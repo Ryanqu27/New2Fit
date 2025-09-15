@@ -4,7 +4,7 @@ import cv2
 import tkinter as tk
 from PIL import Image, ImageTk
 from threading import Thread
-# import time
+import time
 
 #import funtions from Utilities.py
 from Utilities import movenet, draw_prediction_on_image, GetMoveRecommendation, GetElbow2WristLen, GetMovePositions, StandbackCheck,KEYPOINT_DICT
@@ -65,6 +65,9 @@ rightArmLift = 0
 distElbow2Wrist_l = 0
 distElbow2Wrist_r = 0
 distShoulders = 10
+lastRepTimeRightArm = time.time()
+lastRepTimeLeftArm = time.time()
+slowDownMsgUntil = 0
 
 # Main function, 
 #   1. capture image, 
@@ -88,10 +91,14 @@ def show_frame():
     global distElbow2Wrist_l
     global distElbow2Wrist_r
     global distShoulders
+    global lastRepTimeLeftArm
+    global lastRepTimeRightArm
+    global slowDownMsgUntil
     inputsize = 192
     cofident_threshold = 0.35
     FrameTextRefreshThreshold = 6
-
+    minIncrementTime = 1.5
+    
     ret, frame = cap.read()
     if ret :
       FrameCount = FrameCount + 1
@@ -126,25 +133,40 @@ def show_frame():
         PntsPosition = GetMovePositions(keypoints_with_scores,distElbow2Wrist_l, distElbow2Wrist_r, cofident_threshold) 
         if PntsPosition['left_wrist'] != prePntsPosition['left_wrist']  :
           if (PntsPosition['left_wrist'] == MovePosition.Up) & (prePntsPosition['left_wrist'] == MovePosition.Down):
-              leftArmLift = leftArmLift + 1
+              if time.time() - lastRepTimeLeftArm < minIncrementTime:
+                 lastRepTimeLeftArm = time.time()
+                 CmdName = MoveName.SlowDown
+                 slowDownMsgUntil = time.time() + 2.0
+                 textPrint = GetRecommendationTex(CmdName)
+              else:
+                 leftArmLift = leftArmLift + 1
+                 lastRepTimeLeftArm = time.time()
               prePntsPosition['left_wrist'] = MovePosition.Up
           elif PntsPosition['left_wrist'] == MovePosition.Down:
               prePntsPosition['left_wrist'] = MovePosition.Down
-
         if PntsPosition['right_wrist'] != prePntsPosition['right_wrist']  :
           if (PntsPosition['right_wrist'] == MovePosition.Up) & (prePntsPosition['right_wrist'] == MovePosition.Down):
-              rightArmLift = rightArmLift + 1
+              if time.time() - lastRepTimeRightArm < minIncrementTime:
+                 lastRepTimeRightArm = time.time()
+                 CmdName = MoveName.SlowDown
+                 slowDownMsgUntil = time.time() + 2.0
+                 textPrint = GetRecommendationTex(CmdName)
+              else:
+                rightArmLift = rightArmLift + 1
+                lastRepTimeRightArm = time.time()
               prePntsPosition['right_wrist'] = MovePosition.Up
           elif PntsPosition['right_wrist'] == MovePosition.Down:
               prePntsPosition['right_wrist'] = MovePosition.Down
 
-      if(CmdName != MoveName.Nothing):
+      if time.time() < slowDownMsgUntil:
+        # keep showing slowdown message
+        textPrint = GetRecommendationTex(MoveName.SlowDown)
+      elif(CmdName != MoveName.Nothing):
         if(FrameCount > FrameTextRefreshThreshold) :
           if (CmdName == preCmdName):
             if curUsedCmdName != CmdName:
                 curUsedCmdName = CmdName
                 textPrint = GetRecommendationTex(CmdName)
-                #PlayCmdAudio(CmdName)
           preCmdName = CmdName
           FrameCount = 0
       else:
