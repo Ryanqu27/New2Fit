@@ -29,13 +29,12 @@ class MoveName(Enum):
     MoveToLeft = 3
     MoveToRight = 4
     SlowDown = 5
-
 CommandString = {
     MoveName.Nothing: ' ',
     MoveName.StandBack: 'Please Stand Back',
-    MoveName.MoveToLeft: 'Please move to left little bit',
-    MoveName.MoveToRight: 'Please move to right little bit',        
-    MoveName.SlowDown: 'Please slow your reps down'
+    MoveName.MoveToLeft: 'Please shift to the left',
+    MoveName.MoveToRight: 'Please shift to the right',        
+    MoveName.SlowDown: 'Please slow your reps down',
 }
 
 def GetRecommendationTex(CmdName):

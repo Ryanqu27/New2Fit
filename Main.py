@@ -127,8 +127,8 @@ def show_frame():
               distElbow2Wrist_r = distRTmp     
               distShoulders = distShouldersTmp  
 
-      # CmdName = GetMoveRecommendation(keypoints_with_scores,cofident_threshold,1)
-      CmdName = StandbackCheck(KeyPntCheckList,keypoints_with_scores,cofident_threshold,1)
+      CmdName = GetMoveRecommendation(keypoints_with_scores,cofident_threshold,4)
+      # CmdName = StandbackCheck(KeyPntCheckList,keypoints_with_scores,cofident_threshold,1)
       if MoveName.Nothing == CmdName:
         PntsPosition = GetMovePositions(keypoints_with_scores,distElbow2Wrist_l, distElbow2Wrist_r, cofident_threshold) 
         if PntsPosition['left_wrist'] != prePntsPosition['left_wrist']  :

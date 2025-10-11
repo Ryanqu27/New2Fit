@@ -223,6 +223,8 @@ def StandbackCheck (KeypntCheckList,keypoints_with_scores, cofident_threshold, N
     return MoveName.StandBack
   else:
     return MoveName.Nothing  
+  
+  
 
 def GetMovePositions_1(keypoints_with_scores, distElbow2Wrist, cofident_threshold):
   dTol = 0.00001
@@ -297,157 +299,52 @@ def GetMovePositions(pnts, distElbow2Wrist_l, distElbow2Wrist_r, cofident_thresh
 
    
 def GetMoveRecommendation(keypoints_with_scores, cofident_threshold, NumOfFailedAllowed):
-    
-    iIndex = 0
-    # needMoveLeft = False
-    # needMoveRight = False
-    numOfLeftFailed = 0
-    numOfRightFailed = 0
-    for iIndex in range(0,17):    
-      kp_conf = keypoints_with_scores[0][0][iIndex][2]
-      if kp_conf < cofident_threshold:
-        # if iIndex == KEYPOINT_DICT.get('left_eye'):
-        #   numOfLeftFailed = numOfLeftFailed + 1
-        #   # needMoveLeft = True
-        # elif iIndex == KEYPOINT_DICT.get('left_ear'):
-        #   numOfLeftFailed = numOfLeftFailed + 1
-        #   # needMoveLeft = True
-        if iIndex == KEYPOINT_DICT.get('left_shoulder'):
-          numOfLeftFailed = numOfLeftFailed + 1
-          # needMoveLeft = True
-        # elif iIndex == KEYPOINT_DICT.get('left_elbow'):
-        #   numOfLeftFailed = numOfLeftFailed + 1
-        #   # needMoveLeft = True
-        elif iIndex == KEYPOINT_DICT.get('left_wrist'):
-          numOfLeftFailed = numOfLeftFailed + 1
-          # needMoveLeft = True
-        elif iIndex == KEYPOINT_DICT.get('left_hip'):
-          numOfLeftFailed = numOfLeftFailed + 1
-          # needMoveLeft = True
-        # elif iIndex == KEYPOINT_DICT.get('left_knee'):
-        #   numOfLeftFailed = numOfLeftFailed + 1
-        #   # needMoveLeft = True
-        elif iIndex == KEYPOINT_DICT.get('left_ankle'):
-          numOfLeftFailed = numOfLeftFailed + 1
-          # needMoveLeft = True
-        # elif iIndex == KEYPOINT_DICT.get('right_eye'):
-        #   numOfRightFailed = numOfRightFailed + 1
-        #   # needMoveRight = True
-        # elif iIndex == KEYPOINT_DICT.get('right_ear'):
-        #   numOfRightFailed = numOfRightFailed + 1
-        #   # needMoveRight = True
-        elif iIndex == KEYPOINT_DICT.get('right_shoulder'):
-          numOfRightFailed = numOfRightFailed + 1
-          # needMoveRight = True
-        # elif iIndex == KEYPOINT_DICT.get('right_elbow'):
-        #   numOfRightFailed = numOfRightFailed + 1
-        #   # needMoveRight = True
-        elif iIndex == KEYPOINT_DICT.get('right_wrist'):
-          numOfRightFailed = numOfRightFailed + 1
-          # needMoveRight = True
-        elif iIndex == KEYPOINT_DICT.get('right_hip'):
-          numOfRightFailed = numOfRightFailed + 1
-          # needMoveRight = True
-        # elif iIndex == KEYPOINT_DICT.get('right_knee'):
-        #   numOfRightFailed = numOfRightFailed + 1
-        #   # needMoveRight = True                      
-        elif iIndex == KEYPOINT_DICT.get('right_ankle'):
-          numOfRightFailed = numOfRightFailed + 1
-          # needMoveRight = True
-      # if needMoveLeft & needMoveRight:
-      #   break      
-    # if needMoveLeft & needMoveRight:  
-    #   return MoveName.StandBack 
-    # elif needMoveLeft:
-    #   return MoveName.MoveToLeft  
-    # elif needMoveRight:
-    #   return MoveName.MoveToRight
-    # else:
-    #   return MoveName.Nothing
-    if (numOfLeftFailed >= NumOfFailedAllowed) & (numOfRightFailed >= NumOfFailedAllowed):  
-      return MoveName.StandBack 
-    elif numOfLeftFailed >= NumOfFailedAllowed:
-      return MoveName.MoveToLeft  
-    elif numOfRightFailed >= NumOfFailedAllowed:
-      return MoveName.MoveToRight
-    else:
-      return MoveName.Nothing       
+  iIndex = 0
+  numOfLeftFailed = 0
+  numOfRightFailed = 0
+  for iIndex in range(0,17):    
+    kp_conf = keypoints_with_scores[0][0][iIndex][2]
+    if kp_conf < cofident_threshold:
+      if iIndex == KEYPOINT_DICT.get('left_eye'):
+        numOfLeftFailed = numOfLeftFailed + 1
+      elif iIndex == KEYPOINT_DICT.get('left_ear'):
+        numOfLeftFailed = numOfLeftFailed + 1
+      elif iIndex == KEYPOINT_DICT.get('left_shoulder'):
+        numOfLeftFailed = numOfLeftFailed + 1
+      elif iIndex == KEYPOINT_DICT.get('left_elbow'):
+        numOfLeftFailed = numOfLeftFailed + 1
+      elif iIndex == KEYPOINT_DICT.get('left_wrist'):
+        numOfLeftFailed = numOfLeftFailed + 1
+      elif iIndex == KEYPOINT_DICT.get('left_hip'):
+        numOfLeftFailed = numOfLeftFailed + 1
+      elif iIndex == KEYPOINT_DICT.get('left_knee'):
+        numOfLeftFailed = numOfLeftFailed + 1
+      elif iIndex == KEYPOINT_DICT.get('left_ankle'):
+        numOfLeftFailed = numOfLeftFailed + 1
+      elif iIndex == KEYPOINT_DICT.get('right_eye'):
+        numOfRightFailed = numOfRightFailed + 1
+      elif iIndex == KEYPOINT_DICT.get('right_ear'):
+        numOfRightFailed = numOfRightFailed + 1
+      elif iIndex == KEYPOINT_DICT.get('right_shoulder'):
+        numOfRightFailed = numOfRightFailed + 1
+      elif iIndex == KEYPOINT_DICT.get('right_elbow'):
+        numOfRightFailed = numOfRightFailed + 1
+      elif iIndex == KEYPOINT_DICT.get('right_wrist'):
+        numOfRightFailed = numOfRightFailed + 1
+      elif iIndex == KEYPOINT_DICT.get('right_hip'):
+        numOfRightFailed = numOfRightFailed + 1
+      elif iIndex == KEYPOINT_DICT.get('right_knee'):
+        numOfRightFailed = numOfRightFailed + 1
+      elif iIndex == KEYPOINT_DICT.get('right_ankle'):
+        numOfRightFailed = numOfRightFailed + 1
+
+  if (numOfLeftFailed >= NumOfFailedAllowed) & (numOfRightFailed >= NumOfFailedAllowed):  
+    return MoveName.StandBack 
+  elif numOfLeftFailed >= NumOfFailedAllowed:
+    return MoveName.MoveToLeft  
+  elif numOfRightFailed >= NumOfFailedAllowed:
+    return MoveName.MoveToRight
+  else:
+    return MoveName.Nothing       
                     
-def GetMoveRecommendation_old(keypoints_with_scores, cofident_threshold, NumOfFailedAllowed):
-    
-    iIndex = 0
-    # needMoveLeft = False
-    # needMoveRight = False
-    numOfLeftFailed = 0
-    numOfRightFailed = 0
-    shaped = np.squeeze(np.multiply(keypoints_with_scores,[1,1,1]))   
-    for kp in shaped:
-      ky,kx,kp_conf = kp
-      if kp_conf < cofident_threshold:
-        # if iIndex == KEYPOINT_DICT.get('left_eye'):
-        #   numOfLeftFailed = numOfLeftFailed + 1
-        #   # needMoveLeft = True
-        # elif iIndex == KEYPOINT_DICT.get('left_ear'):
-        #   numOfLeftFailed = numOfLeftFailed + 1
-        #   # needMoveLeft = True
-        if iIndex == KEYPOINT_DICT.get('left_shoulder'):
-          numOfLeftFailed = numOfLeftFailed + 1
-          # needMoveLeft = True
-        # elif iIndex == KEYPOINT_DICT.get('left_elbow'):
-        #   numOfLeftFailed = numOfLeftFailed + 1
-        #   # needMoveLeft = True
-        elif iIndex == KEYPOINT_DICT.get('left_wrist'):
-          numOfLeftFailed = numOfLeftFailed + 1
-          # needMoveLeft = True
-        elif iIndex == KEYPOINT_DICT.get('left_hip'):
-          numOfLeftFailed = numOfLeftFailed + 1
-          # needMoveLeft = True
-        # elif iIndex == KEYPOINT_DICT.get('left_knee'):
-        #   numOfLeftFailed = numOfLeftFailed + 1
-        #   # needMoveLeft = True
-        elif iIndex == KEYPOINT_DICT.get('left_ankle'):
-          numOfLeftFailed = numOfLeftFailed + 1
-          # needMoveLeft = True
-        # elif iIndex == KEYPOINT_DICT.get('right_eye'):
-        #   numOfRightFailed = numOfRightFailed + 1
-        #   # needMoveRight = True
-        # elif iIndex == KEYPOINT_DICT.get('right_ear'):
-        #   numOfRightFailed = numOfRightFailed + 1
-        #   # needMoveRight = True
-        elif iIndex == KEYPOINT_DICT.get('right_shoulder'):
-          numOfRightFailed = numOfRightFailed + 1
-          # needMoveRight = True
-        # elif iIndex == KEYPOINT_DICT.get('right_elbow'):
-        #   numOfRightFailed = numOfRightFailed + 1
-        #   # needMoveRight = True
-        elif iIndex == KEYPOINT_DICT.get('right_wrist'):
-          numOfRightFailed = numOfRightFailed + 1
-          # needMoveRight = True
-        elif iIndex == KEYPOINT_DICT.get('right_hip'):
-          numOfRightFailed = numOfRightFailed + 1
-          # needMoveRight = True
-        # elif iIndex == KEYPOINT_DICT.get('right_knee'):
-        #   numOfRightFailed = numOfRightFailed + 1
-        #   # needMoveRight = True                      
-        elif iIndex == KEYPOINT_DICT.get('right_ankle'):
-          numOfRightFailed = numOfRightFailed + 1
-          # needMoveRight = True
-      # if needMoveLeft & needMoveRight:
-      #   break
-      iIndex = iIndex + 1
-    # if needMoveLeft & needMoveRight:  
-    #   return MoveName.StandBack 
-    # elif needMoveLeft:
-    #   return MoveName.MoveToLeft  
-    # elif needMoveRight:
-    #   return MoveName.MoveToRight
-    # else:
-    #   return MoveName.Nothing
-    if (numOfLeftFailed >= NumOfFailedAllowed) & (numOfRightFailed >= NumOfFailedAllowed):  
-      return MoveName.StandBack 
-    elif numOfLeftFailed >= NumOfFailedAllowed:
-      return MoveName.MoveToLeft  
-    elif numOfRightFailed >= NumOfFailedAllowed:
-      return MoveName.MoveToRight
-    else:
-      return MoveName.Nothing                                    
+                              
