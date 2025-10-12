@@ -4,11 +4,11 @@ import math
 
 import numpy as np
 import cv2
-from PoseAnalysis import MoveName, MovePosition
+from Camera.PoseAnalysis import MoveName, MovePosition
 useTsLite = True
 if useTsLite:
 # Initialize the TFLite interpreter
-  interpreter = tf.lite.Interpreter(model_path='3.tflite')
+  interpreter = tf.lite.Interpreter(model_path='Camera/3.tflite')
   interpreter.allocate_tensors()
 else:
 # Download the model from TF Hub.
