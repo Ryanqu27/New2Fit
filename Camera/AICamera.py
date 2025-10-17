@@ -3,7 +3,6 @@ import numpy as np
 import cv2
 import tkinter as tk
 from PIL import Image, ImageTk
-from threading import Thread
 import time
 #import funtions from Utilities.py
 from Camera.Utilities import movenet, draw_prediction_on_image, GetMoveRecommendation, GetElbow2WristLen, GetMovePositions, StandbackCheck,KEYPOINT_DICT
@@ -20,8 +19,11 @@ def run_camera():
   TriggerRecordOff = False
   TriggerRecordOn = False
 
+  outVideoAndKeyPnts = None
+  outKeyPntsOnly = None
+  
   ImageShowWidth = 1000
-  IconFileName = 'New2Fit-Logo.ico'
+  IconFileName = 'Camera/New2Fit-Logo.ico'
   window = tk.Tk()
   window.title("New2Fit")
   #window.geometry("250x500")
@@ -35,8 +37,8 @@ def run_camera():
   imageFrame.grid(row=0, column=0, padx=10, pady=2)
 
   # Creating a photoimage object for start and stop button
-  renderStart = ImageTk.PhotoImage(file="StartRecordingButton.png")
-  renderStop = ImageTk.PhotoImage(file="StopRecordingButton.png")
+  renderStart = ImageTk.PhotoImage(file="Camera/StartRecordingButton.png")
+  renderStop = ImageTk.PhotoImage(file="Camera/StopRecordingButton.png")
 
   #Capture video frames
   lmain = tk.Label(imageFrame)
@@ -45,10 +47,10 @@ def run_camera():
   capWidth = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
   capHeight = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     # Define the codec and create VideoWriter object
-  fourcc = cv2.VideoWriter_fourcc(*'MP4V')
+  fourcc = cv2.VideoWriter_fourcc(*'mp4v')
   #fourcc = cv2.VideoWriter_fourcc(*'H264') 
-  videoAndKeyntsFile = 'VideoAndKeyPnts.mp4'
-  KeypntsFile = 'KeyPntsOnly.mp4'
+  videoAndKeyntsFile = 'Camera/VideoAndKeyPnts.mp4'
+  KeypntsFile = 'Camera/KeyPntsOnly.mp4'
   # outVideoAndKeyPnts = cv2.VideoWriter(videoAndKeyntsFile, fourcc, 20.0, (capWidth,capHeight))
   # outKeyPntsOnly = cv2.VideoWriter(KeypntsFile, fourcc, 20.0, (capWidth,capHeight))  
 
@@ -84,6 +86,7 @@ def run_camera():
     nonlocal leftArmLift, rightArmLift
     nonlocal distElbow2Wrist_l, distElbow2Wrist_r, distShoulders
     nonlocal lastRepTimeLeftArm, lastRepTimeRightArm, slowDownMsgUntil
+    nonlocal outVideoAndKeyPnts, outKeyPntsOnly
     inputsize = 192
     cofident_threshold = 0.35
     FrameTextRefreshThreshold = 6
@@ -208,16 +211,16 @@ def run_camera():
 
   # Record and stop button handling
   def RecordCmd():  
-    global btn
-    global InRecordMode
-    global TriggerRecordOff
-    global TriggerRecordOn  
+    nonlocal btn
+    nonlocal InRecordMode
+    nonlocal TriggerRecordOff
+    nonlocal TriggerRecordOn  
     if InRecordMode:
-        TriggerRecordOff = True
-        btn.configure(image=renderStart)
+      TriggerRecordOff = True
+      btn.configure(image=renderStart)
     else:
-        TriggerRecordOn = True
-        btn.configure(image=renderStop) 
+      TriggerRecordOn = True
+      btn.configure(image=renderStop) 
         
     
   #Slider window (slider controls stage position)
@@ -247,3 +250,4 @@ def run_camera():
 def stop_camera():
   global stop_flag
   stop_flag = True
+  

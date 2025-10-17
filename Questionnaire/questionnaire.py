@@ -19,15 +19,60 @@ class Question:
         self.answers = answers
         
     def get_answers(self):
-        return self.answers
+        text_answers = []
+        for answer in self.answers:
+            text_answers.append(answer.get_answer())
+        return text_answers
     
     def get_question(self):
         return self.question
     
+    def get_score_of_response(self, user_response: str) -> int:
+        for answer in self.answers:
+            if user_response == answer.get_answer():
+                return answer.get_point_value()
+        
+def get_workout(score: int):
+    #Higher score indicates more intense workout
+    if score <= 10:
+        return {
+            "Monday": "Full Body (Bodyweight squats, knee pushups, planks, light stretching)",
+            "Tuesday": "Rest or light walk (20-30 mins)",
+            "Wednesday": "Full Body (Glute bridges, wall pushups, crunches, side planks)",
+            "Thursday": "Rest or light yoga",
+            "Friday": "Full Body (Bodyweight lunges, bird dogs, supermans, sit-ups)",
+            "Saturday": "Rest",
+            "Sunday": "Optional light cardio (bike or walk, 30 mins)"
+        }
+
+    elif 11 <= score <= 16:
+        return {
+            "Monday": "Upper Body (Pushups, dumbbell rows, shoulder press, planks)",
+            "Tuesday": "Lower Body (Squats, lunges, glute bridges, calf raises)",
+            "Wednesday": "Cardio (Jog or cycling, 30–40 mins)",
+            "Thursday": "Core & Mobility (Planks, leg raises, yoga stretches)",
+            "Friday": "Full Body (Circuit training with moderate weights)",
+            "Saturday": "Rest or light walk",
+            "Sunday": "Active recovery (yoga, hiking, or swimming)"
+        }
+
+    else:
+        return {
+            "Monday": "Push (Bench press, shoulder press, triceps dips, pushups)",
+            "Tuesday": "Pull (Pull-ups, barbell rows, bicep curls, face pulls)",
+            "Wednesday": "Legs (Squats, deadlifts, lunges, calf raises)",
+            "Thursday": "Core & Conditioning (HIIT + ab circuit)",
+            "Friday": "Push (Incline press, overhead press, dips, pushups)",
+            "Saturday": "Pull + Cardio (Lat pulldowns, curls, sprints or cycling)",
+            "Sunday": "Rest or active recovery (mobility work, foam rolling)"
+        }
+        
+    
+    
 questions = [
     Question("What is your gender?", [
         Answer("Female", 1),
-        Answer("Male, 2")
+        Answer("Male", 2)
     ]),
     Question("How old are you?", [
         Answer("17 or younger", 3),
