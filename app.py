@@ -2,11 +2,23 @@ import streamlit as st
 import Camera.AICamera as AICam
 import Questionnaire.questionnaire as questionnaire
 
+# Login Handling
+if not st.user.is_logged_in:
+    st.title("Welcome to New2Fit!")
+    st.write("Please log in to continue")
+    if st.button("Log in with Google"):
+        st.login("google")
+    st.stop()
 
+
+# Main App
+st.title(f"Welcome {st.user.name}")
+if st.sidebar.button("Log out"):
+    st.logout()
+    st.stop()
 
 if "completed_questionnaire" not in st.session_state:
-    st.session_state["completed_questionnaire"] = False
-    
+    st.session_state["completed_questionnaire"] = False 
 Home, AICamera = st.tabs(["      Home", "      AICamera"]) # 6 spaces aligns text to middle of tab
 
 with Home:
@@ -34,12 +46,10 @@ with Home:
             st.rerun()
             
 with AICamera:  
-    #try:
-    if st.button("Open Camera"):
-        AICam.run_camera()
-    #except AICam.tk.TclError as e:
-        #st.text("Camera is already running")
-    
-            
-    
-            
+    try:
+        if st.button("Open Camera"):
+            AICam.run_camera()
+    except AICam.tk.TclError as e:
+        st.text("Camera is already running")
+        
+                            
