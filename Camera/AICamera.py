@@ -10,11 +10,11 @@ from Camera.Utilities import movenet, draw_prediction_on_image, GetMoveRecommend
 from Camera.PoseAnalysis import MoveName, MovePosition, GetRecommendationTex, DrawText, play_video
 # CreateAudioFiles()
 
-stop_flag = False
+stopFlag = False
 
 def run_camera():
-  global stop_flag
-  stop_flag = False
+  global stopFlag
+  stopFlag = False
   InRecordMode = False
   TriggerRecordOff = False
   TriggerRecordOn = False
@@ -239,7 +239,7 @@ def run_camera():
 
   # t = Thread (target = VideoCapture(lmain))
   # t.start()
-  if stop_flag:
+  if stopFlag:
     return
   
   show_frame()
@@ -248,6 +248,6 @@ def run_camera():
   cap.release()
 
 def stop_camera():
-  global stop_flag
-  stop_flag = True
+  global stopFlag
+  stopFlag = True
   

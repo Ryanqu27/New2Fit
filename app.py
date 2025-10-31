@@ -1,6 +1,9 @@
 import streamlit as st
 import Camera.AICamera as AICam
 import Questionnaire.questionnaire as questionnaire
+import pandas as pd
+import pydeck as pdk
+import webbrowser
 
 # Login Handling
 if not st.user.is_logged_in:
@@ -12,26 +15,26 @@ if not st.user.is_logged_in:
 
 
 # Main App
-st.title(f"Welcome {st.user.name}")
+st.title(f"Welcome {st.user.name}!")
 if st.sidebar.button("Log out"):
     st.logout()
     st.stop()
 
 if "completed_questionnaire" not in st.session_state:
     st.session_state["completed_questionnaire"] = False 
-Home, AICamera = st.tabs(["      Home", "      AICamera"]) # 6 spaces aligns text to middle of tab
+Home, AICamera, findGyms = st.tabs(["      Home", "      AICamera", "      Find Gyms"]) # 6 spaces aligns text to middle of tab
 
 with Home:
     # Home page either shows questionnaire or workout depending on questionnaire completion
     if not (st.session_state.get("completed_questionnaire")):
-        total_score = 0
+        totalScore = 0
         st.header("Take our questionnaire to personalize your workouts!")
         for question in questionnaire.questions:
-            user_response = st.radio( question.get_question(), question.get_answers())
-            total_score += question.get_score_of_response(user_response)
+            userResponse = st.radio( question.get_question(), question.get_answers())
+            totalScore += question.get_score_of_response(userResponse)
             st.divider()
         if st.button("Submit questionnaire"):
-            workout = questionnaire.get_workout(total_score)
+            workout = questionnaire.get_workout(totalScore)
             st.session_state["completed_questionnaire"] = True
             st.session_state["workout"] = workout
             st.rerun()
@@ -45,11 +48,32 @@ with Home:
             st.session_state["completed_questionnaire"] = False
             st.rerun()
             
-with AICamera:  
+with AICamera: 
+    st.title("Use our AI Camera to track and analyze form in real-time") 
     try:
         if st.button("Open Camera"):
             AICam.run_camera()
     except AICam.tk.TclError as e:
         st.text("Camera is already running")
-        
+
+with findGyms:
+    gyms = pd.read_csv("GymLocations/CrunchGyms.csv")
+    pointLayer = pdk.Layer(
+        "ScatterplotLayer", 
+        data=gyms, 
+        get_position=["longitude", "latitude"], 
+        pickable=True, 
+        get_radius=2000,
+        get_color=[200, 75, 75]
+    )
+    initialViewState = pdk.ViewState (
+        latitude =40, longitude = -100, controller=True, zoom = 3.5, pitch=30
+    )
+    chart = pdk.Deck(
+        layers=[pointLayer], 
+        initial_view_state=initialViewState, 
+        tooltip={"text": "{city}, {state}\n Gym Website: {URL}"}
+    )
+    st.pydeck_chart(chart, selection_mode="single-object")
+     
                             
