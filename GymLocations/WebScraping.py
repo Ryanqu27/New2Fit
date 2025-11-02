@@ -6,13 +6,15 @@ import csv
 crunchResponse = requests.get("https://www.crunch.com/load-clubs")
 crunchJson = crunchResponse.json()
 crunchGyms = crunchJson.get("clubs")
-crunchGymDataFrame = pd.DataFrame({"URL": [], "latitude": [], "longitude": [], "city": [], "state": []})
+gymDataFrame = pd.DataFrame({"URL": [], "latitude": [], "longitude": [], "city": [], "state": [], "brand": []})
 for gym in crunchGyms:
-    slug = gym.get("slug")
-    latitude = gym.get("latitude")
-    longitude = gym.get("longitude")
-    city = gym["address"].get("city")
-    state = gym["address"].get("state")
-    crunchGymDataFrame.loc[len(crunchGymDataFrame)] = ["https://www.crunch.com/locations/" + slug, latitude, longitude, city, state]
+    gymDataFrame.loc[len(gymDataFrame)] = [
+        "https://www.crunch.com/locations/" + gym.get("slug"), 
+        gym.get("latitude"), 
+        gym.get("longitude"), 
+        gym["address"].get("city"), 
+        gym["address"].get("state"),
+        "Crunch"
+    ]
 
-crunchGymDataFrame.to_csv("GymLocations/CrunchGyms.csv")
+gymDataFrame.to_csv("GymLocations/CrunchGyms.csv")

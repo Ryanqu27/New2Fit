@@ -61,9 +61,10 @@ with findGyms:
     pointLayer = pdk.Layer(
         "ScatterplotLayer", 
         data=gyms, 
+        id="gymLocation",
         get_position=["longitude", "latitude"], 
         pickable=True, 
-        get_radius=2000,
+        get_radius=2500,
         get_color=[200, 75, 75]
     )
     initialViewState = pdk.ViewState (
@@ -74,6 +75,17 @@ with findGyms:
         initial_view_state=initialViewState, 
         tooltip={"text": "{city}, {state}\n Gym Website: {URL}"}
     )
-    st.pydeck_chart(chart, selection_mode="single-object")
-     
+        
+    
+    event = st.pydeck_chart(chart, on_select="rerun", selection_mode="single-object")
+    
+    if event and event.selection["objects"]:
+        clicked = event.selection
+        gymData = clicked["objects"].get("gymLocation")[0]
+        gymCity = gymData["city"]
+        gymURL = gymData["URL"]
+        gymBrand = gymData["brand"]
+        st.success(f"You selected a {gymBrand} gym in {gymCity}")
+        if st.button("Open Gym Website"):
+            webbrowser.open_new_tab(gymURL)
                             
