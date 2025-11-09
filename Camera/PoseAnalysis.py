@@ -47,7 +47,7 @@ def play_video(video_path):
     cap = cv2.VideoCapture(video_path)
     if not cap.isOpened():
         print(f"Error: Cannot open video file {video_path}")
-        return
+        return False
     while cap.isOpened():
         ret, frame = cap.read()
         if not ret:
@@ -58,6 +58,7 @@ def play_video(video_path):
             break
     cap.release()
     cv2.destroyAllWindows()
+    return True
 
 def DrawText(image, text):
     xSize = 0

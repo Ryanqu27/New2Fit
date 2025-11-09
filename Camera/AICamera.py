@@ -9,6 +9,8 @@ from Camera.Utilities import movenet, draw_prediction_on_image, GetMoveRecommend
 #import function in PoseAnalysis
 from Camera.PoseAnalysis import MoveName, MovePosition, GetRecommendationTex, DrawText, play_video
 # CreateAudioFiles()
+import tempfile
+import os
 
 stopFlag = False
 
@@ -49,8 +51,11 @@ def run_camera():
     # Define the codec and create VideoWriter object
   fourcc = cv2.VideoWriter_fourcc(*'mp4v')
   #fourcc = cv2.VideoWriter_fourcc(*'H264') 
-  videoAndKeyntsFile = 'Camera/VideoAndKeyPnts.mp4'
-  KeypntsFile = 'Camera/KeyPntsOnly.mp4'
+  tempVideo = tempfile.NamedTemporaryFile(delete=True, suffix=".mp4")
+  videoAndKeyntsFile = tempVideo.name
+  tempVideo.close()
+  
+  # KeypntsFile = 'Camera/KeyPntsOnly.mp4'
   # outVideoAndKeyPnts = cv2.VideoWriter(videoAndKeyntsFile, fourcc, 20.0, (capWidth,capHeight))
   # outKeyPntsOnly = cv2.VideoWriter(KeypntsFile, fourcc, 20.0, (capWidth,capHeight))  
 
@@ -177,7 +182,7 @@ def run_camera():
       if TriggerRecordOn:
         TriggerRecordOn = False
         outVideoAndKeyPnts = cv2.VideoWriter(videoAndKeyntsFile, fourcc, 10.0, (capWidth,capHeight))
-        outKeyPntsOnly = cv2.VideoWriter(KeypntsFile, fourcc, 10.0, (capWidth,capHeight))  
+        #outKeyPntsOnly = cv2.VideoWriter(KeypntsFile, fourcc, 10.0, (capWidth,capHeight))  
         # Logoimage = cv2.imread("Logo.png")
         # Logoimage = cv2.resize (Logoimage,(capWidth, capHeight))
         # for counter in range (0,20):
@@ -188,14 +193,14 @@ def run_camera():
       if TriggerRecordOff:
         TriggerRecordOff = False
         outVideoAndKeyPnts.release()
-        outKeyPntsOnly.release()
+        #outKeyPntsOnly.release()
         InRecordMode = False     
 
       #Write current frame to video
       if InRecordMode:
         # write the flipped frame
         outVideoAndKeyPnts.write(image)
-        outKeyPntsOnly.write(imageKeyPnt)      
+        #outKeyPntsOnly.write(imageKeyPnt)      
 
       #Resize the image and show on the main window  
       ImageShowHeight= int(ImageShowWidth * capHeight / capWidth)
@@ -232,6 +237,7 @@ def run_camera():
   # Play Recording button
   def PlayRecordingCmd():
     play_video(videoAndKeyntsFile)
+    
 
   playBtn = tk.Button(sliderFrame, text="Play Recording", command=PlayRecordingCmd)
   playBtn.grid(row=0, column=2)
@@ -246,6 +252,11 @@ def run_camera():
   window.mainloop()
   Exit = True
   cap.release()
+  cv2.destroyAllWindows()
+  try:
+    os.remove(videoAndKeyntsFile)
+  except:
+    pass
 
 def stop_camera():
   global stopFlag
