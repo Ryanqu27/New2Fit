@@ -6,5 +6,6 @@ that can track, analyze, and give real-time feedback for bicep curl form. The ca
     -AI camera was built using a Tensorflow framework called movenet. Tracks body parts and gives information on confidence levels and coordinates. 
     -Front end developed mainly using streamlit. 
     -Web Scraping scripts were developed to retrieve information on gyms around the US.
+    -SupaBase/PostGreSQL database used for storing user workout information, points, and progress.
 
 

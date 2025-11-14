@@ -1,6 +1,7 @@
 import streamlit as st
 import Camera.AICamera as AICam
 import Questionnaire.questionnaire as questionnaire
+import DataBaseManaging.SupaBase as dataBase
 import pandas as pd
 import pydeck as pdk
 import webbrowser
@@ -16,6 +17,7 @@ if not st.user.is_logged_in:
 
 # Main App
 st.title(f"Welcome {st.user.name}!")
+dataBase.addUser(st.user.email, st.user.name)
 if st.sidebar.button("Log out"):
     st.logout()
     st.stop()
@@ -53,6 +55,7 @@ with AICamera:
     try:
         if st.button("Open Camera"):
             AICam.run_camera()
+            dataBase.addUserPoints(st.user.email, st.user.name, pointAmount=10)
     except AICam.tk.TclError as e:
         st.text("Camera is already running")
 
