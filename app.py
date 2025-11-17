@@ -123,10 +123,10 @@ with logWorkouts:
             st.text("No workouts available")
         else:
             for workout in workouts:
-                st.text(workout["exercises"])
-                st.text(str(workout["date"]))
-                st.text(workout["duration_minutes"])
-                st.text(workout["notes"])
+                st.text("Workout date: " + str(workout["date"])[:10])
+                st.text("Exercises: " + workout["exercises"])
+                st.text("Workout duration: " + str(workout["duration_minutes"]) + " minutes")
+                st.text("Workout notes: " + workout["notes"])
                 st.divider()
     else:
         if st.button("View logged workouts"):
