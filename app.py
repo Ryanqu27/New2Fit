@@ -5,6 +5,7 @@ import DataBaseManaging.SupaBase as dataBase
 import pandas as pd
 import pydeck as pdk
 import webbrowser
+import time
 
 # Login Handling
 if not st.user.is_logged_in:
@@ -24,7 +25,7 @@ if st.sidebar.button("Log out"):
 
 if "completed_questionnaire" not in st.session_state:
     st.session_state["completed_questionnaire"] = False 
-Home, AICamera, findGyms = st.tabs(["      Home", "      AICamera", "      Find Gyms"]) # 6 spaces aligns text to middle of tab
+Home, AICamera, findGyms, logWorkouts = st.tabs(["      Home", "      AICamera", "      Find Gyms", "      Workouts"]) # 6 spaces aligns text to middle of tab
 
 with Home:
     # Home page either shows questionnaire or workout depending on questionnaire completion
@@ -91,4 +92,44 @@ with findGyms:
         st.success(f"You selected a {gymBrand} gym in {gymCity}")
         if st.button("Open Gym Website"):
             webbrowser.open_new_tab(gymURL)
-                            
+
+with logWorkouts:
+    st.title("Log your workouts here to track your progress!")
+    if "addingWorkout" not in st.session_state:
+        st.session_state["addingWorkout"] = False
+    if st.button("Enter a new workout"):
+        st.session_state["addingWorkout"] = True
+    if st.session_state["addingWorkout"]:
+        date = st.date_input("When did u complete this workout?")
+        dateStr = date.isoformat()
+        duration = st.slider(label="Enter your workout duration in minutes", min_value=0, max_value=300)
+        notes = st.text_input("Enter any notes or notable things for your workout", max_chars=300)
+        exercises = st.text_input("Enter your exercises, sets, and reps here", max_chars=600)
+        if st.button("Log workout"):
+            dataBase.logWorkout(st.user.email, st.user.name, dateStr, duration, notes, exercises)
+            st.success("Logged Workout Sucessfully!")
+            st.session_state["addingWorkout"] = False
+            time.sleep(1)
+            st.rerun()
+    if "viewingWorkouts" not in st.session_state:
+        st.session_state["viewingWorkouts"] = False
+    
+    if st.session_state["viewingWorkouts"]:
+        if st.button("Finish viewing workout"):
+            st.session_state["viewingWorkouts"] = False
+            st.rerun()
+        workouts = dataBase.getUserWorkouts(st.user.email, st.user.name)
+        if not workouts:
+            st.text("No workouts available")
+        else:
+            for workout in workouts:
+                st.text(workout["exercises"])
+                st.text(str(workout["date"]))
+                st.text(workout["duration_minutes"])
+                st.text(workout["notes"])
+                st.divider()
+    else:
+        if st.button("View logged workouts"):
+            st.session_state["viewingWorkouts"] = True
+            st.rerun()
+        

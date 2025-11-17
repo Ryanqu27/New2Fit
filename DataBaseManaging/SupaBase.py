@@ -28,5 +28,20 @@ def addUserPoints(userEmail, userName, pointAmount):
         "pointamount": pointAmount
     }).execute()
 
-#def updateWorkoutPlan(userEmail, userName, workouts):
-    
+def logWorkout(userEmail, userName, date, duration, notes, exercises):
+    supabase.rpc("log_workout", {
+        "p_username": userName,
+        "p_useremail": userEmail,
+        "p_date":date,
+        "p_duration": duration,
+        "p_notes":notes,
+        "p_exercises": exercises
+    }).execute()
+
+def getUserWorkouts(userEmail, userName):
+    workouts = supabase.rpc("get_user_workouts", {
+        "p_username":userName,
+        "p_useremail":userEmail,
+    }).execute()
+    return workouts.data
+
