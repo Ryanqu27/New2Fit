@@ -43,5 +43,21 @@ def getUserWorkouts(userEmail, userName):
         "p_username":userName,
         "p_useremail":userEmail,
     }).execute()
-    return workouts.data
+    workouts = workouts.data
+    for workout in workouts:
+        workout["date"] = str(workout["date"])[:10] #Clean up date formatting
+    return workouts
 
+def getLastLogin(userEmail, userName):
+    date = supabase.rpc("get_last_login", {
+        "p_useremail":userEmail,
+        "p_username":userName
+    }).execute()
+    return str(date.data)[:10] #Clean up date formatting
+def updateLastLogin(userEmail, userName):
+    supabase.rpc("update_user_login", {
+        "p_useremail":userEmail,
+        "p_username":userName
+    }).execute()
+    
+    

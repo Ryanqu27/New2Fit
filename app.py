@@ -6,6 +6,7 @@ import pandas as pd
 import pydeck as pdk
 import webbrowser
 import time
+from datetime import datetime, date
 
 # Login Handling
 if not st.user.is_logged_in:
@@ -17,15 +18,26 @@ if not st.user.is_logged_in:
 
 
 # Main App
+st.set_page_config( #Widen tab space
+    page_title="New2Fit",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+
 st.title(f"Welcome {st.user.name}!")
 dataBase.addUser(st.user.email, st.user.name)
+today = date.today().isoformat()
+last_login = dataBase.getLastLogin(st.user.email, st.user.name)
+if last_login != today:
+    dataBase.addUserPoints(st.user.email, st.user.name, 5)
+    dataBase.updateLastLogin(st.user.email, st.user.name)
 if st.sidebar.button("Log out"):
     st.logout()
     st.stop()
 
 if "completed_questionnaire" not in st.session_state:
     st.session_state["completed_questionnaire"] = False 
-Home, AICamera, findGyms, logWorkouts = st.tabs(["      Home", "      AICamera", "      Find Gyms", "      Workouts"]) # 6 spaces aligns text to middle of tab
+Home, AICamera, findGyms, logWorkouts, progress = st.tabs(["      Home", "      AICamera", "      Find Gyms", "      Workouts", "      Progress"]) # 6 spaces aligns text to middle of tab
 
 with Home:
     # Home page either shows questionnaire or workout depending on questionnaire completion
@@ -52,7 +64,7 @@ with Home:
             st.rerun()
             
 with AICamera: 
-    st.title("Use our AI Camera to track and analyze form in real-time") 
+    st.header("Use our AI Camera to track and analyze form in real-time") 
     try:
         if st.button("Open Camera"):
             AICam.run_camera()
@@ -61,6 +73,7 @@ with AICamera:
         st.text("Camera is already running")
 
 with findGyms:
+    st.header("Find the right gym for you with our gym locator")
     gyms = pd.read_csv("GymLocations/CrunchGyms.csv")
     pointLayer = pdk.Layer(
         "ScatterplotLayer", 
@@ -94,7 +107,7 @@ with findGyms:
             webbrowser.open_new_tab(gymURL)
 
 with logWorkouts:
-    st.title("Log your workouts here to track your progress!")
+    st.header("Log your workouts here to track your progress!")
     if "addingWorkout" not in st.session_state:
         st.session_state["addingWorkout"] = False
     if st.button("Enter a new workout"):
@@ -108,6 +121,7 @@ with logWorkouts:
         if st.button("Log workout"):
             dataBase.logWorkout(st.user.email, st.user.name, dateStr, duration, notes, exercises)
             st.success("Logged Workout Sucessfully!")
+            dataBase.addUserPoints(st.user.email, st.user.name, pointAmount=20)
             st.session_state["addingWorkout"] = False
             time.sleep(1)
             st.rerun()
@@ -123,7 +137,7 @@ with logWorkouts:
             st.text("No workouts available")
         else:
             for workout in workouts:
-                st.text("Workout date: " + str(workout["date"])[:10])
+                st.text("Workout date: " + workout["date"])
                 st.text("Exercises: " + workout["exercises"])
                 st.text("Workout duration: " + str(workout["duration_minutes"]) + " minutes")
                 st.text("Workout notes: " + workout["notes"])
@@ -132,4 +146,8 @@ with logWorkouts:
         if st.button("View logged workouts"):
             st.session_state["viewingWorkouts"] = True
             st.rerun()
-        
+
+with progress:
+    st.header("Check your progress here!")
+    points = dataBase.getUserPoints(st.user.email, st.user.name)
+    st.text(f"You have {points} points currently. \n Gain more points through logging workouts, using the AI camera, and logging in daily." )
