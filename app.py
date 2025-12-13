@@ -6,7 +6,7 @@ import pandas as pd
 import pydeck as pdk
 import webbrowser
 import time
-from datetime import datetime, date
+from datetime import date
 
 # Login Handling
 if not st.user.is_logged_in:
@@ -43,38 +43,65 @@ with Home:
     # Home page either shows questionnaire or workout depending on questionnaire completion
     if not (st.session_state.get("completed_questionnaire")):
         totalScore = 0
-        st.header("Take our questionnaire to personalize your workouts!")
+        st.header("Take our questionnaire to get a workout recommendation!")
+        st.divider()
         for question in questionnaire.questions:
             userResponse = st.radio( question.get_question(), question.get_answers())
             totalScore += question.get_score_of_response(userResponse)
             st.divider()
-        if st.button("Submit questionnaire"):
+        if st.button("Submit questionnaire", icon="✅"):
             workout = questionnaire.get_workout(totalScore)
             st.session_state["completed_questionnaire"] = True
             st.session_state["workout"] = workout
             st.rerun()
     else:
-        st.header("Here is your recommended workout plan! Feel free to change exercises as necessary.")
+        st.header("Here is your recommended weekly workout plan! Feel free to change exercises as necessary.")
         for day_key in st.session_state.get("workout"):
             st.subheader(day_key)
             st.text(st.session_state.get("workout").get(day_key))
             st.divider()
-        if st.button("Retake questionnaire"):
+        if st.button("Retake questionnaire", icon="🔄"):
             st.session_state["completed_questionnaire"] = False
             st.rerun()
             
-with AICamera: 
-    st.header("Use our AI Camera to track and analyze form in real-time") 
+with AICamera:
+    st.header("AI Form Analysis")
+    st.subheader("Select an exercise and use your camera to analyze movement and form in real time.")
+    st.divider()
+
+    st.subheader("Choose an Exercise")
+
+    exercise = st.radio(
+        label="Select exercise",
+        options=["Bicep Curls", "Lateral Raises"],
+        horizontal=True,
+        label_visibility="collapsed"
+    )
+    st.divider()
+    st.subheader("Start Camera")
     try:
-        if st.button("Open Camera"):
-            AICam.run_camera()
-            dataBase.addUserPoints(st.user.email, st.user.name, pointAmount=10)
-    except AICam.tk.TclError as e:
-        st.text("Camera is already running")
+        if st.button(
+            "Open Camera",
+            icon="📷",
+            use_container_width=True
+        ):
+            AICam.run_camera(exercise=exercise)
+            dataBase.addUserPoints(
+                st.user.email,
+                st.user.name,
+                pointAmount=10
+            )
+
+    except AICam.tk.TclError:
+        st.warning("Camera is already running.")
+                    
+
 
 with findGyms:
     st.header("Find the right gym for you with our gym locator")
-    gyms = pd.read_csv("GymLocations/CrunchGyms.csv")
+    st.divider() 
+
+    gyms = pd.read_csv("GymLocations/Gyms.csv")
     pointLayer = pdk.Layer(
         "ScatterplotLayer", 
         data=gyms, 
@@ -103,51 +130,104 @@ with findGyms:
         gymURL = gymData["URL"]
         gymBrand = gymData["brand"]
         st.success(f"You selected a {gymBrand} gym in {gymCity}")
-        if st.button("Open Gym Website"):
+        if st.button("Open Gym Website", icon="🌐"):
             webbrowser.open_new_tab(gymURL)
 
 with logWorkouts:
-    st.header("Log your workouts here to track your progress!")
-    if "addingWorkout" not in st.session_state:
-        st.session_state["addingWorkout"] = False
-    if st.button("Enter a new workout"):
-        st.session_state["addingWorkout"] = True
-    if st.session_state["addingWorkout"]:
-        date = st.date_input("When did u complete this workout?")
-        dateStr = date.isoformat()
-        duration = st.slider(label="Enter your workout duration in minutes", min_value=0, max_value=300)
-        notes = st.text_input("Enter any notes or notable things for your workout", max_chars=300)
-        exercises = st.text_input("Enter your exercises, sets, and reps here", max_chars=600)
-        if st.button("Log workout"):
-            dataBase.logWorkout(st.user.email, st.user.name, dateStr, duration, notes, exercises)
-            st.success("Logged Workout Sucessfully!")
-            dataBase.addUserPoints(st.user.email, st.user.name, pointAmount=20)
-            st.session_state["addingWorkout"] = False
-            time.sleep(1)
-            st.rerun()
-    if "viewingWorkouts" not in st.session_state:
-        st.session_state["viewingWorkouts"] = False
-    
-    if st.session_state["viewingWorkouts"]:
-        if st.button("Finish viewing workout"):
+    st.header("Log Your Workouts")
+    st.subheader("Track your training and monitor progress over time.")
+    st.divider()
+
+    st.session_state.setdefault("addingWorkout", False)
+    st.session_state.setdefault("viewingWorkouts", False)
+
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("➕ Log New Workout", use_container_width=True):
+            st.session_state["addingWorkout"] = True
             st.session_state["viewingWorkouts"] = False
-            st.rerun()
+
+    with col2:
+        if st.button("📖 View Workout History", use_container_width=True):
+            st.session_state["viewingWorkouts"] = True
+            st.session_state["addingWorkout"] = False
+
+    if st.session_state["addingWorkout"]:
+        st.subheader("New Workout Entry")
+
+        with st.form("log_workout_form", clear_on_submit=True):
+            col1, col2 = st.columns(2)
+
+            with col1:
+                date = st.date_input("📅 Workout Date")
+
+            with col2:
+                duration = st.slider(
+                    "⏱ Duration (minutes)",
+                    min_value=0,
+                    max_value=300,
+                    step=5
+                )
+
+            exercises = st.text_area(
+                "🏋️ Exercises (sets × reps)",
+                placeholder="Bench Press 3x8 100lbs, Squats 4x5...",
+                max_chars=600
+            )
+
+            notes = st.text_area(
+                "📝 Notes",
+                placeholder="How did it feel? PRs? Fatigue?",
+                max_chars=300
+            )
+
+            submitted = st.form_submit_button("✅ Log Workout")
+
+            if submitted:
+                dataBase.logWorkout(
+                    st.user.email,
+                    st.user.name,
+                    date.isoformat(),
+                    duration,
+                    notes,
+                    exercises
+                )
+                dataBase.addUserPoints(
+                    st.user.email,
+                    st.user.name,
+                    pointAmount=20
+                )
+
+                st.success("Workout logged successfully!")
+                st.session_state["addingWorkout"] = False
+                time.sleep(0.8)
+                st.rerun()
+
+    if st.session_state["viewingWorkouts"]:
+        st.subheader("Your Workout History")
+
         workouts = dataBase.getUserWorkouts(st.user.email, st.user.name)
+
         if not workouts:
-            st.text("No workouts available")
+            st.info("No workouts logged yet. Start by adding one!")
         else:
             for workout in workouts:
-                st.text("Workout date: " + workout["date"])
-                st.text("Exercises: " + workout["exercises"])
-                st.text("Workout duration: " + str(workout["duration_minutes"]) + " minutes")
-                st.text("Workout notes: " + workout["notes"])
-                st.divider()
-    else:
-        if st.button("View logged workouts"):
-            st.session_state["viewingWorkouts"] = True
-            st.rerun()
+                with st.expander(f"📅 {workout['date']} — ⏱ {workout['duration_minutes']} min"):
+                    st.markdown(f"**Exercises:**\n\n{workout['exercises']}")
+                    st.markdown(f"**Notes:**\n\n{workout['notes']}")
+
+
 
 with progress:
     st.header("Check your progress here!")
+    st.divider()
     points = dataBase.getUserPoints(st.user.email, st.user.name)
-    st.text(f"You have {points} points currently. \n Gain more points through logging workouts, using the AI camera, and logging in daily." )
+    level = points // 100
+    current_level_points = points - (level * 100)
+    points_to_next = 100 - current_level_points
+    st.columns(2)[0].metric("Level", level)
+    st.columns(2)[1].metric("Points", points)
+    pct = current_level_points / 100 if points >= 0 else 0.0
+    st.progress(pct)
+    st.caption(f"{current_level_points} / 100 pts to next level — {points_to_next} pts remaining")
+    

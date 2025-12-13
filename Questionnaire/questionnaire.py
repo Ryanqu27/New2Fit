@@ -107,7 +107,7 @@ questions = [
         Answer("Over an hour", 3)
     ]),
     Question("Do you have any current injuries or health limitations?", [
-        Answer("Yes", -3),
+        Answer("Yes", -5),
         Answer("No", 0)
     ]),
 ]

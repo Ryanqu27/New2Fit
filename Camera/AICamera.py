@@ -14,7 +14,7 @@ import os
 
 stopFlag = False
 
-def run_camera():
+def run_camera(exercise):
   global stopFlag
   stopFlag = False
   InRecordMode = False
