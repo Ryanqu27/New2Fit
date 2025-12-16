@@ -231,3 +231,4 @@ with progress:
     st.progress(pct)
     st.caption(f"{current_level_points} / 100 pts to next level — {points_to_next} pts remaining")
     
+    st.metric("Total Days Logged In", f"{dataBase.getTotalDaysLogged(st.user.email, st.user.name)}")

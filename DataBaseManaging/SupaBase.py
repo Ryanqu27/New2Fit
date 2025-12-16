@@ -60,4 +60,9 @@ def updateLastLogin(userEmail, userName):
         "p_username":userName
     }).execute()
     
+def getTotalDaysLogged(userEmail, userName):
+    return supabase.rpc("get_total_days_logged", {
+        "p_useremail": userEmail,
+        "p_username": userName
+    }).execute().data
     
