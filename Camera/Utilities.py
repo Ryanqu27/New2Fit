@@ -298,19 +298,40 @@ def GetMovePositionsBicep(pnts, distElbow2Wrist_l, distElbow2Wrist_r, cofident_t
       Positions['right_wrist'] = MovePosition.Middle      
   return Positions
 
-def GetMovePositionsLateral(keypoints):
-  lw = keypoints["left_wrist"]
-  ls = keypoints["left_shoulder"]
-  
-  rw = keypoints["right_wrist"]
-  rs = keypoints["right_shoulder"]
-  
-  left_up = lw["y"] < ls["y"] + 0.05  
-  right_up = rw["y"] < rs["y"] + 0.05
-  positions = {}
-  positions["left_wrist"] = MovePosition.Up if left_up else MovePosition.Down
-  positions["right_wrist"] = MovePosition.Up if right_up else MovePosition.Down
-  return positions
+def GetMovePositionsLateral(pnts, conf_threshold=0.35):
+    lw = KEYPOINT_DICT["left_wrist"]
+    ls = KEYPOINT_DICT["left_shoulder"]
+    rw = KEYPOINT_DICT["right_wrist"]
+    rs = KEYPOINT_DICT["right_shoulder"]
+
+    positions = {}
+
+    # Check confidence first
+    if (
+        pnts[0][0][lw][2] < conf_threshold or
+        pnts[0][0][ls][2] < conf_threshold
+    ):
+        positions["left_wrist"] = MovePosition.Middle
+    else:
+        positions["left_wrist"] = (
+            MovePosition.Up
+            if pnts[0][0][lw][0] < pnts[0][0][ls][0]
+            else MovePosition.Down
+        )
+
+    if (
+        pnts[0][0][rw][2] < conf_threshold or
+        pnts[0][0][rs][2] < conf_threshold
+    ):
+        positions["right_wrist"] = MovePosition.Middle
+    else:
+        positions["right_wrist"] = (
+            MovePosition.Up
+            if pnts[0][0][rw][0] < pnts[0][0][rs][0]
+            else MovePosition.Down
+        )
+
+    return positions
 
 def GetMoveRecommendation(keypoints_with_scores, cofident_threshold, NumOfFailedAllowed):
   iIndex = 0
