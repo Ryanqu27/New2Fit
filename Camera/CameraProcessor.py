@@ -1,7 +1,7 @@
 import time
-import cv2
 import numpy as np
 import tensorflow as tf
+import cv2
 
 from Camera.Utilities import (
     movenet,
@@ -92,23 +92,23 @@ class PoseProcessor:
     def _count_reps(self, PntsPosition):
         now = time.time()
 
-        # LEFT ARM
+        # Right Arm Since Camera is Flipped
         if PntsPosition['left_wrist'] != self.prePntsPosition['left_wrist']:
             if PntsPosition['left_wrist'] == MovePosition.Up:
                 if now - self.lastRepTimeLeftArm < self.minIncrementTime:
                     self.slowDownMsgUntil = now + 2
                 else:
-                    self.leftArmLift += 1
+                    self.rightArmLift += 1
                 self.lastRepTimeLeftArm = now
             self.prePntsPosition['left_wrist'] = PntsPosition['left_wrist']
 
-        # RIGHT ARM
+        # Left Arm Since Camera is Flipped
         if PntsPosition['right_wrist'] != self.prePntsPosition['right_wrist']:
             if PntsPosition['right_wrist'] == MovePosition.Up:
                 if now - self.lastRepTimeRightArm < self.minIncrementTime:
                     self.slowDownMsgUntil = now + 2
                 else:
-                    self.rightArmLift += 1
+                    self.leftArmLift += 1
                 self.lastRepTimeRightArm = now
             self.prePntsPosition['right_wrist'] = PntsPosition['right_wrist']
 

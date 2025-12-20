@@ -43,22 +43,6 @@ def GetRecommendationTex(CmdName):
     else:
         return ""
 
-def play_video(video_path):
-    cap = cv2.VideoCapture(video_path)
-    if not cap.isOpened():
-        print(f"Error: Cannot open video file {video_path}")
-        return False
-    while cap.isOpened():
-        ret, frame = cap.read()
-        if not ret:
-            break
-        cv2.imshow('Playback', frame)
-        # Press 'q' to exit playback
-        if cv2.waitKey(25) & 0xFF == ord('q'):
-            break
-    cap.release()
-    cv2.destroyAllWindows()
-    return True
 
 def DrawText(image, text):
     xSize = 0
