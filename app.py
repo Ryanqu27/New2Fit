@@ -3,7 +3,6 @@ import Questionnaire.questionnaire as questionnaire
 import DataBaseManaging.SupaBase as dataBase
 import pandas as pd
 import pydeck as pdk
-import webbrowser
 import time
 from datetime import date
 from streamlit_webrtc import webrtc_streamer, VideoProcessorBase
