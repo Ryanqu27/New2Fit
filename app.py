@@ -1,5 +1,4 @@
 import streamlit as st
-import Camera.AICamera as AICam
 import Questionnaire.questionnaire as questionnaire
 import DataBaseManaging.SupaBase as dataBase
 import pandas as pd
@@ -82,7 +81,7 @@ class VideoProcessor(VideoProcessorBase):
 
 with AICamera:
     st.header("AI Form Analysis")
-    st.subheader("Select an exercise and use your camera to analyze movement and form in real time.")
+    st.subheader("Select an exercise and use your camera to analyze form and count reps in real time.")
 
     exercise = st.radio(
         "Exercise",
@@ -92,7 +91,8 @@ with AICamera:
 
     st.divider()
     st.subheader("Camera")
-    if st.button("Click the start button below to begin"):
+    # Button here prevents weird bugs with webrtc
+    if st.button("Click the start button below to begin"): 
         st.session_state.camera_running = True
             
     webrtc_streamer(
