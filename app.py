@@ -7,6 +7,9 @@ import pydeck as pdk
 import webbrowser
 import time
 from datetime import date
+from streamlit_webrtc import webrtc_streamer, VideoProcessorBase
+import av
+from Camera.CameraProcessor import PoseProcessor
 
 # Login Handling
 if not st.user.is_logged_in:
@@ -37,6 +40,9 @@ if st.sidebar.button("Log out"):
 
 if "completed_questionnaire" not in st.session_state:
     st.session_state["completed_questionnaire"] = False 
+if "camera_running" not in st.session_state:
+    st.session_state.camera_running = False
+    
 Home, AICamera, findGyms, logWorkouts, progress = st.tabs(["      Home", "      AICamera", "      Find Gyms", "      Workouts", "      Progress"]) # 6 spaces aligns text to middle of tab
 
 with Home:
@@ -64,37 +70,37 @@ with Home:
             st.session_state["completed_questionnaire"] = False
             st.rerun()
             
+class VideoProcessor(VideoProcessorBase):
+    def __init__(self, exercise):
+        self.processor = PoseProcessor(exercise)
+
+    def recv(self, frame):
+        img = frame.to_ndarray(format="bgr24")
+        img = self.processor.process(img)
+        return av.VideoFrame.from_ndarray(img, format="bgr24")
+
+
 with AICamera:
     st.header("AI Form Analysis")
     st.subheader("Select an exercise and use your camera to analyze movement and form in real time.")
-    st.divider()
-
-    st.subheader("Choose an Exercise")
 
     exercise = st.radio(
-        label="Select exercise",
-        options=["Bicep Curls", "Lateral Raises"],
-        horizontal=True,
-        label_visibility="collapsed"
+        "Exercise",
+        ["Bicep Curls", "Lateral Raises"],
+        horizontal=True
     )
-    st.divider()
-    st.subheader("Start Camera")
-    try:
-        if st.button(
-            "Open Camera",
-            icon="📷",
-            use_container_width=True
-        ):
-            AICam.run_camera(exercise=exercise)
-            dataBase.addUserPoints(
-                st.user.email,
-                st.user.name,
-                pointAmount=10
-            )
 
-    except AICam.tk.TclError:
-        st.warning("Camera is already running.")
-                    
+    st.divider()
+    st.subheader("Camera")
+    if st.button("Click the start button below to begin"):
+        st.session_state.camera_running = True
+            
+    webrtc_streamer(
+        key=f"ai-camera-{st.session_state.camera_running}",
+        video_processor_factory=lambda: VideoProcessor(exercise),
+        media_stream_constraints={"video": True, "audio": False},
+        async_processing=True,
+    )
 
 
 with findGyms:
