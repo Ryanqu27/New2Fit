@@ -260,7 +260,7 @@ def GetMovePositions_1(keypoints_with_scores, distElbow2Wrist, cofident_threshol
       Positions['right_wrist'] = MovePosition.Middle      
   return Positions
 
-def GetMovePositions(pnts, distElbow2Wrist_l, distElbow2Wrist_r, cofident_threshold):
+def GetMovePositionsBicep(pnts, distElbow2Wrist_l, distElbow2Wrist_r, cofident_threshold):
   dTol = 0.0001
   angleUpTreshold = 0.5 # 0.7 # about 45 degree
   angleDownTreshold = 0.5
@@ -298,7 +298,21 @@ def GetMovePositions(pnts, distElbow2Wrist_l, distElbow2Wrist_r, cofident_thresh
       Positions['right_wrist'] = MovePosition.Middle      
   return Positions
 
-   
+def GetMovePositionsLateral(keypoints, confidence=0.35):
+  lw = keypoints["left_wrist"]
+  ls = keypoints["left_shoulder"]
+  
+  rw = keypoints["right_wrist"]
+  rs = keypoints["right_shoulder"]
+  
+  left_up = lw["y"] < ls["y"] + 0.05  
+  right_up = rw["y"] < rs["y"] + 0.05
+  
+  return {
+    "left": MovePosition.Up if left_up else MovePosition.Down,
+    "right": MovePosition.Up if right_up else MovePosition.Down
+  }
+
 def GetMoveRecommendation(keypoints_with_scores, cofident_threshold, NumOfFailedAllowed):
   iIndex = 0
   numOfLeftFailed = 0

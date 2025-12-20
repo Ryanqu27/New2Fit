@@ -30,7 +30,7 @@ dataBase.addUser(st.user.email, st.user.name)
 today = date.today().isoformat()
 last_login = dataBase.getLastLogin(st.user.email, st.user.name)
 if last_login != today:
-    dataBase.addUserPoints(st.user.email, st.user.name, 5)
+    dataBase.addUserPoints(st.user.email, st.user.name, 25)
     dataBase.updateLastLogin(st.user.email, st.user.name)
 if st.sidebar.button("Log out"):
     st.logout()
@@ -67,7 +67,8 @@ with Home:
         if st.button("Retake questionnaire", icon="🔄"):
             st.session_state["completed_questionnaire"] = False
             st.rerun()
-            
+
+           
 class VideoProcessor(VideoProcessorBase):
     def __init__(self, exercise):
         self.processor = PoseProcessor(exercise)
@@ -76,7 +77,6 @@ class VideoProcessor(VideoProcessorBase):
         img = frame.to_ndarray(format="bgr24")
         img = self.processor.process(img)
         return av.VideoFrame.from_ndarray(img, format="bgr24")
-
 
 with AICamera:
     st.header("AI Form Analysis")
