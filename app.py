@@ -84,11 +84,8 @@ class VideoProcessor(VideoProcessorBase):
 
 with AICamera:
     st.header("AI Form Analysis")
-    st.subheader(
-        "Select an exercise and use your camera to analyze form and count reps in real time."
-    )
+    st.subheader("Select an exercise and analyze your form and count reps in real time.")
 
-    # --- Exercise Selection ---
     exercise = st.radio(
         "Exercise",
         ["Bicep Curls", "Lateral Raises"],
@@ -98,37 +95,37 @@ with AICamera:
     st.divider()
     st.subheader("Camera")
 
-    # --- Session state ---
     if "camera_running" not in st.session_state:
         st.session_state.camera_running = False
 
+    if "webrtc_key" not in st.session_state:
+        st.session_state.webrtc_key = 0
+    
     col1, col2 = st.columns(2)
 
     with col1:
         if st.button("▶ Start Camera", use_container_width=True):
             st.session_state.camera_running = True
+            st.session_state.webrtc_key += 1 
 
     with col2:
         if st.button("⏹ Stop Camera", use_container_width=True):
             st.session_state.camera_running = False
+            st.session_state.webrtc_key += 1  
 
-    # --- WebRTC configuration (important for stability) ---
-    rtc_config = RTCConfiguration(
-        {"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]}
-    )
+    camera_slot = st.empty()
 
-    # --- Mount WebRTC ONCE ---
-    ctx = webrtc_streamer(
-        key="ai-camera",
-        rtc_configuration=rtc_config,
-        video_processor_factory=lambda: VideoProcessor(exercise),
-        media_stream_constraints={"video": True, "audio": False},
-        async_processing=True,
-    )
-
-    # --- Control camera play state safely ---
-    if ctx:
-        ctx.desired_playing = st.session_state.camera_running
+    if st.session_state.camera_running:
+        with camera_slot:
+            webrtc_streamer(
+                key=f"ai-camera-{st.session_state.webrtc_key}",
+                rtc_configuration=RTCConfiguration(
+                    {"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]}
+                ),
+                video_processor_factory=lambda: VideoProcessor(exercise),
+                media_stream_constraints={"video": True, "audio": False},
+                async_processing=True,
+            )
 
 
 with findGyms:
