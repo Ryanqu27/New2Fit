@@ -98,7 +98,7 @@ with AICamera:
         st.session_state.camera_running = True
             
     webrtc_streamer(
-        key=f"ai-camera-{st.session_state.camera_running}",
+        key=f"ai-camera",
         video_processor_factory=lambda: VideoProcessor(exercise),
         media_stream_constraints={"video": True, "audio": False},
         async_processing=True,
