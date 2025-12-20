@@ -26,12 +26,15 @@ st.set_page_config( #Widen tab space
 )
 
 st.title(f"Welcome {st.user.name}!")
-dataBase.addUser(st.user.email, st.user.name)
-today = date.today().isoformat()
-last_login = dataBase.getLastLogin(st.user.email, st.user.name)
-if last_login != today:
-    dataBase.addUserPoints(st.user.email, st.user.name, 25)
-    dataBase.updateLastLogin(st.user.email, st.user.name)
+if "initialize_login" not in st.session_state:
+    dataBase.addUser(st.user.email, st.user.name)
+    today = date.today().isoformat()
+    last_login = dataBase.getLastLogin(st.user.email, st.user.name)
+    if last_login != today:
+        dataBase.addUserPoints(st.user.email, st.user.name, 25)
+        dataBase.updateLastLogin(st.user.email, st.user.name)
+    st.session_state["initialize_login"] = True
+    
 if st.sidebar.button("Log out"):
     st.logout()
     st.stop()
