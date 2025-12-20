@@ -31,7 +31,7 @@ class MoveName(Enum):
     SlowDown = 5
 CommandString = {
     MoveName.Nothing: ' ',
-    MoveName.StandBack: 'Please Stand Back and Face the Camera',
+    MoveName.StandBack: 'Please Stand Back',
     MoveName.MoveToLeft: 'Please shift to the left',
     MoveName.MoveToRight: 'Please shift to the right',        
     MoveName.SlowDown: 'Please slow your reps down',
