@@ -39,7 +39,8 @@ class PoseProcessor:
         self.lastRepTimeLeftArm = time.time()
         self.lastRepTimeRightArm = time.time()
         self.slowDownMsgUntil = 0
-
+        self.slowDownMsgDuration = 2
+        
         self.distElbow2Wrist_l = 0
         self.distElbow2Wrist_r = 0
         self.distShoulders = 10
@@ -96,7 +97,7 @@ class PoseProcessor:
         if PntsPosition['left_wrist'] != self.prePntsPosition['left_wrist']:
             if PntsPosition['left_wrist'] == MovePosition.Up:
                 if now - self.lastRepTimeLeftArm < self.minIncrementTime:
-                    self.slowDownMsgUntil = now + 2
+                    self.slowDownMsgUntil = now + self.slowDownMsgDuration
                 else:
                     self.rightArmLift += 1
                 self.lastRepTimeLeftArm = now
@@ -106,7 +107,7 @@ class PoseProcessor:
         if PntsPosition['right_wrist'] != self.prePntsPosition['right_wrist']:
             if PntsPosition['right_wrist'] == MovePosition.Up:
                 if now - self.lastRepTimeRightArm < self.minIncrementTime:
-                    self.slowDownMsgUntil = now + 2
+                    self.slowDownMsgUntil = now + self.slowDownMsgDuration
                 else:
                     self.leftArmLift += 1
                 self.lastRepTimeRightArm = now

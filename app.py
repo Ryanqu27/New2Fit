@@ -136,8 +136,8 @@ with findGyms:
         gymURL = gymData["URL"]
         gymBrand = gymData["brand"]
         st.success(f"You selected a {gymBrand} gym in {gymCity}")
-        if st.button("Open Gym Website", icon="🌐"):
-            webbrowser.open_new_tab(gymURL)
+        st.link_button("Open Gym Website 🌐", gymURL)
+
 
 with logWorkouts:
     st.header("Log Your Workouts")
