@@ -8,6 +8,7 @@ from datetime import date
 from streamlit_webrtc import webrtc_streamer, VideoProcessorBase
 import av
 from Camera.CameraProcessor import PoseProcessor
+from streamlit_webrtc import RTCConfiguration
 
 # Login Handling
 if not st.user.is_logged_in:
@@ -83,26 +84,51 @@ class VideoProcessor(VideoProcessorBase):
 
 with AICamera:
     st.header("AI Form Analysis")
-    st.subheader("Select an exercise and use your camera to analyze form and count reps in real time.")
+    st.subheader(
+        "Select an exercise and use your camera to analyze form and count reps in real time."
+    )
 
+    # --- Exercise Selection ---
     exercise = st.radio(
         "Exercise",
         ["Bicep Curls", "Lateral Raises"],
-        horizontal=True
+        horizontal=True,
     )
 
     st.divider()
     st.subheader("Camera")
-    # Button here prevents weird bugs with webrtc
-    if st.button("Click the start button below to begin"): 
-        st.session_state.camera_running = True
-            
-    webrtc_streamer(
-        key=f"ai-camera",
+
+    # --- Session state ---
+    if "camera_running" not in st.session_state:
+        st.session_state.camera_running = False
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        if st.button("▶ Start Camera", use_container_width=True):
+            st.session_state.camera_running = True
+
+    with col2:
+        if st.button("⏹ Stop Camera", use_container_width=True):
+            st.session_state.camera_running = False
+
+    # --- WebRTC configuration (important for stability) ---
+    rtc_config = RTCConfiguration(
+        {"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]}
+    )
+
+    # --- Mount WebRTC ONCE ---
+    ctx = webrtc_streamer(
+        key="ai-camera",
+        rtc_configuration=rtc_config,
         video_processor_factory=lambda: VideoProcessor(exercise),
         media_stream_constraints={"video": True, "audio": False},
         async_processing=True,
     )
+
+    # --- Control camera play state safely ---
+    if ctx:
+        ctx.desired_playing = st.session_state.camera_running
 
 
 with findGyms:
