@@ -9,7 +9,6 @@ from Camera.Utilities import (
     GetMoveRecommendation,
     GetElbow2WristLen,
     GetMovePositionsBicep,
-    GetMovePositionsLateral,
     KEYPOINT_DICT
 )
 
@@ -77,15 +76,13 @@ class PoseProcessor:
         )
 
         if CmdName == MoveName.Nothing:
-            if self.exercise == "Bicep Curl":
-                PntsPosition = GetMovePositionsBicep(
-                    keypoints,
-                    self.distElbow2Wrist_l,
-                    self.distElbow2Wrist_r,
-                    self.conf_threshold
-                )
-            elif self.exercise == "Lateral Raises":
-                PntsPosition = GetMovePositionsLateral(keypoints)
+            PntsPosition = GetMovePositionsBicep(
+                keypoints,
+                self.distElbow2Wrist_l,
+                self.distElbow2Wrist_r,
+                self.conf_threshold
+            )
+
             self._count_reps(PntsPosition)
 
         self._update_text(CmdName)
@@ -95,9 +92,9 @@ class PoseProcessor:
 
     def _count_reps(self, PntsPosition):
         now = time.time()
-
-        # Right Arm Since Camera is Flipped
+        
         if self.exercise == "Bicep Curls":
+            # Right Arm Since Camera is Flipped
             if PntsPosition['left_wrist'] != self.prePntsPosition['left_wrist']:
                 if PntsPosition['left_wrist'] == MovePosition.Up:
                     if now - self.lastRepTimeLeftArm < self.minIncrementTime:
@@ -116,29 +113,8 @@ class PoseProcessor:
                         self.leftArmLift += 1
                     self.lastRepTimeRightArm = now
                 self.prePntsPosition['right_wrist'] = PntsPosition['right_wrist']
-        elif self.exercise == "Lateral Raises":
-            # LEFT ARM
-            if PntsPosition["left"] != self.prePntsPosition["left"]:
-                if PntsPosition["left"] == MovePosition.Up:
-                    if now - self.lastRepTimeLeftArm < self.minIncrementTime:
-                        self.slowDownMsgUntil = now + self.slowDownMsgDuration
-                    else:
-                        self.leftArmLift += 1
-                    self.lastRepTimeLeftArm = now
-
-                self.prePntsPosition["left"] = PntsPosition["left"]
-
-            # RIGHT ARM
-            if PntsPosition["right"] != self.prePntsPosition["right"]:
-                if PntsPosition["right"] == MovePosition.Up:
-                    if now - self.lastRepTimeRightArm < self.minIncrementTime:
-                        self.slowDownMsgUntil = now + self.slowDownMsgDuration
-                    else:
-                        self.rightArmLift += 1
-                    self.lastRepTimeRightArm = now
-
-                self.prePntsPosition["right"] = PntsPosition["right"]
-
+        #elif self.exercise == "Lateral Raises":
+            #PntsPosition = GetMovePositionsLateral()
     def _update_text(self, CmdName):
         if time.time() < self.slowDownMsgUntil:
             self.textPrint = GetRecommendationTex(MoveName.SlowDown)
