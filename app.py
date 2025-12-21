@@ -97,9 +97,12 @@ with AICamera:
     # Button here prevents weird bugs with webrtc
     if st.button("Click the start button below to begin"): 
         st.session_state.camera_running = True
-            
+    st.info(
+        "If the camera does not start or stops responding, "
+        "**please refresh the page** to restart the camera."
+    )        
     webrtc_streamer(
-        key=f"ai-camera-{random.random()}",
+        key=f"ai-camera-{st.session_state.camera_running}",
         video_processor_factory=lambda: VideoProcessor(exercise),
         media_stream_constraints={"video": True, "audio": False},
         async_processing=True,
