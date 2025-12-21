@@ -8,7 +8,7 @@ from datetime import date
 from streamlit_webrtc import webrtc_streamer, VideoProcessorBase
 import av
 from Camera.CameraProcessor import PoseProcessor
-from streamlit_webrtc import RTCConfiguration
+import random
 
 # Login Handling
 if not st.user.is_logged_in:
@@ -84,48 +84,26 @@ class VideoProcessor(VideoProcessorBase):
 
 with AICamera:
     st.header("AI Form Analysis")
-    st.subheader("Select an exercise and analyze your form and count reps in real time.")
+    st.subheader("Select an exercise and use your camera to analyze form and count reps in real time.")
 
     exercise = st.radio(
         "Exercise",
         ["Bicep Curls", "Lateral Raises"],
-        horizontal=True,
+        horizontal=True
     )
 
     st.divider()
     st.subheader("Camera")
-
-    if "camera_running" not in st.session_state:
-        st.session_state.camera_running = False
-
-    if "webrtc_key" not in st.session_state:
-        st.session_state.webrtc_key = 0
-    
-    col1, col2 = st.columns(2)
-
-    with col1:
-        if st.button("▶ Start Camera", use_container_width=True):
-            st.session_state.camera_running = True
-            st.session_state.webrtc_key += 1 
-
-    with col2:
-        if st.button("⏹ Stop Camera", use_container_width=True):
-            st.session_state.camera_running = False
-            st.session_state.webrtc_key += 1  
-
-    camera_slot = st.empty()
-
-    if st.session_state.camera_running:
-        with camera_slot:
-            webrtc_streamer(
-                key=f"ai-camera-{st.session_state.webrtc_key}",
-                rtc_configuration=RTCConfiguration(
-                    {"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]}
-                ),
-                video_processor_factory=lambda: VideoProcessor(exercise),
-                media_stream_constraints={"video": True, "audio": False},
-                async_processing=True,
-            )
+    # Button here prevents weird bugs with webrtc
+    if st.button("Click the start button below to begin"): 
+        st.session_state.camera_running = True
+            
+    webrtc_streamer(
+        key=f"ai-camera-{random.random()}",
+        video_processor_factory=lambda: VideoProcessor(exercise),
+        media_stream_constraints={"video": True, "audio": False},
+        async_processing=True,
+    )
 
 
 with findGyms:
