@@ -1,13 +1,10 @@
 import cv2
 from enum import Enum
 
-# font 
 font = cv2.FONT_ITALIC 
-  
-# org 
+   
 org = (00, 50) 
-  
-# fontScale 
+   
 fontScale = 1
    
 # Red color in BGR 

@@ -129,7 +129,7 @@ with findGyms:
     chart = pdk.Deck(
         layers=[pointLayer], 
         initial_view_state=initialViewState, 
-        tooltip={"text": "{city}, {state}\n Gym Website: {URL}"}
+        tooltip={"text": "{brand} gym\n {city}, {state}\n Gym Website: {URL}"}
     )
         
     
