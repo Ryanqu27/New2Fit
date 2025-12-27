@@ -1,5 +1,5 @@
 # New2Fit
-This application is a personalized AI fitness coach for beginners featuring an AI camera with real-time pose analysis and feedback.
+New2Fit is a personalized AI fitness application for beginners featuring an AI camera with real-time pose analysis and feedback.
 
 ## Overview
 New2Fit uses a TensorFlow pose model to analyze exercise form in real time and provides feedback on range of motion, speed, and joint angles. The front end is built with Streamlit and user data is stored in Supabase/PostgreSQL.
