@@ -9,8 +9,9 @@ New2Fit uses a TensorFlow pose model to analyze exercise form in real time and p
 - Form analysis and per-rep feedback (angles, speed, confidence)
 - Streamlit web UI for sessions and progress
 - Gym locations and websites retreived from web scraping algorithm. 
-- Supabase backend for user data and progress tracking
+- Supabase storage for user data and progress tracking
 
 ## Running Application
 - Project is deployed with streamlit at: https://new2fit-evzjqy2ztsamnzvkgkkmvv.streamlit.app/
 - The application may be asleep which could take a few minutes to get back up.
+- NOTE: Cellular networks can sometimes impose WebRTC restrictions on mobile devices making the AI camera not functional.  
