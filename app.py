@@ -8,7 +8,12 @@ from datetime import date
 from streamlit_webrtc import webrtc_streamer, VideoProcessorBase
 import av
 from Camera.CameraProcessor import PoseProcessor
-import random
+
+st.set_page_config(
+    page_title="New2Fit",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
 
 # Login Handling
 if not st.user.is_logged_in:
@@ -20,12 +25,6 @@ if not st.user.is_logged_in:
 
 
 # Main App
-st.set_page_config( #Widen tab space
-    page_title="New2Fit",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
-
 st.title(f"Welcome {st.user.name}!")
 if "initialize_login" not in st.session_state:
     dataBase.addUser(st.user.email, st.user.name)
