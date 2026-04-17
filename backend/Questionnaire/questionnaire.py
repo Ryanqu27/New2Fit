@@ -1,5 +1,5 @@
 from typing import List
-from questionnaire_schema import QuestionnaireSubmit, QuestionDTO
+from .questionnaire_schema import QuestionnaireSubmit, QuestionDTO
 
 class Answer:
     # Each answer choice has a point value. A higher point value should indicate recommending

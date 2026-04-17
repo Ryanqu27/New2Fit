@@ -2,7 +2,7 @@ from fastapi import APIRouter
 from .questionnaire_schema import QuestionnaireSubmit, QuestionDTO
 from .questionnaire import get_all_questions_dto, get_workout_recommendation
 
-router = APIRouter(prefix="/questionnaire", tags=["Questionnaire"])
+router = APIRouter(prefix="/api/questionnaire", tags=["Questionnaire"])
 
 @router.get("/questions", response_model=list[QuestionDTO])
 def get_questions():
