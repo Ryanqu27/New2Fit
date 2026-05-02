@@ -72,12 +72,12 @@ export default function Questionnaire() {
                   return (
                     <li key={ansIndex} className={`answer-item ${isSelected ? 'selected' : ''}`}>
                       <label className="answer-label">
-                        <input 
-                          type="radio" 
-                          name={`question-${qIndex}`} 
-                          value={answer} 
-                          checked={isSelected} 
-                          onChange={() => handleRadioButtonChange(qIndex, answer)} 
+                        <input
+                          type="radio"
+                          name={`question-${qIndex}`}
+                          value={answer}
+                          checked={isSelected}
+                          onChange={() => handleRadioButtonChange(qIndex, answer)}
                           className="answer-input"
                         />
                         <span className="answer-text">{answer}</span>
@@ -89,8 +89,8 @@ export default function Questionnaire() {
             </div>
           ))}
           <div className="q-footer">
-            <button 
-              className="submit-button" 
+            <button
+              className="submit-button"
               onClick={handleSubmit}
               disabled={!isFormComplete || isSubmitting}
             >

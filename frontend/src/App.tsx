@@ -1,9 +1,8 @@
-import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom'
-import Questionnaire from './Questionnaire'
-import GymsPage from './GymsPage'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import Questionnaire from './pages/Questionnaire/Questionnaire'
+import GymsPage from './pages/GymsPage/GymsPage'
 import './App.css'
-import './Navbar.css'
-import Navbar from './Navbar';
+import Navbar from './pages/Navbar/Navbar';
 
 function App() {
   return (

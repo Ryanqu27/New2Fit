@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { getGymLocations } from './GymsPageService';
-import GymMap from './GymMap'; 
+import GymMap from './GymMap';
 
 export default function GymsPage() {
     const [gyms, setGyms] = useState([]);
