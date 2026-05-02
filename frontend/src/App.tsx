@@ -1,18 +1,19 @@
-import { useState } from 'react'
+import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom'
 import Questionnaire from './Questionnaire'
+import GymsPage from './GymsPage'
 import './App.css'
-
-function Dashboard() {
-  return (
-    <Questionnaire />
-  )
-}
-
+import './Navbar.css'
+import Navbar from './Navbar';
 
 function App() {
-
   return (
-    <Dashboard />
+    <BrowserRouter>
+      <Navbar />
+      <Routes>
+        <Route path="/questionnaire" element={<Questionnaire />} />
+        <Route path="/gyms" element={<GymsPage />} />
+      </Routes>
+    </BrowserRouter>
   )
 }
 

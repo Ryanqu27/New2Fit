@@ -28,7 +28,6 @@ export default function WorkoutPlan({ plan, onRetake }: WorkoutPlanProps) {
 
   return (
     <div className="workout-plan-root">
-      {/* Hero header */}
       <header className="wp-hero">
         <h1 className="wp-title">Your Workout Plan</h1>
         <p className="wp-sub">
@@ -37,7 +36,6 @@ export default function WorkoutPlan({ plan, onRetake }: WorkoutPlanProps) {
         </p>
       </header>
 
-      {/* Day cards grid */}
       <div className="wp-grid">
         {days.map(([day, workout], i) => {
           const meta = dayMeta[day] ?? { accent: 'var(--accent)' };
@@ -69,7 +67,6 @@ export default function WorkoutPlan({ plan, onRetake }: WorkoutPlanProps) {
         })}
       </div>
 
-      {/* Retake button */}
       <button className="wp-retake" onClick={onRetake}>
         ↻ Retake Questionnaire
       </button>
