@@ -8,9 +8,7 @@ router = APIRouter(
     tags=["Users"]
 )
 
-# Endpoint called by the frontend after a successful Auth0/Google login.
 @router.post("/login", response_model=user_schema.UserResponse)
-def oauth_login(user_data: user_schema.UserCreate, db: Session = Depends(get_db)):
-    user = user_service.process_oauth_login(db, user_data)
-    
+def google_login(request: user_schema.GoogleLoginRequest, db: Session = Depends(get_db)):
+    user = user_service.process_oauth_login(db, request)
     return user
