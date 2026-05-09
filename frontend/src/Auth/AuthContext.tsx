@@ -15,8 +15,13 @@ const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<User | null>(() => {
-        const saved = localStorage.getItem('user');
-        return saved ? JSON.parse(saved) : null;
+        try {
+            const saved = localStorage.getItem('user');
+            return saved ? JSON.parse(saved) : null;
+        } catch {
+            localStorage.removeItem('user');
+            return null;
+        }
     })
 
     const login = (inputUser: User) => {

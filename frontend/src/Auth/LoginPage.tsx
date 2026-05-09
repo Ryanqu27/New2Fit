@@ -4,7 +4,7 @@ import { useAuth } from './AuthContext';
 import api from '.././api';
 
 const loginUser = async (google_token: string) => {
-    const response = await api.post('/api/users/login', { google_token });
+    const response = await api.post('/users/login', { google_token });
     return response.data;
 }
 
