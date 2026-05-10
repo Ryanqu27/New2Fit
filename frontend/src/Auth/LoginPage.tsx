@@ -20,7 +20,7 @@ export default function LoginPage() {
         }
         const user = await loginUser(token);
         auth.login(user);
-        navigate('/questionnaire');
+        navigate('/');
     }
 
     const handleError = () => {
