@@ -8,7 +8,11 @@ def get_user_by_google_id(db: Session, google_id: str):
     return db.query(User).filter(User.google_id == google_id).first()
 
 def create_user(db: Session, google_user: dict):
-    db_user = User(email=google_user["email"], google_id=google_user["google_id"])
+    db_user = User(
+        email=google_user["email"],
+        google_id=google_user["google_id"],
+        first_name=google_user.get("first_name", "")
+    )
     db.add(db_user)
     db.commit()
     db.refresh(db_user)

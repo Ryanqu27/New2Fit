@@ -8,6 +8,7 @@ class GoogleLoginRequest(BaseModel):
 # What we send back to the frontend
 class UserResponse(BaseModel):
     email: str
+    first_name: str
     created_at: datetime
 
     class Config:

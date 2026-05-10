@@ -14,7 +14,8 @@ def verify_google_token(token: str) -> dict:
         )
         return {
             "google_id": id_info["sub"], 
-            "email": id_info["email"]
+            "email": id_info["email"],
+            "first_name": id_info.get("given_name", "") 
         }
     except ValueError:
         raise HTTPException(status_code=401, detail="Invalid Google token.")
