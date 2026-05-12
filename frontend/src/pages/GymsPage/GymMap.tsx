@@ -1,5 +1,6 @@
 import 'leaflet/dist/leaflet.css';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import MarkerClusterGroup from 'react-leaflet-cluster';
 import L from 'leaflet';
 
 import icon from 'leaflet/dist/images/marker-icon.png';
@@ -40,17 +41,19 @@ export default function GymMap({ gyms }: GymMapProps) {
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
-            {gyms.map((gym, index) => (
-                <Marker key={index} position={[gym.latitude, gym.longitude]}>
-                    <Popup>
-                        <strong>{gym.brand}</strong> <br />
-                        {gym.city}, {gym.state} <br />
-                        <a href={gym.URL} target="_blank" rel="noreferrer">
-                            View Gym Details
-                        </a>
-                    </Popup>
-                </Marker>
-            ))}
+            <MarkerClusterGroup>
+                {gyms.map((gym, index) => (
+                    <Marker key={index} position={[gym.latitude, gym.longitude]}>
+                        <Popup>
+                            <strong>{gym.brand}</strong> <br />
+                            {gym.city}, {gym.state} <br />
+                            <a href={gym.URL} target="_blank" rel="noreferrer">
+                                View Gym Details
+                            </a>
+                        </Popup>
+                    </Marker>
+                ))}
+            </MarkerClusterGroup>
         </MapContainer>
     );
 }
