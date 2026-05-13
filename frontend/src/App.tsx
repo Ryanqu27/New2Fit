@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom'
 import Questionnaire from './pages/Questionnaire/Questionnaire'
 import GymsPage from './pages/GymsPage/GymsPage'
 import HomePage from './pages/HomePage/HomePage'
+import AICamera from './pages/AICamera/AICamera'
 import './App.css'
 import Navbar from './pages/Navbar/Navbar';
 import ProtectedRoute from './Auth/ProtectedRoute';
@@ -28,6 +29,7 @@ function App() {
               <Route path="/" element={<HomePage />} />
               <Route path="/questionnaire" element={<Questionnaire />} />
               <Route path="/gyms" element={<GymsPage />} />
+              <Route path="/camera" element={<AICamera />} />
             </Route>
           </Routes>
         </BrowserRouter>
