@@ -10,7 +10,6 @@ from Camera.Utilities import (
     GetElbow2WristLen,
     GetMovePositionsBicep,
     GetMovePositionsLateral,
-    KEYPOINT_DICT
 )
 
 from Camera.PoseAnalysis import (
