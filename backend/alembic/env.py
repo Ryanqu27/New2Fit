@@ -24,6 +24,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 from database import Base
 import Users.UserModel
+import Workouts.WorkoutModel
 target_metadata = Base.metadata
 
 config.set_main_option("sqlalchemy.url", os.environ.get("DATABASE_URL"))
