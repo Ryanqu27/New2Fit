@@ -3,7 +3,7 @@ import cv2
 import numpy as np
 from Camera.CameraProcessor import PoseProcessor
 
-router = APIRouter()
+router = APIRouter(prefix="/api/camera", tags=["Camera"])
 
 @router.websocket("/ws/{exercise_name}")
 async def camera_websocket(websocket: WebSocket, exercise_name: str):

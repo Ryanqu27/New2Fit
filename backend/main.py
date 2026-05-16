@@ -4,6 +4,7 @@ from Questionnaire.questionnaire_router import router as questionnaire_router
 from GymLocations.gym_locations_router import router as gym_locations_router
 from Users.user_router import router as users_router
 from Camera.camera_router import router as camera_router
+from Workouts.workout_router import router as workouts_router
 app = FastAPI()
 
 app.add_middleware(
@@ -17,7 +18,8 @@ app.add_middleware(
 app.include_router(questionnaire_router)
 app.include_router(gym_locations_router)
 app.include_router(users_router)
-app.include_router(camera_router, prefix="/api/camera", tags=["Camera"])
+app.include_router(camera_router)
+app.include_router(workouts_router)
 
 @app.get("/")
 async def root():
