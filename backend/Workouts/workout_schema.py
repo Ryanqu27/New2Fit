@@ -3,7 +3,6 @@ from pydantic import BaseModel
 from datetime import datetime
  
 class WorkoutRequest(BaseModel):
-    user_id: int
     name: str
     notes: str
     duration_minutes: int

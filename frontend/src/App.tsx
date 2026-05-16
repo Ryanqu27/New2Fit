@@ -1,8 +1,8 @@
 import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom'
-import Questionnaire from './pages/Questionnaire/Questionnaire'
+import Questionnaire from './pages/QuestionnairePage/Questionnaire'
 import GymsPage from './pages/GymsPage/GymsPage'
 import HomePage from './pages/HomePage/HomePage'
-import AICamera from './pages/AICamera/AICamera'
+import AICamera from './pages/AICameraPage/AICamera'
 import './App.css'
 import Navbar from './pages/Navbar/Navbar';
 import ProtectedRoute from './Auth/ProtectedRoute';

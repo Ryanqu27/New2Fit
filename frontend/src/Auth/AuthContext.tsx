@@ -8,7 +8,7 @@ type User = {
 
 type AuthContextType = {
     user: User | null;
-    login: (user: User) => void;
+    login: (user: User, token: string) => void;
     logout: () => void;
 }
 
@@ -25,14 +25,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
     })
 
-    const login = (inputUser: User) => {
+    const login = (inputUser: User, token: string) => {
         setUser(inputUser);
         localStorage.setItem('user', JSON.stringify(inputUser));
+        localStorage.setItem('google_token', token);
     }
 
     const logout = () => {
         setUser(null);
         localStorage.removeItem('user');
+        localStorage.removeItem('google_token');
     }
 
     return (

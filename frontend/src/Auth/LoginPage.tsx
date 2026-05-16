@@ -19,7 +19,7 @@ export default function LoginPage() {
             return;
         }
         const user = await loginUser(token);
-        auth.login(user);
+        auth.login(user, token);
         navigate('/');
     }
 
