@@ -39,6 +39,12 @@ export default function Navbar() {
         >
           AI Camera
         </NavLink>
+        <NavLink
+          to="/workouts"
+          className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}
+        >
+          Workouts
+        </NavLink>
       </div>
 
       <button className="logout-btn" onClick={handleLogout}>

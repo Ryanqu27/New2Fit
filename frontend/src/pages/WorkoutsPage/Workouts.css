@@ -1,0 +1,221 @@
+.workouts-page {
+    padding: 0 40px 60px;
+    max-width: 860px;
+    margin: 0 auto;
+    width: 100%;
+    box-sizing: border-box;
+    text-align: left;
+}
+
+.workouts-header {
+    padding: 40px 0 32px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 40px;
+}
+
+.workouts-title {
+    margin: 0 0 8px;
+    font-size: 40px;
+    letter-spacing: -1px;
+}
+
+.workouts-subtitle {
+    color: var(--text);
+    font-size: 16px;
+    margin: 0;
+}
+
+.workouts-content {
+    display: flex;
+    flex-direction: column;
+    gap: 48px;
+}
+
+/* ── Section titles ── */
+.section-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-h);
+    margin: 0 0 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+}
+
+/* ── Log Form ── */
+.log-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-group label {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-h);
+}
+
+.form-group input,
+.form-group textarea {
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg);
+    color: var(--text-h);
+    font-size: 15px;
+    font-family: var(--sans);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+    resize: vertical;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-bg);
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+    color: var(--text);
+    opacity: 0.6;
+}
+
+.form-error {
+    color: #ef4444;
+    font-size: 14px;
+    margin: 0;
+}
+
+.form-success {
+    color: #22c55e;
+    font-size: 14px;
+    margin: 0;
+    font-weight: 500;
+}
+
+.log-btn {
+    padding: 12px 28px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    align-self: flex-start;
+    transition: opacity 0.2s, transform 0.15s;
+}
+
+.log-btn:hover:not(:disabled) {
+    opacity: 0.88;
+    transform: translateY(-1px);
+}
+
+.log-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ── Workout History ── */
+.workouts-loading,
+.workouts-empty {
+    color: var(--text);
+    text-align: center;
+    padding: 40px;
+    border: 1px dashed var(--border);
+    border-radius: 12px;
+    font-size: 15px;
+    line-height: 1.8;
+}
+
+.workout-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.workout-card {
+    padding: 18px 20px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--bg);
+    transition: box-shadow 0.2s, transform 0.15s;
+    cursor: default;
+}
+
+.workout-card:hover {
+    box-shadow: var(--shadow);
+    transform: translateY(-2px);
+}
+
+.workout-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    gap: 12px;
+}
+
+.workout-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-h);
+}
+
+.workout-date {
+    font-size: 13px;
+    color: var(--text);
+    white-space: nowrap;
+}
+
+.workout-card-meta {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 8px;
+}
+
+.workout-duration {
+    font-size: 13px;
+    color: var(--accent);
+    font-weight: 500;
+}
+
+.workout-notes {
+    font-size: 14px;
+    color: var(--text);
+    margin: 0;
+    line-height: 1.5;
+    border-top: 1px solid var(--border);
+    padding-top: 8px;
+    margin-top: 4px;
+}
+
+@media (max-width: 600px) {
+    .workouts-page {
+        padding: 0 20px 40px;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .workout-card-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}

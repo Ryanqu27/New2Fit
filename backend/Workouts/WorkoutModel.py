@@ -15,5 +15,6 @@ class Workout(Base):
     duration_minutes = Column(Integer, nullable=False)
 
     date = Column(DateTime(timezone=True))
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     user = relationship("User", back_populates="workouts")
