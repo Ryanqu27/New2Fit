@@ -19,7 +19,7 @@ export default function Navbar() {
           className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}
           end
         >
-          Home
+          Dashboard
         </NavLink>
         <NavLink 
           to="/questionnaire" 

@@ -45,7 +45,7 @@
 }
 
 .exercise-select:focus {
-  border-color: #646cff;
+  border-color: #2563eb;
 }
 
 .exercise-select:disabled {
@@ -64,13 +64,13 @@
 }
 
 .record-btn.start {
-  background-color: #646cff;
+  background-color: #2563eb;
   color: white;
 }
 
 .record-btn.start:hover {
-  background-color: #535bf2;
-  box-shadow: 0 0 15px rgba(100, 108, 255, 0.4);
+  background-color: #1d4ed8;
+  box-shadow: 0 0 15px rgba(37, 99, 235, 0.4);
 }
 
 .record-btn.stop {
