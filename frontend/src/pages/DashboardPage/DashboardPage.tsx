@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../../Auth/AuthContext';
-import { getUserStats, type UserStatsResponse } from './HomeService';
-import './HomePage.css';
+import { getUserStats, type UserStatsResponse } from './DashboardService';
+import './DashboardPage.css';
 
-export default function HomePage() {
+export default function DashboardPage() {
   const { user } = useAuth();
   const [stats, setStats] = useState<UserStatsResponse | null>(null);
   const [loading, setLoading] = useState(true);

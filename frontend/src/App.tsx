@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom'
 import Questionnaire from './pages/QuestionnairePage/Questionnaire'
 import GymsPage from './pages/GymsPage/GymsPage'
-import HomePage from './pages/HomePage/HomePage'
+import DashboardPage from './pages/DashboardPage/DashboardPage'
 import AICamera from './pages/AICameraPage/AICamera'
 import Workouts from './pages/WorkoutsPage/Workouts'
 import './App.css'
@@ -27,7 +27,7 @@ function App() {
                 </>
               </ProtectedRoute>
             }>
-              <Route path="/" element={<HomePage />} />
+              <Route path="/" element={<DashboardPage />} />
               <Route path="/questionnaire" element={<Questionnaire />} />
               <Route path="/gyms" element={<GymsPage />} />
               <Route path="/camera" element={<AICamera />} />
@@ -37,8 +37,8 @@ function App() {
         </BrowserRouter>
       </AuthProvider>
     </GoogleOAuthProvider>
-    
-    
+
+
   )
 }
 
