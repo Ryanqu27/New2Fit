@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { getQuestions, submitQuestions } from './QuestionnaireService'
+import { getQuestions, submitQuestions, getRecommendation } from './QuestionnaireService'
 import WorkoutPlan from './WorkoutPlan'
 import './Questionnaire.css'
 
@@ -13,14 +13,26 @@ export default function Questionnaire() {
   const [questionnaire, setQuestionnaire] = useState<Question[]>([]);
   const [userAnswers, setUserAnswers] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchQuestions() {
-      const response = await getQuestions();
-      setQuestionnaire(response);
-      setUserAnswers(new Array(response.length).fill(""));
+    async function loadInitialData() {
+      try {
+        const savedRec = await getRecommendation();
+        if (savedRec) {
+          setWorkoutRecommendation(savedRec);
+        }
+        
+        const questionsResponse = await getQuestions();
+        setQuestionnaire(questionsResponse);
+        setUserAnswers(new Array(questionsResponse.length).fill(""));
+      } catch (err) {
+        console.error("Failed to load initial data", err);
+      } finally {
+        setLoading(false);
+      }
     }
-    fetchQuestions();
+    loadInitialData();
   }, [])
 
   const handleRadioButtonChange = (questionIndex: number, answer: string) => {
@@ -45,6 +57,14 @@ export default function Questionnaire() {
   };
 
   const isFormComplete = userAnswers.length > 0 && userAnswers.every(ans => ans !== "");
+
+  if (loading) {
+    return (
+      <div className="questionnaire-container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh' }}>
+        <div className="q-loading">Loading your profile details...</div>
+      </div>
+    );
+  }
 
   if (workoutRecommendation) {
     return <WorkoutPlan plan={workoutRecommendation} onRetake={handleRetake} />;

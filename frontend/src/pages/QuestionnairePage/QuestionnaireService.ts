@@ -10,3 +10,8 @@ export const submitQuestions = async (userResponses: string[]) => {
   const response = await api.post('questionnaire/submit', { answers: userResponses });
   return response.data;
 }
+
+export const getRecommendation = async () => {
+  const response = await api.get('questionnaire/recommendation');
+  return response.data;
+}
