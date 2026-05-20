@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from RecommendationModel import UserRecommendation
+from .RecommendationModel import UserRecommendation
 
 def get_recommendation_by_user_id(db: Session, user_id: int) -> UserRecommendation | None:
     return db.query(UserRecommendation).filter(UserRecommendation.user_id == user_id).first()

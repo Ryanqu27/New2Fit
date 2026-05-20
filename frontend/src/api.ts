@@ -1,5 +1,6 @@
 import axios from 'axios';
 
+
 // Abstraction on axios to make API calls easier and more consistent
 const API_BASE_URL = 'http://127.0.0.1:8000/api';
 
@@ -16,5 +17,22 @@ api.interceptors.request.use((config) => {
     }
     return config;
 });
+
+
+// Automatically log user out for 401 or 403 status codes returned
+api.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        if (error.response?.status === 401 || error.response?.status === 403) {
+            localStorage.removeItem('user');
+            localStorage.removeItem('google_token');
+            if (window.location.pathname !== '/login') {
+                window.location.href = '/login';
+            }
+        }
+        return Promise.reject(error);
+    }
+);
+
 
 export default api;
