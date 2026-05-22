@@ -90,7 +90,6 @@ export default function DashboardPage() {
                               <ul className="workout-exercises">
                                 {details.map((exercise, idx) => (
                                   <li key={idx} className="exercise-item">
-                                    <span className="bullet">⚡</span>
                                     {exercise}
                                   </li>
                                 ))}

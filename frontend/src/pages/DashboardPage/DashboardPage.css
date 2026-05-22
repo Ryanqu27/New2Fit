@@ -242,12 +242,6 @@
   color: #e5e7eb;
 }
 
-.exercise-item .bullet {
-  color: #f59e0b;
-  margin-right: 0.75rem;
-  font-size: 1rem;
-}
-
 .rest-hint,
 .no-workout {
   font-size: 1.1rem;
