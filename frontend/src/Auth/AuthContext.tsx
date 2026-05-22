@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState } from 'react';
+import api from '../api';
 
 type User = {
     email: string;
@@ -8,7 +9,7 @@ type User = {
 
 type AuthContextType = {
     user: User | null;
-    login: (user: User, token: string) => void;
+    login: (user: User) => void;
     logout: () => void;
 }
 
@@ -25,16 +26,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
     })
 
-    const login = (inputUser: User, token: string) => {
+    const login = (inputUser: User) => {
         setUser(inputUser);
         localStorage.setItem('user', JSON.stringify(inputUser));
-        localStorage.setItem('google_token', token);
     }
 
-    const logout = () => {
-        setUser(null);
-        localStorage.removeItem('user');
-        localStorage.removeItem('google_token');
+    const logout = async () => {
+        try {
+            // Hit the backend to clear the HttpOnly cookie
+            await api.post('/users/logout');
+        } catch (error) {
+            console.error("Error during backend logout", error);
+        } finally {
+            setUser(null);
+            localStorage.removeItem('user');
+            // Make sure to remove old google_token if it still exists from previous sessions
+            localStorage.removeItem('google_token'); 
+            window.location.href = '/login';
+        }
     }
 
     return (

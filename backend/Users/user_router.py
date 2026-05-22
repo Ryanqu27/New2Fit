@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Response
 from sqlalchemy.orm import Session
 from database import get_db
 from Users import user_service, user_schema
@@ -11,24 +11,56 @@ router = APIRouter(
 )
 
 
-@router.post("/login", response_model=user_schema.TokenResponse)
-def google_login(request: user_schema.GoogleLoginRequest, db: Session = Depends(get_db)):
-    return user_service.process_oauth_login(db, request)
+def set_auth_cookie(response: Response, token: str):
+    """Helper to set the HttpOnly cookie for authentication."""
+    response.set_cookie(
+        key="access_token",
+        value=token,
+        httponly=True,
+        samesite="lax",
+        secure=False,  # Set to True in production (HTTPS)
+        max_age=7 * 24 * 60 * 60  # 7 days
+    )
 
 
-@router.post("/login/email", response_model=user_schema.TokenResponse)
-def email_login(request: user_schema.EmailLoginRequest, db: Session = Depends(get_db)):
-    return user_service.process_email_login(db, email=request.email, password=request.password)
+@router.post("/login", response_model=user_schema.UserResponse)
+def google_login(request: user_schema.GoogleLoginRequest, response: Response, db: Session = Depends(get_db)):
+    auth_data = user_service.process_oauth_login(db, request)
+    set_auth_cookie(response, auth_data["access_token"])
+    return auth_data["user"]
 
 
-@router.post("/register", response_model=user_schema.TokenResponse)
-def user_register(request: user_schema.RegisterRequest, db: Session = Depends(get_db)):
-    return user_service.register_user(
+@router.post("/login/email", response_model=user_schema.UserResponse)
+def email_login(request: user_schema.EmailLoginRequest, response: Response, db: Session = Depends(get_db)):
+    auth_data = user_service.process_email_login(db, email=request.email, password=request.password)
+    set_auth_cookie(response, auth_data["access_token"])
+    return auth_data["user"]
+
+
+@router.post("/register", response_model=user_schema.UserResponse)
+def user_register(request: user_schema.RegisterRequest, response: Response, db: Session = Depends(get_db)):
+    auth_data = user_service.register_user(
         db,
         email=request.email,
         first_name=request.first_name,
         password=request.password
     )
+    set_auth_cookie(response, auth_data["access_token"])
+    return auth_data["user"]
+
+
+@router.post("/logout")
+def logout(response: Response):
+    """Log out the user by clearing the HttpOnly cookie."""
+    response.set_cookie(
+        key="access_token",
+        value="",
+        httponly=True,
+        samesite="lax",
+        secure=False,
+        max_age=0  # Expires immediately
+    )
+    return {"message": "Successfully logged out"}
 
 
 @router.get("/me/stats", response_model=user_schema.UserStatsResponse)

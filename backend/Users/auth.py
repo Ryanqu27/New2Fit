@@ -3,7 +3,7 @@ import jwt
 from datetime import datetime, timedelta, timezone
 from google.oauth2 import id_token
 from google.auth.transport import requests as google_requests
-from fastapi import Depends, HTTPException, Header
+from fastapi import Depends, HTTPException, Cookie
 from sqlalchemy.orm import Session
 from database import get_db
 
@@ -40,21 +40,19 @@ def create_access_token(user_id: int) -> str:
     return jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
 
 
-def get_current_user(authorization: str = Header(...), db: Session = Depends(get_db)):
+def get_current_user(access_token: str = Cookie(None), db: Session = Depends(get_db)):
     """
     FastAPI dependency that extracts and validates our own JWT from the
-    Authorization header, then returns the corresponding User from the DB.
+    HttpOnly cookie, then returns the corresponding User from the DB.
     """
-    if not authorization.startswith("Bearer "):
+    if not access_token:
         raise HTTPException(
             status_code=401,
-            detail="Authorization header must start with 'Bearer '."
+            detail="Not authenticated. No access token cookie found."
         )
 
-    token = authorization.removeprefix("Bearer ").strip()
-
     try:
-        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        payload = jwt.decode(access_token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
         user_id = int(payload["sub"])
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="Token has expired.")

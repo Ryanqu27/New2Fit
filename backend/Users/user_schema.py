@@ -29,16 +29,6 @@ class UserResponse(BaseModel):
         from_attributes = True
 
 
-class TokenResponse(BaseModel):
-    """Returned after any successful login or registration."""
-    access_token: str
-    token_type: str = "bearer"
-    user: UserResponse
-
-    class Config:
-        from_attributes = True
-
-
 class UserStatsResponse(BaseModel):
     all_time_workouts: int
     all_time_minutes: int
