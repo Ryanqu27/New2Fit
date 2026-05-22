@@ -1,11 +1,25 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from datetime import datetime
 
-# What the frontend sends us: just the raw Google token
+
+
 class GoogleLoginRequest(BaseModel):
     google_token: str
 
-# What we send back to the frontend
+
+
+class EmailLoginRequest(BaseModel):
+    email: EmailStr
+    password: str
+
+
+class RegisterRequest(BaseModel):
+    email: EmailStr
+    password: str
+    first_name: str
+
+
+
 class UserResponse(BaseModel):
     email: str
     first_name: str
@@ -13,6 +27,17 @@ class UserResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class TokenResponse(BaseModel):
+    """Returned after any successful login or registration."""
+    access_token: str
+    token_type: str = "bearer"
+    user: UserResponse
+
+    class Config:
+        from_attributes = True
+
 
 class UserStatsResponse(BaseModel):
     all_time_workouts: int

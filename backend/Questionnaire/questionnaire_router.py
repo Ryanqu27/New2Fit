@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from database import get_db
-from Users.google_auth import get_current_user
+from Users.auth import get_current_user
 from Users.UserModel import User
 from .questionnaire_schema import QuestionnaireSubmit, QuestionDTO
 from .questionnaire import get_all_questions_dto, get_workout_recommendation

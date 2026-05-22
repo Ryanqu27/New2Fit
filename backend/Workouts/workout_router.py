@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from database import get_db
 from Workouts import workout_service, workout_schema
-from Users.google_auth import get_current_user
+from Users.auth import get_current_user
 from Users.UserModel import User
 
 router = APIRouter(
