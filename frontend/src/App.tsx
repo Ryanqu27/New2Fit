@@ -8,6 +8,7 @@ import './App.css'
 import Navbar from './pages/Navbar/Navbar';
 import ProtectedRoute from './Auth/ProtectedRoute';
 import LoginPage from './Auth/LoginPage';
+import RegisterPage from './Auth/RegisterPage';
 import { AuthProvider } from './Auth/AuthContext';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 
@@ -19,6 +20,7 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
             <Route element={
               <ProtectedRoute>
                 <>

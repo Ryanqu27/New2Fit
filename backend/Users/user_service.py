@@ -30,6 +30,9 @@ def process_oauth_login(db: Session, request: user_schema.GoogleLoginRequest) ->
 
 
 def process_email_login(db: Session, email: str, password: str) -> dict:
+    if len(password.encode("utf-8")) > 72:
+        raise HTTPException(status_code=400, detail="Password cannot be longer than 72 characters.")
+
     user = user_repository.get_user_by_email(db, email=email)
 
     if not user or not user.password_hash:
@@ -44,6 +47,13 @@ def process_email_login(db: Session, email: str, password: str) -> dict:
 
 
 def register_user(db: Session, email: str, first_name: str, password: str) -> dict:
+    if len(password) < 6:
+        raise HTTPException(status_code=400, detail="Password must be at least 6 characters.")
+
+    # bcrypt has a hard 72-byte limit
+    if len(password.encode("utf-8")) > 72:
+        raise HTTPException(status_code=400, detail="Password cannot be longer than 72 characters.")
+
     if user_repository.get_user_by_email(db, email=email):
         raise HTTPException(status_code=400, detail="An account with this email already exists.")
 

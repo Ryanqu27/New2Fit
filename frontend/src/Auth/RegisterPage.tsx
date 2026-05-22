@@ -10,10 +10,11 @@ const loginWithGoogle = async (google_token: string) => {
     return response.data;
 }
 
-export default function LoginPage() {
+export default function RegisterPage() {
     const navigate = useNavigate();
     const auth = useAuth();
     
+    const [firstName, setFirstName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
@@ -29,25 +30,29 @@ export default function LoginPage() {
             auth.login(user);
             navigate('/');
         } catch (err: any) {
-            setError(err.response?.data?.detail || 'Google login failed');
+            setError(err.response?.data?.detail || 'Google sign up failed');
         }
     }
 
     const handleGoogleError = () => {
-        setError('Google login failed');
+        setError('Google sign up failed');
     }
 
-    const handleEmailSubmit = async (e: React.SyntheticEvent) => {
+    const handleRegisterSubmit = async (e: React.SyntheticEvent) => {
         e.preventDefault();
         setError('');
         setIsLoading(true);
 
         try {
-            const response = await api.post('/users/login/email', { email, password });
+            const response = await api.post('/users/register', { 
+                first_name: firstName, 
+                email, 
+                password 
+            });
             auth.login(response.data);
             navigate('/');
         } catch (err: any) {
-            setError(err.response?.data?.detail || 'Invalid email or password');
+            setError(err.response?.data?.detail || 'Failed to create account');
         } finally {
             setIsLoading(false);
         }
@@ -60,18 +65,27 @@ export default function LoginPage() {
             
             <div className="login-card">
                 <div className="login-header">
-                    <p className="login-welcome">Welcome to</p>
+                    <p className="login-welcome">Join us today</p>
                     <h1 className="login-brand">
                         <span className="login-brand-name">New2Fit</span>
                     </h1>
                     <p className="login-subtitle">
-                        Sign in to start your fitness journey
+                        Create an account to start your journey
                     </p>
                 </div>
 
                 {error && <div className="login-error">{error}</div>}
 
-                <form className="email-login-form" onSubmit={handleEmailSubmit}>
+                <form className="email-login-form" onSubmit={handleRegisterSubmit}>
+                    <div className="input-group">
+                        <input 
+                            type="text" 
+                            placeholder="First Name" 
+                            value={firstName}
+                            onChange={(e) => setFirstName(e.target.value)}
+                            required 
+                        />
+                    </div>
                     <div className="input-group">
                         <input 
                             type="email" 
@@ -88,10 +102,11 @@ export default function LoginPage() {
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             required 
+                            minLength={6}
                         />
                     </div>
                     <button type="submit" className="email-login-btn" disabled={isLoading}>
-                        {isLoading ? 'Signing in...' : 'Sign In'}
+                        {isLoading ? 'Creating account...' : 'Create Account'}
                     </button>
                 </form>
 
@@ -106,10 +121,12 @@ export default function LoginPage() {
                         theme="outline"
                         shape="pill"
                         size="large"
+                        text="signup_with"
                     />
                 </div>
+
                 <div className="auth-switch-link">
-                    Don't have an account? <Link to="/register">Sign up</Link>
+                    Already have an account? <Link to="/login">Log in</Link>
                 </div>
             </div>
         </div>

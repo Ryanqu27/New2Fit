@@ -188,3 +188,22 @@
   width: 100%;
   min-height: 44px;
 }
+
+/* ── Auth Switch Link ── */
+.auth-switch-link {
+  margin-top: 1.5rem;
+  font-size: 0.9rem;
+  color: #9ca3af;
+}
+
+.auth-switch-link a {
+  color: #3b82f6;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.auth-switch-link a:hover {
+  color: #60a5fa;
+  text-decoration: underline;
+}
