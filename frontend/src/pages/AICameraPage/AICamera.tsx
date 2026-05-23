@@ -144,6 +144,17 @@ export default function AICamera() {
       </div>
 
       <div className="video-display-area">
+        <img 
+          ref={imageRef} 
+          alt="AI Camera Feed" 
+          className="ai-feed"
+          style={{ display: isRecording ? 'block' : 'none' }} 
+        />
+        {!isRecording && (
+          <div className="camera-placeholder">
+            <p style={{ fontSize: '0.85rem', marginTop: '0.5rem', color: '#4b5563' }}>Camera is currently off</p>
+          </div>
+        )}
         <video ref={videoRef} style={{ display: 'none' }} playsInline muted />
         <canvas ref={canvasRef} style={{ display: 'none' }} />
       </div>
