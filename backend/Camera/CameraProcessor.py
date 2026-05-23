@@ -32,8 +32,8 @@ class PoseProcessor:
         self.rightArmLift = 0
 
         self.prePntsPosition = {
-            'left_wrist': MovePosition.Down,
-            'right_wrist': MovePosition.Down
+            'left_side': MovePosition.Down,
+            'right_side': MovePosition.Down
         }
 
         self.lastRepTimeLeftArm = time.time()
@@ -96,44 +96,25 @@ class PoseProcessor:
     def _count_reps(self, PntsPosition):
         now = time.time()
         
-        if self.exercise == "Bicep Curls":
-            # Right Arm Since Camera is Flipped
-            if PntsPosition['left_wrist'] != self.prePntsPosition['left_wrist']:
-                if PntsPosition['left_wrist'] == MovePosition.Up:
-                    if now - self.lastRepTimeLeftArm < self.minIncrementTime:
-                        self.slowDownMsgUntil = now + self.slowDownMsgDuration
-                    else:
-                        self.rightArmLift += 1
-                    self.lastRepTimeLeftArm = now
-                self.prePntsPosition['left_wrist'] = PntsPosition['left_wrist']
+        # Right Arm Since Camera is Flipped
+        if PntsPosition.get('left_side') != self.prePntsPosition['left_side']:
+            if PntsPosition.get('left_side') == MovePosition.Up:
+                if now - self.lastRepTimeLeftArm < self.minIncrementTime:
+                    self.slowDownMsgUntil = now + self.slowDownMsgDuration
+                else:
+                    self.rightArmLift += 1
+                self.lastRepTimeLeftArm = now
+            self.prePntsPosition['left_side'] = PntsPosition.get('left_side', MovePosition.Down)
 
-            # Left Arm Since Camera is Flipped
-            if PntsPosition['right_wrist'] != self.prePntsPosition['right_wrist']:
-                if PntsPosition['right_wrist'] == MovePosition.Up:
-                    if now - self.lastRepTimeRightArm < self.minIncrementTime:
-                        self.slowDownMsgUntil = now + self.slowDownMsgDuration
-                    else:
-                        self.leftArmLift += 1
-                    self.lastRepTimeRightArm = now
-                self.prePntsPosition['right_wrist'] = PntsPosition['right_wrist']
-        elif self.exercise == "Lateral Raises":
-            if PntsPosition['left_wrist'] != self.prePntsPosition['left_wrist']:
-                if PntsPosition['left_wrist'] == MovePosition.Up:
-                    if now - self.lastRepTimeLeftArm < self.minIncrementTime:
-                        self.slowDownMsgUntil = now + self.slowDownMsgDuration
-                    else:
-                        self.rightArmLift += 1
-                    self.lastRepTimeLeftArm = now
-                self.prePntsPosition['left_wrist'] = PntsPosition["left_wrist"]
-            
-            if PntsPosition['right_wrist'] != self.prePntsPosition['right_wrist']:
-                if PntsPosition['right_wrist'] == MovePosition.Up:
-                    if now - self.lastRepTimeRightArm < self.minIncrementTime:
-                        self.slowDownMsgUntil = now + self.slowDownMsgDuration
-                    else:
-                        self.leftArmLift += 1
-                    self.lastRepTimeRightArm = now
-                self.prePntsPosition['right_wrist'] = PntsPosition['right_wrist']
+        # Left Arm Since Camera is Flipped
+        if PntsPosition.get('right_side') != self.prePntsPosition['right_side']:
+            if PntsPosition.get('right_side') == MovePosition.Up:
+                if now - self.lastRepTimeRightArm < self.minIncrementTime:
+                    self.slowDownMsgUntil = now + self.slowDownMsgDuration
+                else:
+                    self.leftArmLift += 1
+                self.lastRepTimeRightArm = now
+            self.prePntsPosition['right_side'] = PntsPosition.get('right_side', MovePosition.Down)
             
             
     def _update_text(self, CmdName):

@@ -242,22 +242,22 @@ def GetMovePositions_1(keypoints_with_scores, distElbow2Wrist, cofident_threshol
   else:
     yDir = y_leftWrist / leftLen
     if yDir > angleTreshold:
-      Positions['left_wrist'] = MovePosition.Down
+      Positions['left_side'] = MovePosition.Down
     elif yDir < (-angleTreshold):
-      Positions['left_wrist'] = MovePosition.Up
+      Positions['left_side'] = MovePosition.Up
     else:
-      Positions['left_wrist'] = MovePosition.Middle
+      Positions['left_side'] = MovePosition.Middle
   
   if rightLen <= dTol:
-    Positions['right_wrist'] = MovePosition.Middle
+    Positions['right_side'] = MovePosition.Middle
   else:
     yDir = y_rightWrist / rightLen
     if yDir > angleTreshold:
-      Positions['right_wrist'] = MovePosition.Down
+      Positions['right_side'] = MovePosition.Down
     elif yDir < (-angleTreshold):
-      Positions['right_wrist'] = MovePosition.Up
+      Positions['right_side'] = MovePosition.Up
     else:
-      Positions['right_wrist'] = MovePosition.Middle      
+      Positions['right_side'] = MovePosition.Middle      
   return Positions
 
 def GetMovePositionsBicep(pnts, distElbow2Wrist_l, distElbow2Wrist_r, cofident_threshold):
@@ -280,22 +280,22 @@ def GetMovePositionsBicep(pnts, distElbow2Wrist_l, distElbow2Wrist_r, cofident_t
   else:
     yDir = y_leftWrist / leftLen
     if yDir > angleDownTreshold:
-      Positions['left_wrist'] = MovePosition.Down
+      Positions['left_side'] = MovePosition.Down
     elif yDir < (-angleUpTreshold):
-      Positions['left_wrist'] = MovePosition.Up
+      Positions['left_side'] = MovePosition.Up
     else:
-      Positions['left_wrist'] = MovePosition.Middle
+      Positions['left_side'] = MovePosition.Middle
   
   if rightLen <= dTol:
-    Positions['right_wrist'] = MovePosition.Middle
+    Positions['right_side'] = MovePosition.Middle
   else:
     yDir = y_rightWrist / rightLen
     if yDir > angleDownTreshold:
-      Positions['right_wrist'] = MovePosition.Down
+      Positions['right_side'] = MovePosition.Down
     elif yDir < (-angleUpTreshold):
-      Positions['right_wrist'] = MovePosition.Up
+      Positions['right_side'] = MovePosition.Up
     else:
-      Positions['right_wrist'] = MovePosition.Middle      
+      Positions['right_side'] = MovePosition.Middle      
   return Positions
 
 def GetMovePositionsLateral(pnts, conf_threshold=0.35):
@@ -311,9 +311,9 @@ def GetMovePositionsLateral(pnts, conf_threshold=0.35):
         pnts[0][0][lw][2] < conf_threshold or
         pnts[0][0][ls][2] < conf_threshold
     ):
-        positions["left_wrist"] = MovePosition.Middle
+        positions["left_side"] = MovePosition.Middle
     else:
-        positions["left_wrist"] = (
+        positions["left_side"] = (
             MovePosition.Up
             if pnts[0][0][lw][0] < pnts[0][0][ls][0]
             else MovePosition.Down
@@ -323,9 +323,9 @@ def GetMovePositionsLateral(pnts, conf_threshold=0.35):
         pnts[0][0][rw][2] < conf_threshold or
         pnts[0][0][rs][2] < conf_threshold
     ):
-        positions["right_wrist"] = MovePosition.Middle
+        positions["right_side"] = MovePosition.Middle
     else:
-        positions["right_wrist"] = (
+        positions["right_side"] = (
             MovePosition.Up
             if pnts[0][0][rw][0] < pnts[0][0][rs][0]
             else MovePosition.Down
