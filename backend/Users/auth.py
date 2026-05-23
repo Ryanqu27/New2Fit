@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 from database import get_db
 
 GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID")
-JWT_SECRET = os.environ.get("JWT_SECRET", "changeme-in-production")
+JWT_SECRET = os.environ.get("JWT_SECRET")
 JWT_ALGORITHM = "HS256"
 JWT_EXPIRY_DAYS = 7
 
