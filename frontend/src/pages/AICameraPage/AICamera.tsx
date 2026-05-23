@@ -146,14 +146,6 @@ export default function AICamera() {
       <div className="video-display-area">
         <video ref={videoRef} style={{ display: 'none' }} playsInline muted />
         <canvas ref={canvasRef} style={{ display: 'none' }} />
-        
-        {isRecording ? (
-          <img ref={imageRef} className="ai-feed" alt="AI Processed Feed" />
-        ) : (
-          <div className="camera-placeholder">
-            <p>Select an exercise and click Start AI to activate the camera</p>
-          </div>
-        )}
       </div>
     </div>
   );
