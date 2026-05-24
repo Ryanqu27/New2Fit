@@ -1,7 +1,7 @@
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 import cv2
 import numpy as np
-from Camera.CameraProcessor import PoseProcessor
+from Camera.camera_processor import PoseProcessor
 
 router = APIRouter(prefix="/api/camera", tags=["Camera"])
 

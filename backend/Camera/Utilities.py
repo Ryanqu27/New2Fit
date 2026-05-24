@@ -4,7 +4,7 @@ import math
 
 import numpy as np
 import cv2
-from Camera.PoseAnalysis import MoveName, MovePosition
+from Camera.pose_analysis import MoveName, MovePosition
 
 useTsLite = True
 if useTsLite:

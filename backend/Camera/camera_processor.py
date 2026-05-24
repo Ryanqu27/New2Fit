@@ -3,7 +3,7 @@ import numpy as np
 import tensorflow as tf
 import cv2
 
-from Camera.Utilities import (
+from Camera.utilities import (
     movenet,
     draw_prediction_on_image,
     GetMoveRecommendation,
@@ -12,7 +12,7 @@ from Camera.Utilities import (
     GetMovePositionsLateral,
 )
 
-from Camera.PoseAnalysis import (
+from Camera.pose_analysis import (
     MoveName,
     MovePosition,
     GetRecommendationTex,
@@ -96,7 +96,7 @@ class PoseProcessor:
     def _count_reps(self, PntsPosition):
         now = time.time()
         
-        # Right Arm Since Camera is Flipped
+        # Right side Since Camera is Flipped
         if PntsPosition.get('left_side') != self.prePntsPosition['left_side']:
             if PntsPosition.get('left_side') == MovePosition.Up:
                 if now - self.lastRepTimeLeftArm < self.minIncrementTime:
@@ -106,7 +106,7 @@ class PoseProcessor:
                 self.lastRepTimeLeftArm = now
             self.prePntsPosition['left_side'] = PntsPosition.get('left_side', MovePosition.Down)
 
-        # Left Arm Since Camera is Flipped
+        # Left side Since Camera is Flipped
         if PntsPosition.get('right_side') != self.prePntsPosition['right_side']:
             if PntsPosition.get('right_side') == MovePosition.Up:
                 if now - self.lastRepTimeRightArm < self.minIncrementTime:
