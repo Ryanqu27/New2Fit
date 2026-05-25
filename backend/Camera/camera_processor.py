@@ -27,17 +27,10 @@ class PoseProcessor:
         self.conf_threshold = 0.35
         self.minIncrementTime = 1.5
 
-        # Rep tracking
-        self.leftArmLift = 0
-        self.rightArmLift = 0
-
-        self.prePntsPosition = {
-            'left_side': MovePosition.Down,
-            'right_side': MovePosition.Down
-        }
-
-        self.lastRepTimeLeftArm = time.time()
-        self.lastRepTimeRightArm = time.time()
+        # Dynamic Rep tracking
+        self.reps = {}
+        self.prePntsPosition = {}
+        self.lastRepTime = {}
         self.slowDownMsgUntil = 0
         self.slowDownMsgDuration = 2
         
@@ -96,25 +89,23 @@ class PoseProcessor:
     def _count_reps(self, PntsPosition):
         now = time.time()
         
-        # Right side Since Camera is Flipped
-        if PntsPosition.get('left_side') != self.prePntsPosition['left_side']:
-            if PntsPosition.get('left_side') == MovePosition.Up:
-                if now - self.lastRepTimeLeftArm < self.minIncrementTime:
-                    self.slowDownMsgUntil = now + self.slowDownMsgDuration
-                else:
-                    self.rightArmLift += 1
-                self.lastRepTimeLeftArm = now
-            self.prePntsPosition['left_side'] = PntsPosition.get('left_side', MovePosition.Down)
-
-        # Left side Since Camera is Flipped
-        if PntsPosition.get('right_side') != self.prePntsPosition['right_side']:
-            if PntsPosition.get('right_side') == MovePosition.Up:
-                if now - self.lastRepTimeRightArm < self.minIncrementTime:
-                    self.slowDownMsgUntil = now + self.slowDownMsgDuration
-                else:
-                    self.leftArmLift += 1
-                self.lastRepTimeRightArm = now
-            self.prePntsPosition['right_side'] = PntsPosition.get('right_side', MovePosition.Down)
+        for key, state in PntsPosition.items():
+            # Initialize states for any newly detected keys
+            if key not in self.prePntsPosition:
+                self.prePntsPosition[key] = MovePosition.Down
+                self.reps[key] = 0
+                self.lastRepTime[key] = now
+            
+            # Since camera is flipped, we might want to swap left/right labels
+            # if we display them, but we handle that in the UI string formatting.
+            if state != self.prePntsPosition[key]:
+                if state == MovePosition.Up:
+                    if now - self.lastRepTime[key] < self.minIncrementTime:
+                        self.slowDownMsgUntil = now + self.slowDownMsgDuration
+                    else:
+                        self.reps[key] += 1
+                    self.lastRepTime[key] = now
+                self.prePntsPosition[key] = state
             
             
     def _update_text(self, CmdName):
@@ -123,7 +114,19 @@ class PoseProcessor:
         elif CmdName != MoveName.Nothing:
             self.textPrint = GetRecommendationTex(CmdName)
         else:
-            self.textPrint = (
-                f"LH Reps: {self.leftArmLift}\n"
-                f"RH Reps: {self.rightArmLift}"
-            )
+            lines = []
+            for key, count in self.reps.items():
+                # For flipped camera UI mapping (optional): if "left_side" is detected, it's actually the right side on camera
+                display_key = key
+                if "left" in key:
+                    display_key = key.replace("left", "right")
+                elif "right" in key:
+                    display_key = key.replace("right", "left")
+                
+                if self.exercise in ["Bicep Curls", "Lateral Raises"]:
+                    display_key = display_key.replace("side", "arm")
+                    
+                formatted_key = display_key.replace('_', ' ').title()
+                lines.append(f"{formatted_key} Reps: {count}")
+            
+            self.textPrint = "\n".join(lines)

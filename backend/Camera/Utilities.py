@@ -238,7 +238,7 @@ def GetMovePositions_1(keypoints_with_scores, distElbow2Wrist, cofident_threshol
   leftLen = math.sqrt(x_leftWrist * x_leftWrist + y_leftWrist * y_leftWrist)
   rightLen = math.sqrt(x_rightWrist * x_rightWrist + y_rightWrist * y_rightWrist)
   if leftLen <= dTol:
-    Positions['left_wrist'] = MovePosition.Middle
+    Positions['left_side'] = MovePosition.Middle
   else:
     yDir = y_leftWrist / leftLen
     if yDir > angleTreshold:
@@ -276,7 +276,7 @@ def GetMovePositionsBicep(pnts, distElbow2Wrist_l, distElbow2Wrist_r, cofident_t
   # print(y_leftWrist, y_rightWrist, distElbow2Wrist_l*angleUpTreshold, distElbow2Wrist_r*angleUpTreshold, 
   #       pnts[0][0][lWrist][2],pnts[0][0][lElbow][2], pnts[0][0][rWrist][2],pnts[0][0][rElbow][2] )
   if leftLen <= dTol:
-    Positions['left_wrist'] = MovePosition.Middle
+    Positions['left_side'] = MovePosition.Middle
   else:
     yDir = y_leftWrist / leftLen
     if yDir > angleDownTreshold:

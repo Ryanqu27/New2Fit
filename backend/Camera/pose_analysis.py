@@ -61,11 +61,8 @@ def DrawText(image, text):
                   (x0+xSize+margin, y0-line_heights[0] + ySize + margin), bkColor, -1 )
     # image = cv2.putText(image, text, org, font, fontScale,  
     #              color, thickness, cv2.LINE_AA, False) 
+    y = y0
     for i, line in enumerate(text.split("\n")):
-        if i <= 0:
-            y = y0
-        else:
-            y = y0 + line_heights[i - 1]
         cv2.putText(image,
                     line,
                     (x0, y),
@@ -74,3 +71,4 @@ def DrawText(image, text):
                     color,
                     thickness,
                     cv2.LINE_AA, False)
+        y += line_heights[i]
