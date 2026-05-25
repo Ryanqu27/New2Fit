@@ -10,6 +10,7 @@ from Camera.utilities import (
     GetElbow2WristLen,
     GetMovePositionsBicep,
     GetMovePositionsLateral,
+    GetMovePositionsSquat,
 )
 
 from Camera.pose_analysis import (
@@ -78,6 +79,8 @@ class PoseProcessor:
                 )
             elif self.exercise == "Lateral Raises":
                 PntsPosition = GetMovePositionsLateral(keypoints)
+            elif self.exercise == "Squats":
+                PntsPosition = GetMovePositionsSquat(keypoints, self.conf_threshold)
 
             self._count_reps(PntsPosition)
 
@@ -89,23 +92,31 @@ class PoseProcessor:
     def _count_reps(self, PntsPosition):
         now = time.time()
         
+        # Initialize rep stages dictionary if it doesn't exist
+        if not hasattr(self, 'rep_stage'):
+            self.rep_stage = {}
+            
         for key, state in PntsPosition.items():
             # Initialize states for any newly detected keys
             if key not in self.prePntsPosition:
                 self.prePntsPosition[key] = MovePosition.Down
+                self.rep_stage[key] = MovePosition.Down
                 self.reps[key] = 0
                 self.lastRepTime[key] = now
             
-            # Since camera is flipped, we might want to swap left/right labels
-            # if we display them, but we handle that in the UI string formatting.
-            if state != self.prePntsPosition[key]:
-                if state == MovePosition.Up:
-                    if now - self.lastRepTime[key] < self.minIncrementTime:
-                        self.slowDownMsgUntil = now + self.slowDownMsgDuration
-                    else:
-                        self.reps[key] += 1
-                    self.lastRepTime[key] = now
-                self.prePntsPosition[key] = state
+            # Update the stage tracker
+            if state == MovePosition.Down:
+                self.rep_stage[key] = MovePosition.Down
+            elif state == MovePosition.Up and self.rep_stage[key] == MovePosition.Down:
+                # Only count the rep if we are transitioning from a successfully reached Down state
+                if now - self.lastRepTime[key] < self.minIncrementTime:
+                    self.slowDownMsgUntil = now + self.slowDownMsgDuration
+                else:
+                    self.reps[key] += 1
+                self.lastRepTime[key] = now
+                self.rep_stage[key] = MovePosition.Up
+                
+            self.prePntsPosition[key] = state
             
             
     def _update_text(self, CmdName):

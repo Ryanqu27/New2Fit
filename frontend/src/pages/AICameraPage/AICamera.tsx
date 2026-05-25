@@ -130,6 +130,7 @@ export default function AICamera() {
         >
           <option value="Bicep Curls">Bicep Curls</option>
           <option value="Lateral Raises">Lateral Raises</option>
+          <option value="Squats">Squats</option>
         </select>
 
         {!isRecording ? (

@@ -333,6 +333,64 @@ def GetMovePositionsLateral(pnts, conf_threshold=0.35):
 
     return positions
 
+def GetMovePositionsSquat(pnts, conf_threshold=0.35):
+    """Detects squat position using the knee angle (hip → knee → ankle).
+    
+    Returns a single {'squat': MovePosition} key:
+      - MovePosition.Up   = standing (legs nearly straight, ≥160°) → triggers rep count
+      - MovePosition.Down = deep squat (knee angle ≤90°, past parallel)
+      - MovePosition.Middle = transitioning between the two
+    """
+    lh = KEYPOINT_DICT['left_hip']
+    lk = KEYPOINT_DICT['left_knee']
+    la = KEYPOINT_DICT['left_ankle']
+    rh = KEYPOINT_DICT['right_hip']
+    rk = KEYPOINT_DICT['right_knee']
+    ra = KEYPOINT_DICT['right_ankle']
+
+    def calc_knee_angle(hip, knee, ankle):
+        v_hip   = (hip[0] - knee[0],   hip[1] - knee[1])
+        v_ankle = (ankle[0] - knee[0], ankle[1] - knee[1])
+        dot = v_hip[0] * v_ankle[0] + v_hip[1] * v_ankle[1]
+        len_hip   = math.sqrt(v_hip[0]**2   + v_hip[1]**2)
+        len_ankle = math.sqrt(v_ankle[0]**2 + v_ankle[1]**2)
+        if len_hip < 0.0001 or len_ankle < 0.0001:
+            return 180.0
+        cos_a = max(-1.0, min(1.0, dot / (len_hip * len_ankle)))
+        return math.degrees(math.acos(cos_a))
+
+    l_visible = (pnts[0][0][lh][2] > conf_threshold and
+                 pnts[0][0][lk][2] > conf_threshold and
+                 pnts[0][0][la][2] > conf_threshold)
+    r_visible = (pnts[0][0][rh][2] > conf_threshold and
+                 pnts[0][0][rk][2] > conf_threshold and
+                 pnts[0][0][ra][2] > conf_threshold)
+
+    if not l_visible and not r_visible:
+        return {'squat': MovePosition.Middle}
+
+    angles = []
+    if l_visible:
+        angles.append(calc_knee_angle(
+            pnts[0][0][lh][:2], pnts[0][0][lk][:2], pnts[0][0][la][:2]
+        ))
+    if r_visible:
+        angles.append(calc_knee_angle(
+            pnts[0][0][rh][:2], pnts[0][0][rk][:2], pnts[0][0][ra][:2]
+        ))
+
+    avg_angle = sum(angles) / len(angles)
+
+    STANDING_THRESHOLD = 160  
+    SQUAT_THRESHOLD = 90 
+
+    if avg_angle >= STANDING_THRESHOLD:
+        return {'squat': MovePosition.Up}
+    elif avg_angle <= SQUAT_THRESHOLD:
+        return {'squat': MovePosition.Down}
+    else:
+        return {'squat': MovePosition.Middle}
+
 def GetMoveRecommendation(keypoints_with_scores, cofident_threshold, NumOfFailedAllowed):
   iIndex = 0
   numOfLeftFailed = 0
