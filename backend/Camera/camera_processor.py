@@ -11,6 +11,7 @@ from Camera.utilities import (
     GetMovePositionsBicep,
     GetMovePositionsLateral,
     GetMovePositionsSquat,
+    GetMovePositionsShoulderPress,
 )
 
 from Camera.pose_analysis import (
@@ -81,6 +82,8 @@ class PoseProcessor:
                 PntsPosition = GetMovePositionsLateral(keypoints)
             elif self.exercise == "Squats":
                 PntsPosition = GetMovePositionsSquat(keypoints, self.conf_threshold)
+            elif self.exercise == "Shoulder Press":
+                PntsPosition = GetMovePositionsShoulderPress(keypoints, self.conf_threshold)
 
             self._count_reps(PntsPosition)
 
@@ -134,7 +137,7 @@ class PoseProcessor:
                 elif "right" in key:
                     display_key = key.replace("right", "left")
                 
-                if self.exercise in ["Bicep Curls", "Lateral Raises"]:
+                if self.exercise in ["Bicep Curls", "Lateral Raises", "Shoulder Press"]:
                     display_key = display_key.replace("side", "arm")
                     
                 formatted_key = display_key.replace('_', ' ').title()

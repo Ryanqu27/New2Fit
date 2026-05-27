@@ -58,8 +58,22 @@ export default function AICamera() {
           const canvas = canvasRef.current;
           const video = videoRef.current;
           
-          canvas.width = video.videoWidth;
-          canvas.height = video.videoHeight;
+          const MAX_WIDTH = 640;
+          const MAX_HEIGHT = 480;
+          let width = video.videoWidth;
+          let height = video.videoHeight;
+
+          if (width > MAX_WIDTH) {
+            height = Math.round((height * MAX_WIDTH) / width);
+            width = MAX_WIDTH;
+          }
+          if (height > MAX_HEIGHT) {
+            width = Math.round((width * MAX_HEIGHT) / height);
+            height = MAX_HEIGHT;
+          }
+
+          canvas.width = width;
+          canvas.height = height;
           
           const context = canvas.getContext('2d');
           if (context) {
@@ -131,6 +145,7 @@ export default function AICamera() {
           <option value="Bicep Curls">Bicep Curls</option>
           <option value="Lateral Raises">Lateral Raises</option>
           <option value="Squats">Squats</option>
+          <option value="Shoulder Press">Shoulder Press</option>
         </select>
 
         {!isRecording ? (

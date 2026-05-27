@@ -391,6 +391,71 @@ def GetMovePositionsSquat(pnts, conf_threshold=0.35):
     else:
         return {'squat': MovePosition.Middle}
 
+def GetMovePositionsShoulderPress(pnts, conf_threshold=0.35):
+    """Detects shoulder press using elbow angle and wrist position.
+    
+    Returns {'left_side': MovePosition, 'right_side': MovePosition}:
+      - MovePosition.Up   = arms straight up (angle >= 150° and wrist above shoulder)
+      - MovePosition.Down = arms down at shoulders (angle <= 80°)
+      - MovePosition.Middle = transitioning
+    """
+    ls = KEYPOINT_DICT['left_shoulder']
+    le = KEYPOINT_DICT['left_elbow']
+    lw = KEYPOINT_DICT['left_wrist']
+    rs = KEYPOINT_DICT['right_shoulder']
+    re = KEYPOINT_DICT['right_elbow']
+    rw = KEYPOINT_DICT['right_wrist']
+
+    positions = {}
+
+    def calc_joint_angle(p1, p2, p3):
+        v1 = (p1[0] - p2[0], p1[1] - p2[1])
+        v2 = (p3[0] - p2[0], p3[1] - p2[1])
+        dot = v1[0] * v2[0] + v1[1] * v2[1]
+        len1 = math.sqrt(v1[0]**2 + v1[1]**2)
+        len2 = math.sqrt(v2[0]**2 + v2[1]**2)
+        if len1 < 0.0001 or len2 < 0.0001:
+            return 180.0
+        cos_a = max(-1.0, min(1.0, dot / (len1 * len2)))
+        return math.degrees(math.acos(cos_a))
+
+    STRAIGHT_ARM_THRESHOLD = 150
+    BENT_ARM_THRESHOLD = 80
+
+    if (pnts[0][0][ls][2] > conf_threshold and
+        pnts[0][0][le][2] > conf_threshold and
+        pnts[0][0][lw][2] > conf_threshold):
+        
+        angle = calc_joint_angle(pnts[0][0][ls][:2], pnts[0][0][le][:2], pnts[0][0][lw][:2])
+        is_above_shoulder = pnts[0][0][lw][0] < pnts[0][0][ls][0]
+
+        if angle >= STRAIGHT_ARM_THRESHOLD and is_above_shoulder:
+            positions['left_side'] = MovePosition.Up
+        elif angle <= BENT_ARM_THRESHOLD:
+            positions['left_side'] = MovePosition.Down
+        else:
+            positions['left_side'] = MovePosition.Middle
+    else:
+        positions['left_side'] = MovePosition.Middle
+
+    if (pnts[0][0][rs][2] > conf_threshold and
+        pnts[0][0][re][2] > conf_threshold and
+        pnts[0][0][rw][2] > conf_threshold):
+        
+        angle = calc_joint_angle(pnts[0][0][rs][:2], pnts[0][0][re][:2], pnts[0][0][rw][:2])
+        is_above_shoulder = pnts[0][0][rw][0] < pnts[0][0][rs][0]
+
+        if angle >= STRAIGHT_ARM_THRESHOLD and is_above_shoulder:
+            positions['right_side'] = MovePosition.Up
+        elif angle <= BENT_ARM_THRESHOLD:
+            positions['right_side'] = MovePosition.Down
+        else:
+            positions['right_side'] = MovePosition.Middle
+    else:
+        positions['right_side'] = MovePosition.Middle
+
+    return positions
+
 def GetMoveRecommendation(keypoints_with_scores, cofident_threshold, NumOfFailedAllowed):
   iIndex = 0
   numOfLeftFailed = 0
