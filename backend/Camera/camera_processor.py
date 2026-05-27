@@ -87,10 +87,8 @@ class PoseProcessor:
 
             self._count_reps(PntsPosition)
 
-        self._update_text(CmdName)
-
-        DrawText(image, self.textPrint)
-        return image
+        feedback_msg = self._update_text(CmdName)
+        return image, self.reps, feedback_msg
 
     def _count_reps(self, PntsPosition):
         now = time.time()
@@ -124,23 +122,7 @@ class PoseProcessor:
             
     def _update_text(self, CmdName):
         if time.time() < self.slowDownMsgUntil:
-            self.textPrint = GetRecommendationTex(MoveName.SlowDown)
+            return GetRecommendationTex(MoveName.SlowDown)
         elif CmdName != MoveName.Nothing:
-            self.textPrint = GetRecommendationTex(CmdName)
-        else:
-            lines = []
-            for key, count in self.reps.items():
-                # For flipped camera UI mapping (optional): if "left_side" is detected, it's actually the right side on camera
-                display_key = key
-                if "left" in key:
-                    display_key = key.replace("left", "right")
-                elif "right" in key:
-                    display_key = key.replace("right", "left")
-                
-                if self.exercise in ["Bicep Curls", "Lateral Raises", "Shoulder Press"]:
-                    display_key = display_key.replace("side", "arm")
-                    
-                formatted_key = display_key.replace('_', ' ').title()
-                lines.append(f"{formatted_key} Reps: {count}")
-            
-            self.textPrint = "\n".join(lines)
+            return GetRecommendationTex(CmdName)
+        return ""

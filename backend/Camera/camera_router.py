@@ -1,6 +1,7 @@
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 import cv2
 import numpy as np
+import base64
 from Camera.camera_processor import PoseProcessor
 
 router = APIRouter(prefix="/api/camera", tags=["Camera"])
@@ -22,13 +23,18 @@ async def camera_websocket(websocket: WebSocket, exercise_name: str):
             
             # Pass the frame to the existing MoveNet logic
             if frame is not None:
-                processed_frame = processor.process(frame)
+                processed_frame, reps_data, feedback_message = processor.process(frame)
                 
                 # Encode the processed frame back to a JPEG buffer
                 _, buffer = cv2.imencode('.jpg', processed_frame)
+                base64_image = base64.b64encode(buffer).decode('utf-8')
                 
-                # Send the raw bytes back to React
-                await websocket.send_bytes(buffer.tobytes())
+                # Send the clean JSON payload back to React
+                await websocket.send_json({
+                    "image": base64_image,
+                    "reps": reps_data,
+                    "message": feedback_message
+                })
                 
     except WebSocketDisconnect:
         print("Client disconnected from AI Camera")

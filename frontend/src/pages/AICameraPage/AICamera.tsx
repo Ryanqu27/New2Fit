@@ -4,6 +4,8 @@ import './AICamera.css';
 export default function AICamera() {
   const [exercise, setExercise] = useState('Bicep Curls');
   const [isRecording, setIsRecording] = useState(false);
+  const [repsData, setRepsData] = useState<Record<string, number>>({});
+  const [feedback, setFeedback] = useState<string>('');
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -93,20 +95,23 @@ export default function AICamera() {
       };
 
       ws.onmessage = (event) => {
-        if (imageRef.current && event.data instanceof Blob) {
-          // Clean up the old image URL from memory before creating a new one
-          if (lastObjectUrlRef.current) {
-            URL.revokeObjectURL(lastObjectUrlRef.current);
-          }
-          
-          // Create a new image URL from the raw Blob data
-          const objectUrl = URL.createObjectURL(event.data);
-          lastObjectUrlRef.current = objectUrl;
-          imageRef.current.src = objectUrl;
+        if (typeof event.data === 'string') {
+          try {
+            const data = JSON.parse(event.data);
+            
+            if (imageRef.current && data.image) {
+              imageRef.current.src = `data:image/jpeg;base64,${data.image}`;
+            }
 
-          requestAnimationFrame(() => {
-            captureAndSend();
-          });
+            if (data.reps) setRepsData(data.reps);
+            if (data.message !== undefined) setFeedback(data.message);
+
+            requestAnimationFrame(() => {
+              captureAndSend();
+            });
+          } catch (err) {
+            console.error("Error parsing websocket message", err);
+          }
         }
       };
 
@@ -166,6 +171,38 @@ export default function AICamera() {
           className="ai-feed"
           style={{ display: isRecording ? 'block' : 'none' }} 
         />
+        
+        {isRecording && (
+          <div className="camera-overlay">
+            {feedback && (
+              <div className="feedback-toast">
+                {feedback}
+              </div>
+            )}
+            
+            <div className="reps-container">
+              {Object.entries(repsData).map(([key, count]) => {
+                let displayKey = key;
+                if (displayKey.includes('left')) displayKey = displayKey.replace('left', 'right');
+                else if (displayKey.includes('right')) displayKey = displayKey.replace('right', 'left');
+                
+                if (['Bicep Curls', 'Lateral Raises', 'Shoulder Press'].includes(exercise)) {
+                  displayKey = displayKey.replace('side', 'arm');
+                }
+                
+                const formattedKey = displayKey.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
+
+                return (
+                  <div key={key} className="rep-counter-pill">
+                    <span className="rep-label">{formattedKey} Reps</span>
+                    <span className="rep-number">{count}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         {!isRecording && (
           <div className="camera-placeholder">
             <p style={{ fontSize: '0.85rem', marginTop: '0.5rem', color: '#4b5563' }}>Camera is currently off</p>
