@@ -45,11 +45,6 @@
   box-sizing: border-box;
 }
 
-.search-icon {
-  font-size: 1rem;
-  flex-shrink: 0;
-}
-
 .gyms-search-input {
   flex: 1;
   background: transparent;
@@ -96,4 +91,4 @@
 
 .locate-btn:hover {
   color: #7dd3fc;
-}
+}

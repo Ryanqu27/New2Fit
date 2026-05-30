@@ -33,9 +33,7 @@ export default function GymsPage() {
                 <p className="gyms-subtitle">{filteredGyms.length} gyms found</p>
             </div>
 
-            {/* Search bar sits above the map */}
             <div className="gyms-search-bar">
-                <span className="search-icon">🔍</span>
                 <input
                     className="gyms-search-input"
                     type="text"
@@ -47,7 +45,7 @@ export default function GymsPage() {
                     <button className="search-clear-btn" onClick={() => setSearch('')}>✕</button>
                 )}
                 <button className="locate-btn" onClick={handleLocate} title="Use my location">
-                    📍 Use My Location
+                    Use My Location
                 </button>
             </div>
 
