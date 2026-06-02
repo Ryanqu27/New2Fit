@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 from Users.UserModel import User
+from Settings.SettingsModel import UserSettings
 
 
 def get_user_by_id(db: Session, user_id: int):
@@ -22,6 +23,11 @@ def create_user(db: Session, google_user: dict):
         first_name=google_user.get("first_name", "")
     )
     db.add(db_user)
+    db.flush() 
+    
+    db_settings = UserSettings(user_id=db_user.id)
+    db.add(db_settings)
+    
     db.commit()
     db.refresh(db_user)
     return db_user
@@ -35,6 +41,11 @@ def create_email_user(db: Session, email: str, first_name: str, password_hash: s
         password_hash=password_hash
     )
     db.add(db_user)
+    db.flush() 
+    
+    db_settings = UserSettings(user_id=db_user.id)
+    db.add(db_settings)
+
     db.commit()
     db.refresh(db_user)
     return db_user

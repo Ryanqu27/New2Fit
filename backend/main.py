@@ -15,11 +15,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+from Settings.settings_router import router as settings_router
+
 app.include_router(questionnaire_router)
 app.include_router(gym_locations_router)
 app.include_router(users_router)
 app.include_router(camera_router)
 app.include_router(workouts_router)
+app.include_router(settings_router)
 
 @app.get("/")
 async def root():

@@ -8,12 +8,6 @@ class SettingsBase(BaseModel):
     language: Optional[str] = "en"
     workout_reminders: Optional[bool] = True
 
-class SettingsCreate(SettingsBase):
-    pass
-
-class SettingsUpdate(SettingsBase):
-    pass
-
 class SettingsResponse(SettingsBase):
     id: int
     user_id: int
