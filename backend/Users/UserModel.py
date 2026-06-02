@@ -14,3 +14,4 @@ class User(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     workouts = relationship("Workout", back_populates="user")
+    settings = relationship("UserSettings", back_populates="user", uselist=False)

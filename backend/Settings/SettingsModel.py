@@ -1,0 +1,17 @@
+from sqlalchemy import Column, Integer, String, Boolean, ForeignKey
+from sqlalchemy.orm import relationship
+from database import Base
+
+class UserSettings(Base):
+    __tablename__ = "user_settings"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), unique=True, nullable=False)
+    
+    theme = Column(String, default="system")
+    unit_preference = Column(String, default="imperial")
+    camera_framerate_preference = Column(String, default="performance")
+    language = Column(String, default="en")
+    workout_reminders = Column(Boolean, default=True)
+
+    user = relationship("User", back_populates="settings")
