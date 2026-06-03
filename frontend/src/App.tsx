@@ -12,6 +12,7 @@ import RegisterPage from './Auth/RegisterPage';
 import { AuthProvider } from './Auth/AuthContext';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import SettingsPage from './pages/SettingsPage/SettingsPage';
+import { SettingsProvider } from './Settings/SettingsContext';
 
 const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 function App() {
@@ -24,10 +25,10 @@ function App() {
             <Route path="/register" element={<RegisterPage />} />
             <Route element={
               <ProtectedRoute>
-                <>
+                <SettingsProvider>
                   <Navbar />
                   <Outlet />
-                </>
+                </SettingsProvider>
               </ProtectedRoute>
             }>
               <Route path="/" element={<DashboardPage />} />

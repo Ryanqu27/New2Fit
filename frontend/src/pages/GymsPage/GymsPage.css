@@ -20,7 +20,7 @@
 }
 
 .gyms-subtitle {
-  color: #6b7280;
+  color: var(--text);
   font-size: 0.95rem;
   margin: 0;
 }
@@ -35,16 +35,17 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background: rgba(15, 23, 42, 0.85);
+  background: var(--code-bg);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--border);
   border-radius: 9999px;
   padding: 0.65rem 1.25rem;
   margin-bottom: 0.75rem;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--shadow);
   width: 100%;
   box-sizing: border-box;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .gyms-search-input {
@@ -52,19 +53,19 @@
   background: transparent;
   border: none;
   outline: none;
-  color: #f1f5f9;
+  color: var(--text-h);
   font-size: 0.95rem;
   min-width: 0;
 }
 
 .gyms-search-input::placeholder {
-  color: #64748b;
+  color: var(--text);
 }
 
 .search-clear-btn {
   background: none;
   border: none;
-  color: #64748b;
+  color: var(--text);
   cursor: pointer;
   font-size: 0.85rem;
   padding: 0 0.25rem;
@@ -73,7 +74,7 @@
 }
 
 .search-clear-btn:hover {
-  color: #f1f5f9;
+  color: var(--text-h);
 }
 
 /* Divider between clear and locate */

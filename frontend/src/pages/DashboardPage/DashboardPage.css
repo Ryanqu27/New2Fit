@@ -1,8 +1,9 @@
 .home-container {
   min-height: 100vh;
-  background-color: #0f0f0f;
-  color: #ffffff;
+  background-color: var(--bg);
+  color: var(--text);
   padding: 2rem 1rem;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .home-content {
@@ -17,12 +18,12 @@
   font-weight: 800;
   line-height: 1.1;
   margin: 0 0 1rem;
-  color: #ffffff;
+  color: var(--text-h);
   text-align: center;
 }
 
 .home-name {
-  background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+  background: linear-gradient(135deg, var(--accent) 0%, #3b82f6 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -30,7 +31,7 @@
 
 .home-subtitle {
   font-size: 1.1rem;
-  color: #9ca3af;
+  color: var(--text);
   line-height: 1.7;
   margin: 0 auto 3rem;
   text-align: center;
@@ -38,7 +39,7 @@
 
 .loading-stats {
   text-align: center;
-  color: #9ca3af;
+  color: var(--text);
   font-size: 1.2rem;
   margin-top: 3rem;
 }
@@ -58,10 +59,10 @@
 .section-title {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #f3f4f6;
+  color: var(--text-h);
   margin: 0;
   padding-bottom: 0.5rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid var(--border);
 }
 
 .stats-cards {
@@ -73,28 +74,28 @@
 .stat-card {
   display: flex;
   align-items: center;
-  background: rgba(26, 26, 26, 0.65);
-  border: 1px solid rgba(37, 99, 235, 0.3);
+  background: var(--code-bg);
+  border: 1px solid var(--accent-border);
   border-radius: 16px;
   padding: 1.5rem;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-  transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: var(--shadow);
+  transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
 }
 
 .stat-card:hover {
   transform: translateY(-4px);
-  border-color: rgba(59, 130, 246, 0.8);
-  box-shadow: 0 15px 35px rgba(37, 99, 235, 0.15);
+  border-color: var(--accent);
+  box-shadow: 0 15px 35px var(--accent-bg);
 }
 
 .stat-card.outline {
   background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--border);
 }
 
 .stat-card.outline:hover {
-  border-color: rgba(255, 255, 255, 0.3);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  border-color: var(--accent-border);
+  box-shadow: var(--shadow);
 }
 
 .stat-info {
@@ -105,7 +106,7 @@
 .stat-value {
   font-size: 2.2rem;
   font-weight: 800;
-  color: #ffffff;
+  color: var(--text-h);
   line-height: 1;
   margin-bottom: 0.3rem;
 }
@@ -113,7 +114,7 @@
 .stat-label {
   font-size: 0.95rem;
   font-weight: 500;
-  color: #9ca3af;
+  color: var(--text);
   text-transform: uppercase;
   letter-spacing: 1px;
 }
@@ -126,27 +127,27 @@
 
 .loading-rec {
   text-align: center;
-  color: #9ca3af;
+  color: var(--text);
   font-size: 1.1rem;
   padding: 2rem;
 }
 
 .recommendation-card {
   position: relative;
-  background: rgba(26, 26, 26, 0.45);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--code-bg);
+  border: 1px solid var(--border);
   border-radius: 16px;
   padding: 2rem;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--shadow);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   overflow: hidden;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
 }
 
 .recommendation-card:hover {
-  border-color: rgba(37, 99, 235, 0.4);
-  box-shadow: 0 20px 40px rgba(37, 99, 235, 0.08);
+  border-color: var(--accent-border);
+  box-shadow: 0 20px 40px var(--accent-bg);
 }
 
 .recommendation-card.empty-state {
@@ -160,12 +161,12 @@
 .recommendation-card h3 {
   font-size: 1.4rem;
   font-weight: 700;
-  color: #ffffff;
+  color: var(--text-h);
   margin: 0 0 0.5rem 0;
 }
 
 .recommendation-card p {
-  color: #9ca3af;
+  color: var(--text);
   font-size: 1rem;
   line-height: 1.6;
   max-width: 500px;
@@ -175,20 +176,20 @@
 
 .cta-btn {
   display: inline-block;
-  background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+  background: linear-gradient(135deg, var(--accent) 0%, #3b82f6 100%);
   color: #ffffff;
   font-weight: 600;
   font-size: 0.95rem;
   padding: 0.8rem 1.8rem;
   border-radius: 30px;
   text-decoration: none;
-  box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+  box-shadow: 0 4px 15px var(--accent-bg);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .cta-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.5);
+  box-shadow: 0 6px 20px var(--accent-bg);
   color: #ffffff;
 }
 
@@ -198,9 +199,9 @@
 
 .card-badge {
   display: inline-block;
-  background: rgba(37, 99, 235, 0.15);
-  border: 1px solid rgba(37, 99, 235, 0.3);
-  color: #60a5fa;
+  background: var(--accent-bg);
+  border: 1px solid var(--accent-border);
+  color: var(--accent);
   font-size: 0.8rem;
   font-weight: 600;
   text-transform: uppercase;
@@ -217,7 +218,7 @@
 .workout-title {
   font-size: 1.8rem;
   font-weight: 800;
-  color: #ffffff;
+  color: var(--text-h);
   margin: 0 0 1rem 0;
   text-align: left;
 }
@@ -234,24 +235,23 @@
 .exercise-item {
   display: flex;
   align-items: center;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: var(--social-bg);
+  border: 1px solid var(--border);
   border-radius: 10px;
   padding: 0.75rem 1rem;
   font-size: 0.95rem;
-  color: #e5e7eb;
+  color: var(--text-h);
 }
 
 .rest-hint,
 .no-workout {
   font-size: 1.1rem;
-  color: #9ca3af;
+  color: var(--text);
   margin: 0.5rem 0 0;
   text-align: left;
 }
 
 @keyframes pulse {
-
   0%,
   100% {
     transform: scale(1);

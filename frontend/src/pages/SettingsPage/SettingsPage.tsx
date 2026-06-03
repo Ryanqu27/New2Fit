@@ -1,39 +1,18 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { SettingsService, type UserSettings, type SettingsUpdate } from './SettingsService';
+import React, { useState } from 'react';
+import { useSettings } from '../../Settings/SettingsContext';
 import './SettingsPage.css';
 
 export default function SettingsPage() {
-    const [settings, setSettings] = useState<UserSettings | null>(null);
-    const [loading, setLoading] = useState<boolean>(true);
+    const { settings, updateSettings, loading } = useSettings();
     const [saveStatus, setSaveStatus] = useState<'saving' | 'success' | 'error' | null>(null);
 
-    useEffect(() => {
-        const fetchSettings = async () => {
-            try {
-                const data = await SettingsService.getSettings();
-                setSettings(data);
-            } catch (error) {
-                console.error("Failed to load settings", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchSettings();
-    }, []);
-
-    const updateSetting = async (update: SettingsUpdate) => {
-        if (!settings) return;
-        
-        setSettings({ ...settings, ...update });
+    const updateSetting = async (update: Parameters<typeof updateSettings>[0]) => {
         setSaveStatus('saving');
-
         try {
-            const newSettings = await SettingsService.updateSettings(update);
-            setSettings(newSettings);
+            await updateSettings(update);
             setSaveStatus('success');
             setTimeout(() => setSaveStatus(null), 3000);
-        } catch (error) {
-            console.error("Failed to update settings", error);
+        } catch {
             setSaveStatus('error');
             setTimeout(() => setSaveStatus(null), 4000);
         }
@@ -148,13 +127,13 @@ export default function SettingsPage() {
                             className={settings.camera_framerate_preference === 30 ? 'active' : ''} 
                             onClick={() => updateSetting({ camera_framerate_preference: 30 })}
                         >
-                            30
+                            30 FPS
                         </button>
                         <button 
                             className={settings.camera_framerate_preference === 60 ? 'active' : ''} 
                             onClick={() => updateSetting({ camera_framerate_preference: 60 })}
                         >
-                            60
+                            60 FPS
                         </button>
                     </div>
                 </div>
@@ -163,8 +142,8 @@ export default function SettingsPage() {
             {saveStatus && (
                 <div className={`save-status ${saveStatus}`}>
                     {saveStatus === 'saving' && "Saving changes..."}
-                    {saveStatus === 'success' && "Preferences saved!"}
-                    {saveStatus === 'error' && "Error saving preferences."}
+                    {saveStatus === 'success' && "✓ Preferences saved!"}
+                    {saveStatus === 'error' && "✗ Error saving preferences."}
                 </div>
             )}
         </div>
