@@ -2,13 +2,13 @@ from pydantic import BaseModel
 from typing import Optional
 
 class SettingsBase(BaseModel):
-    theme: Optional[str] = "system"
+    theme: Optional[str] = "dark"
     unit_preference: Optional[str] = "imperial"
-    camera_framerate_preference: Optional[str] = "performance"
+    camera_framerate_preference: Optional[int] = 30
     language: Optional[str] = "en"
     workout_reminders: Optional[bool] = True
 
-class SettingsResponse(SettingsBase):
+class Settings(SettingsBase):
     id: int
     user_id: int
 

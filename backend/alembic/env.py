@@ -26,6 +26,7 @@ from database import Base
 import Users.UserModel
 import Workouts.WorkoutModel
 import Questionnaire.RecommendationModel
+import Settings.SettingsModel
 target_metadata = Base.metadata
 
 config.set_main_option("sqlalchemy.url", os.environ.get("DATABASE_URL"))
