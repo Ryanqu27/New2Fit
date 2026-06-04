@@ -1,7 +1,9 @@
 import { useState, useRef, useEffect } from 'react';
+import { useSettings } from '../../Settings/SettingsContext';
 import './AICamera.css';
 
 export default function AICamera() {
+  const { settings } = useSettings();
   const [exercise, setExercise] = useState('Bicep Curls');
   const [isRecording, setIsRecording] = useState(false);
   const [repsData, setRepsData] = useState<Record<string, number>>({});
@@ -43,7 +45,12 @@ export default function AICamera() {
     try {
       setIsRecording(true);
 
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      const targetFps = settings.camera_framerate_preference;
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        video: { 
+          frameRate: { ideal: targetFps, max: targetFps }
+        } 
+      });
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
         await videoRef.current.play();
