@@ -35,16 +35,11 @@
 }
 
 .wp-title {
-  font-size: 2.4rem;
+  font-size: 2.2rem;
   font-weight: 700;
+  color: var(--text-h);
+  margin: 0 0 0.25rem;
   letter-spacing: -0.5px;
-  margin: 0 0 0.75rem;
-  line-height: 1.3;
-  padding-bottom: 0.1em;
-  background: linear-gradient(135deg, var(--day-fri), var(--day-thu));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
 }
 
 .wp-sub {
@@ -168,7 +163,7 @@
 }
 
 .wp-retake:hover {
-  border-color: var(--day-thu);
+  border-color: var(--accent);
   background: color-mix(in srgb, var(--day-thu) 10%, transparent);
   transform: translateY(-2px);
 }

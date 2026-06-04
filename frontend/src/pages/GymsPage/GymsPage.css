@@ -82,7 +82,7 @@
   background: none;
   border: none;
   border-left: 1px solid rgba(255,255,255,0.15);
-  color: #38bdf8;
+  color: var(--accent);
   cursor: pointer;
   font-size: 0.875rem;
   font-weight: 600;
@@ -90,8 +90,4 @@
   flex-shrink: 0;
   transition: color 0.2s;
   white-space: nowrap;
-}
-
-.locate-btn:hover {
-  color: #7dd3fc;
 }
