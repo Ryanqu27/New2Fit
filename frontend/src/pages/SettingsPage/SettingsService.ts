@@ -6,7 +6,6 @@ export interface UserSettings {
     theme: 'light' | 'dark';
     unit_preference: 'imperial' | 'metric';
     camera_framerate_preference: 30 | 60;
-    language: string;
     workout_reminders: boolean;
 }
 
@@ -14,7 +13,6 @@ export interface SettingsUpdate {
     theme?: 'light' | 'dark';
     unit_preference?: 'imperial' | 'metric';
     camera_framerate_preference?: 30 | 60;
-    language?: string;
     workout_reminders?: boolean;
 }
 

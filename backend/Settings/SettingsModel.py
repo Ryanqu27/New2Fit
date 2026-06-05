@@ -11,7 +11,6 @@ class UserSettings(Base):
     theme = Column(String, default="system")
     unit_preference = Column(String, default="imperial")
     camera_framerate_preference = Column(Integer, default=30)
-    language = Column(String, default="en")
     workout_reminders = Column(Boolean, default=True)
 
     user = relationship("User", back_populates="settings")

@@ -5,7 +5,6 @@ class SettingsBase(BaseModel):
     theme: Optional[str] = "dark"
     unit_preference: Optional[str] = "imperial"
     camera_framerate_preference: Optional[int] = 30
-    language: Optional[str] = "en"
     workout_reminders: Optional[bool] = True
 
 class Settings(SettingsBase):

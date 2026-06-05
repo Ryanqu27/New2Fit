@@ -56,22 +56,6 @@ export default function SettingsPage() {
                         </button>
                     </div>
                 </div>
-
-                <div className="setting-item">
-                    <div className="setting-info">
-                        <h3>Language</h3>
-                        <p>Select your preferred language</p>
-                    </div>
-                    <select 
-                        className="styled-select"
-                        value={settings.language}
-                        onChange={(e) => updateSetting({ language: e.target.value })}
-                    >
-                        <option value="en">English</option>
-                        <option value="es">Español</option>
-                        <option value="fr">Français</option>
-                    </select>
-                </div>
             </div>
 
             <div className="settings-section">
