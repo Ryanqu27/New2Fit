@@ -15,9 +15,12 @@
     margin-bottom: 2rem;
 }
 
-.settings-header h1 {
-    font-size: 2.5rem;
-    color: var(--accent);
+.workouts-title {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--text-h);
+  margin: 0 0 0.25rem;
+  letter-spacing: -0.5px;
 }
 
 .settings-header p {
