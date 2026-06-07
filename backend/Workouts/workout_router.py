@@ -20,3 +20,11 @@ def log_workout(request: workout_schema.WorkoutRequest,
 def get_workouts(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     workouts = workout_service.get_workouts(db, current_user.id)
     return {"workouts": workouts}
+
+@router.put("/{workout_id}", response_model=workout_schema.WorkoutItem)
+def update_workout(workout_id: int,
+                   request: workout_schema.WorkoutRequest,
+                   db: Session = Depends(get_db), 
+                   current_user: User = Depends(get_current_user)):
+    return workout_service.update_workout(db, request, current_user.id, workout_id)
+    

@@ -37,3 +37,9 @@ def log_workout(db: Session, request: workout_schema.WorkoutRequest, user_id: in
             )
 
     workout_repository.log_workout(db, request, user_id)
+
+def update_workout(db: Session, request: workout_schema.WorkoutRequest, user_id: int, workoutID: int):
+    updated_workout = workout_repository.update_workout(db, request, user_id, workoutID)
+    if not updated_workout:
+        raise HTTPException(status_code=404, detail="Workout not found")
+    return updated_workout

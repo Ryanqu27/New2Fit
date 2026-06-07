@@ -14,3 +14,15 @@ def log_workout(db: Session, request: workout_schema.WorkoutRequest, user_id: in
     db.commit()
     db.refresh(new_workout)
     
+def update_workout(db: Session, request: workout_schema.WorkoutRequest, user_id: int, workoutID: int):
+    workout = db.query(Workout).filter(Workout.id == workoutID, Workout.user_id == user_id).first()
+    if workout:
+        update_data = request.model_dump(exclude_unset=True)
+        
+        for key, value in update_data.items():
+            setattr(workout, key, value)
+            
+        db.commit()
+        db.refresh(workout)
+        
+    return workout
