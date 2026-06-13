@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { logWorkout, getWorkouts, type Workout, type WorkoutRequest, type ExerciseSet } from './WorkoutsService';
+import { logWorkout, getWorkouts, updateWorkout, type Workout, type WorkoutRequest, type ExerciseSet } from './WorkoutsService';
 import { useSettings } from '../../Settings/SettingsContext';
 import { weightUnit, toDisplay, toStored } from '../../utils/units';
 import './Workouts.css';
@@ -22,6 +22,8 @@ export default function Workouts() {
     const [exerciseRows, setExerciseRows] = useState<ExerciseFormRow[]>([
         { name: '', sets: '', reps: '', weight_display: '' }
     ]);
+
+    const [editingWorkoutId, setEditingWorkoutId] = useState<number | null>(null);
 
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
@@ -66,6 +68,37 @@ export default function Workouts() {
         });
     };
 
+    const handleEditClick = (workout: Workout) => {
+        setEditingWorkoutId(workout.id);
+        setName(workout.name);
+        setDurationMinutes(workout.duration_minutes);
+        const d = new Date(workout.date);
+        setDate(d.toISOString().split('T')[0]);
+        
+        if (workout.exercises && workout.exercises.length > 0) {
+            setExerciseRows(workout.exercises.map(ex => ({
+                name: ex.name,
+                sets: ex.sets || '',
+                reps: ex.reps || '',
+                weight_display: ex.weight_kg ? toDisplay(ex.weight_kg, pref).toString() : ''
+            })));
+        } else {
+            setExerciseRows([{ name: '', sets: '', reps: '', weight_display: '' }]);
+        }
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    const handleCancelEdit = () => {
+        setEditingWorkoutId(null);
+        setName('');
+        setDurationMinutes('');
+        setDate(new Date().toISOString().split('T')[0]);
+        setExerciseRows([{ name: '', sets: '', reps: '', weight_display: '' }]);
+        setError(null);
+        setSuccess(false);
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setSubmitting(true);
@@ -90,18 +123,24 @@ export default function Workouts() {
                 exercises: exercisesPayload
             };
 
-            await logWorkout(payload);
-            setSuccess(true);
-            
-            // Reset form
-            setName('');
-            setDurationMinutes('');
-            setDate(new Date().toISOString().split('T')[0]);
-            setExerciseRows([{ name: '', sets: '', reps: '', weight_display: '' }]);
+            if (editingWorkoutId) {
+                await updateWorkout(editingWorkoutId, payload);
+                setSuccess(true);
+                handleCancelEdit();
+            } else {
+                await logWorkout(payload);
+                setSuccess(true);
+                
+                // Reset form
+                setName('');
+                setDurationMinutes('');
+                setDate(new Date().toISOString().split('T')[0]);
+                setExerciseRows([{ name: '', sets: '', reps: '', weight_display: '' }]);
+            }
             
             await fetchWorkouts();
         } catch (err: any) {
-            const message = err.response?.data?.detail || 'Failed to log workout. Please try again.';
+            const message = err.response?.data?.detail || 'Failed to save workout. Please try again.';
             setError(message);
         } finally {
             setSubmitting(false);
@@ -123,7 +162,7 @@ export default function Workouts() {
 
             <div className="workouts-content">
                 <section className="log-section">
-                    <h2 className="section-title">Log a Workout</h2>
+                    <h2 className="section-title">{editingWorkoutId ? 'Update Workout' : 'Log a Workout'}</h2>
                     <form className="log-form" onSubmit={handleSubmit}>
                         <div className="form-group">
                             <label htmlFor="workout-name">Workout Name</label>
@@ -220,16 +259,28 @@ export default function Workouts() {
                         </div>
 
                         {error && <p className="form-error">{error}</p>}
-                        {success && <p className="form-success">Workout logged!</p>}
+                        {success && <p className="form-success">Workout {editingWorkoutId ? 'updated' : 'logged'}!</p>}
 
-                        <button
-                            id="log-workout-btn"
-                            type="submit"
-                            className="log-btn"
-                            disabled={submitting || exerciseRows.length === 0}
-                        >
-                            {submitting ? 'Logging...' : 'Log Workout'}
-                        </button>
+                        <div className="form-actions">
+                            <button
+                                id="log-workout-btn"
+                                type="submit"
+                                className="log-btn"
+                                disabled={submitting || exerciseRows.length === 0}
+                            >
+                                {submitting ? (editingWorkoutId ? 'Updating...' : 'Logging...') : (editingWorkoutId ? 'Update Workout' : 'Log Workout')}
+                            </button>
+                            {editingWorkoutId && (
+                                <button
+                                    type="button"
+                                    className="cancel-btn"
+                                    onClick={handleCancelEdit}
+                                    disabled={submitting}
+                                >
+                                    Cancel
+                                </button>
+                            )}
+                        </div>
                     </form>
                 </section>
 
@@ -252,6 +303,13 @@ export default function Workouts() {
                                     </div>
                                     <div className="workout-card-meta">
                                         <span className="workout-duration">⏱ {workout.duration_minutes} min</span>
+                                        <button 
+                                            className="edit-workout-btn" 
+                                            onClick={() => handleEditClick(workout)}
+                                            title="Edit Workout"
+                                        >
+                                            ✎ Edit
+                                        </button>
                                     </div>
                                     
                                     {workout.exercises && workout.exercises.length > 0 && (

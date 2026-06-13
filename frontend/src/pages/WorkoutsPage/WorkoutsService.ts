@@ -31,3 +31,7 @@ export const getWorkouts = async (): Promise<Workout[]> => {
     const response = await api.get('/workouts');
     return response.data.workouts;
 };
+
+export const updateWorkout = async (id: number, workout: WorkoutRequest): Promise<void> => {
+    await api.put(`/workouts/${id}`, workout);
+};

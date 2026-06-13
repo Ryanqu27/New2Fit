@@ -205,7 +205,6 @@
     cursor: pointer;
     align-self: flex-start;
     transition: opacity 0.2s, transform 0.15s;
-    margin-top: 10px;
 }
 
 .log-btn:hover:not(:disabled) {
@@ -214,6 +213,34 @@
 }
 
 .log-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.form-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.cancel-btn {
+    padding: 12px 28px;
+    background: transparent;
+    color: var(--text-h);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s, background 0.2s;
+}
+
+.cancel-btn:hover:not(:disabled) {
+    background: var(--border);
+}
+
+.cancel-btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }
@@ -272,6 +299,26 @@
 
 .workout-card-meta {
     margin-bottom: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.edit-workout-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-h);
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.edit-workout-btn:hover {
+    background: var(--border);
+    border-color: var(--text);
 }
 
 .workout-duration {
