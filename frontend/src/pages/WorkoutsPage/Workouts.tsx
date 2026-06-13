@@ -1,21 +1,34 @@
 import { useEffect, useState } from 'react';
-import { logWorkout, getWorkouts, type Workout, type WorkoutRequest } from './WorkoutsService';
+import { logWorkout, getWorkouts, type Workout, type WorkoutRequest, type ExerciseSet } from './WorkoutsService';
+import { useSettings } from '../../Settings/SettingsContext';
+import { weightUnit, toDisplay, toStored } from '../../utils/units';
 import './Workouts.css';
 
-const EMPTY_FORM: WorkoutRequest = {
-    name: '',
-    notes: '',
-    duration_minutes: 0,
-    date: new Date().toISOString().split('T')[0], // default to today
-};
+interface ExerciseFormRow {
+    name: string;
+    sets: number | '';
+    reps: number | '';
+    weight_display: string; 
+}
 
 export default function Workouts() {
+    const { settings } = useSettings();
     const [workouts, setWorkouts] = useState<Workout[]>([]);
-    const [form, setForm] = useState<WorkoutRequest>(EMPTY_FORM);
+    
+    // Form State
+    const [name, setName] = useState('');
+    const [durationMinutes, setDurationMinutes] = useState<number | ''>('');
+    const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+    const [exerciseRows, setExerciseRows] = useState<ExerciseFormRow[]>([
+        { name: '', sets: '', reps: '', weight_display: '' }
+    ]);
+
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
+
+    const pref = settings?.unit_preference;
 
     useEffect(() => {
         fetchWorkouts();
@@ -33,28 +46,59 @@ export default function Workouts() {
         }
     };
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const { name, value } = e.target;
-        setForm(prev => ({
-            ...prev,
-            [name]: name === 'duration_minutes' ? Number(value) : value,
-        }));
+    const handleAddExercise = () => {
+        setExerciseRows(prev => [...prev, { name: '', sets: '', reps: '', weight_display: '' }]);
     };
 
-    const handleSubmit = async (e: { preventDefault: () => void; }) => {
+    const handleRemoveExercise = (index: number) => {
+        setExerciseRows(prev => prev.filter((_, i) => i !== index));
+    };
+
+    const handleExerciseChange = (index: number, field: keyof ExerciseFormRow, value: string) => {
+        setExerciseRows(prev => {
+            const newRows = [...prev];
+            if (field === 'name' || field === 'weight_display') {
+                newRows[index] = { ...newRows[index], [field]: value };
+            } else {
+                newRows[index] = { ...newRows[index], [field]: value === '' ? '' : Number(value) };
+            }
+            return newRows;
+        });
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setSubmitting(true);
         setError(null);
         setSuccess(false);
+
         try {
-            // Convert date string to ISO datetime for the backend
+            // Build the payload
+            const exercisesPayload: ExerciseSet[] = exerciseRows
+                .filter(row => row.name.trim() !== '') // Skip completely empty rows
+                .map(row => ({
+                    name: row.name,
+                    sets: row.sets === '' ? 0 : Number(row.sets),
+                    reps: row.reps === '' ? 0 : Number(row.reps),
+                    weight_kg: toStored(row.weight_display, pref) || 0 // Store bodyweight/empty as 0 or null
+                }));
+
             const payload: WorkoutRequest = {
-                ...form,
-                date: new Date(form.date).toISOString(),
+                name,
+                duration_minutes: Number(durationMinutes),
+                date: new Date(date).toISOString(),
+                exercises: exercisesPayload
             };
+
             await logWorkout(payload);
             setSuccess(true);
-            setForm(EMPTY_FORM);
+            
+            // Reset form
+            setName('');
+            setDurationMinutes('');
+            setDate(new Date().toISOString().split('T')[0]);
+            setExerciseRows([{ name: '', sets: '', reps: '', weight_display: '' }]);
+            
             await fetchWorkouts();
         } catch (err: any) {
             const message = err.response?.data?.detail || 'Failed to log workout. Please try again.';
@@ -85,11 +129,10 @@ export default function Workouts() {
                             <label htmlFor="workout-name">Workout Name</label>
                             <input
                                 id="workout-name"
-                                name="name"
                                 type="text"
                                 placeholder="e.g. Push Day, Leg Day"
-                                value={form.name}
-                                onChange={handleChange}
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
                                 required
                             />
                         </div>
@@ -99,12 +142,11 @@ export default function Workouts() {
                                 <label htmlFor="workout-duration">Duration (minutes)</label>
                                 <input
                                     id="workout-duration"
-                                    name="duration_minutes"
                                     type="number"
                                     min="1"
                                     placeholder="45"
-                                    value={form.duration_minutes || ''}
-                                    onChange={handleChange}
+                                    value={durationMinutes}
+                                    onChange={(e) => setDurationMinutes(e.target.value === '' ? '' : Number(e.target.value))}
                                     required
                                 />
                             </div>
@@ -112,26 +154,69 @@ export default function Workouts() {
                                 <label htmlFor="workout-date">Date</label>
                                 <input
                                     id="workout-date"
-                                    name="date"
                                     type="date"
-                                    value={form.date}
-                                    onChange={handleChange}
+                                    value={date}
+                                    onChange={(e) => setDate(e.target.value)}
                                     required
                                 />
                             </div>
                         </div>
 
-                        <div className="form-group">
-                            <label htmlFor="workout-notes">Notes</label>
-                            <textarea
-                                id="workout-notes"
-                                name="notes"
-                                placeholder="How did it go?"
-                                value={form.notes}
-                                onChange={handleChange}
-                                rows={3}
-                                required
-                            />
+                        {/* Exercise Builder */}
+                        <div className="exercise-builder">
+                            <label className="exercise-builder-label">Exercises</label>
+                            
+                            <div className="exercise-rows">
+                                {exerciseRows.map((row, idx) => (
+                                    <div key={idx} className="exercise-row">
+                                        <input 
+                                            className="ex-name" 
+                                            placeholder="Exercise (e.g. Bench Press)" 
+                                            value={row.name}
+                                            onChange={(e) => handleExerciseChange(idx, 'name', e.target.value)}
+                                            required
+                                        />
+                                        <input 
+                                            className="ex-sets" 
+                                            type="number" 
+                                            placeholder="Sets" 
+                                            value={row.sets}
+                                            onChange={(e) => handleExerciseChange(idx, 'sets', e.target.value)}
+                                        />
+                                        <input 
+                                            className="ex-reps" 
+                                            type="number" 
+                                            placeholder="Reps" 
+                                            value={row.reps}
+                                            onChange={(e) => handleExerciseChange(idx, 'reps', e.target.value)}
+                                        />
+                                        <div className="ex-weight-wrapper">
+                                            <input 
+                                                className="ex-weight" 
+                                                type="number"
+                                                step="0.1" 
+                                                placeholder="Weight" 
+                                                value={row.weight_display}
+                                                onChange={(e) => handleExerciseChange(idx, 'weight_display', e.target.value)}
+                                            />
+                                            <span className="unit-badge">{weightUnit(pref)}</span>
+                                        </div>
+                                        <button 
+                                            type="button" 
+                                            className="ex-remove"
+                                            onClick={() => handleRemoveExercise(idx)}
+                                            disabled={exerciseRows.length === 1}
+                                            title="Remove Exercise"
+                                        >
+                                            ✕
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                            
+                            <button type="button" className="add-exercise-btn" onClick={handleAddExercise}>
+                                + Add Exercise
+                            </button>
                         </div>
 
                         {error && <p className="form-error">{error}</p>}
@@ -141,7 +226,7 @@ export default function Workouts() {
                             id="log-workout-btn"
                             type="submit"
                             className="log-btn"
-                            disabled={submitting}
+                            disabled={submitting || exerciseRows.length === 0}
                         >
                             {submitting ? 'Logging...' : 'Log Workout'}
                         </button>
@@ -168,8 +253,26 @@ export default function Workouts() {
                                     <div className="workout-card-meta">
                                         <span className="workout-duration">⏱ {workout.duration_minutes} min</span>
                                     </div>
-                                    {workout.notes && (
-                                        <p className="workout-notes">{workout.notes}</p>
+                                    
+                                    {workout.exercises && workout.exercises.length > 0 && (
+                                        <div className="workout-exercises-list">
+                                            <div className="ex-list-header">
+                                                <span>Exercise</span>
+                                                <span>Sets</span>
+                                                <span>Reps</span>
+                                                <span>Weight</span>
+                                            </div>
+                                            {workout.exercises.map((ex, idx) => (
+                                                <div key={idx} className="ex-list-row">
+                                                    <span>{ex.name}</span>
+                                                    <span>{ex.sets || '-'}</span>
+                                                    <span>{ex.reps || '-'}</span>
+                                                    <span>
+                                                        {ex.weight_kg ? `${toDisplay(ex.weight_kg, pref)} ${weightUnit(pref)}` : 'Bodyweight'}
+                                                    </span>
+                                                </div>
+                                            ))}
+                                        </div>
                                     )}
                                 </li>
                             ))}
