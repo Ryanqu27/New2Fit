@@ -2,16 +2,19 @@
 New2Fit is a personalized AI fitness application for beginners featuring an AI camera with real-time pose analysis and feedback.
 
 ## Overview
-New2Fit uses a TensorFlow pose model to analyze exercise form in real time and provides feedback on range of motion, speed, and joint angles. The front end is built with Streamlit and user data is stored in Supabase/PostgreSQL.
+New2Fit uses a TensorFlow pose model (MoveNet) to analyze exercise form in real time and provides per-rep feedback on range of motion, speed, and joint angles. The application features a modern full-stack architecture with a **React** (Vite) frontend and a **FastAPI** backend. Real-time video processing is handled via WebSockets, and user data is managed securely using **SQLAlchemy**.
 
 ## Features
-- Real-time AI camera body tracking (MoveNet)
-- Form analysis and per-rep feedback (angles, speed, confidence)
-- Streamlit web UI for sessions and progress
-- Gym locations and websites retreived from web scraping algorithm. 
-- Supabase storage for user data and progress tracking
+- **Real-time AI Camera Body Tracking**: Analyzes video frames using MoveNet via WebSockets.
+- **Form Analysis & Feedback**: Provides per-rep feedback, angle measurement, and speed monitoring.
+- **Modern Web Interface**: Built with React and TypeScript for a highly responsive user experience.
+- **Workout Logging**: Track your exercises, sets, reps, and weights over time.
+- **Personalized Dashboard & Questionnaire**: Customize your fitness journey based on your personal preferences and goals.
+- **Gym Locator**: Gym locations and websites retrieved from a web scraping algorithm. 
+- **Google OAuth**: Secure user authentication.
 
-## Running Application
-- Project is deployed with streamlit at: https://new2fit-evzjqy2ztsamnzvkgkkmvv.streamlit.app/
-- The application may be asleep which could take a few minutes to get back up.
-- NOTE: Cellular networks can sometimes impose WebRTC restrictions on mobile devices making the AI camera not functional.  
+## Tech Stack
+- **Frontend**: React, TypeScript, Vite, React Router
+- **Backend**: FastAPI, Python, WebSockets, SQLAlchemy, Pydantic
+- **AI/ML**: TensorFlow (MoveNet)
+
