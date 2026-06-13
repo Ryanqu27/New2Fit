@@ -1,0 +1,221 @@
+:root {
+  --day-mon: #f97316;
+  --day-tue: #ef4444;
+  --day-wed: #eab308;
+  --day-thu: #8b5cf6;
+  --day-fri: #3b82f6;
+  --day-sat: #06b6d4;
+  --day-sun: #22c55e;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --day-mon: #fb923c;
+    --day-tue: #f87171;
+    --day-wed: #facc15;
+    --day-thu: #a78bfa;
+    --day-fri: #60a5fa;
+    --day-sat: #22d3ee;
+    --day-sun: #4ade80;
+  }
+}
+
+.workout-plan-root {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 4rem;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+.wp-icon {
+  display: inline-block;
+  font-size: 3.5rem;
+  margin-bottom: 0.5rem;
+  animation: wpBounce 1.8s ease-in-out infinite;
+}
+
+.wp-title {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--text-h);
+  margin: 0 0 0.25rem;
+  letter-spacing: -0.5px;
+}
+
+.wp-sub {
+  font-size: 1.05rem;
+  color: var(--text);
+  line-height: 1.6;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+/* ── Cards grid ──────────────────────────────────────── */
+.wp-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  gap: 1.25rem;
+}
+
+/* ── Individual card ─────────────────────────────────── */
+.wp-card {
+  position: relative;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.5rem;
+  text-align: left;
+  overflow: hidden;
+  transition:
+    transform 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 0.25s ease;
+  animation: wpCardIn 0.5s ease-out both;
+  animation-delay: calc(var(--card-index) * 0.07s);
+}
+
+/* Subtle top-accent bar */
+.wp-card::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 4px;
+  background: var(--card-accent);
+  border-radius: 16px 16px 0 0;
+  opacity: 0.85;
+}
+
+.wp-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow);
+  border-color: var(--card-accent);
+}
+
+/* Header row — icon + day name */
+.wp-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.wp-card-icon {
+  font-size: 1.6rem;
+}
+
+.wp-card-day {
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--card-accent);
+}
+
+/* Workout title */
+.wp-card-title {
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin: 0 0 0.6rem;
+  color: var(--text-h);
+}
+
+/* Detail list */
+.wp-card-details {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.wp-card-details li {
+  font-size: 0.82rem;
+  padding: 0.3rem 0.7rem;
+  border-radius: 99px;
+  background: color-mix(in srgb, var(--card-accent) 12%, transparent);
+  color: var(--text-h);
+  font-weight: 500;
+  transition: background 0.2s ease;
+}
+
+.wp-card-details li:hover {
+  background: color-mix(in srgb, var(--card-accent) 24%, transparent);
+}
+
+/* ── Retake button ───────────────────────────────────── */
+.wp-retake {
+  display: block;
+  margin: 3rem auto 0;
+  padding: 0.85rem 2.4rem;
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: inherit;
+  color: var(--text-h);
+  background: transparent;
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.15s ease;
+}
+
+.wp-retake:hover {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--day-thu) 10%, transparent);
+  transform: translateY(-2px);
+}
+
+.wp-retake:active {
+  transform: translateY(0);
+}
+
+/* ── Keyframes ───────────────────────────────────────── */
+@keyframes wpFadeDown {
+  from {
+    opacity: 0;
+    transform: translateY(-18px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes wpCardIn {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes wpBounce {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+/* ── Responsive tweaks ───────────────────────────────── */
+@media (max-width: 640px) {
+  .wp-hero-title {
+    font-size: 1.8rem;
+  }
+
+  .wp-grid {
+    grid-template-columns: 1fr;
+  }
+}
