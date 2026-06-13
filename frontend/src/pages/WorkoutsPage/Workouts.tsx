@@ -15,7 +15,6 @@ export default function Workouts() {
     const { settings } = useSettings();
     const [workouts, setWorkouts] = useState<Workout[]>([]);
     
-    // Form State
     const [name, setName] = useState('');
     const [durationMinutes, setDurationMinutes] = useState<number | ''>('');
     const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
@@ -106,7 +105,6 @@ export default function Workouts() {
         setSuccess(false);
 
         try {
-            // Build the payload
             const exercisesPayload: ExerciseSet[] = exerciseRows
                 .filter(row => row.name.trim() !== '') // Skip completely empty rows
                 .map(row => ({
@@ -218,6 +216,7 @@ export default function Workouts() {
                                         <input 
                                             className="ex-sets" 
                                             type="number" 
+                                            min="0"
                                             placeholder="Sets" 
                                             value={row.sets}
                                             onChange={(e) => handleExerciseChange(idx, 'sets', e.target.value)}
@@ -225,6 +224,7 @@ export default function Workouts() {
                                         <input 
                                             className="ex-reps" 
                                             type="number" 
+                                            min="0"
                                             placeholder="Reps" 
                                             value={row.reps}
                                             onChange={(e) => handleExerciseChange(idx, 'reps', e.target.value)}
@@ -233,6 +233,7 @@ export default function Workouts() {
                                             <input 
                                                 className="ex-weight" 
                                                 type="number"
+                                                min="0"
                                                 step="0.1" 
                                                 placeholder="Weight" 
                                                 value={row.weight_display}
