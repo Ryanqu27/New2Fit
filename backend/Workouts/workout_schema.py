@@ -26,3 +26,4 @@ class WorkoutItem(BaseModel):
     
 class WorkoutResponse(BaseModel):
     workouts: list[WorkoutItem]
+    total_count: int

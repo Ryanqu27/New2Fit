@@ -5,8 +5,10 @@ from Workouts import workout_repository, workout_schema
 
 HOURS_BETWEEN_WORKOUTS = 6
 
-def get_workouts(db: Session, user_id: int):
-    return workout_repository.get_workouts_by_user_id(db, user_id)
+def get_workouts(db: Session, user_id: int, skip: int = 0, limit: int = 10):
+    workouts = workout_repository.get_workouts_by_user_id(db, user_id, skip, limit)
+    total_count = workout_repository.count_workouts_by_user_id(db, user_id)
+    return workouts, total_count
     
 
 def log_workout(db: Session, request: workout_schema.WorkoutRequest, user_id: int):

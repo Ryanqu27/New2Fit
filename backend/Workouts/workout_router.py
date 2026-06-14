@@ -17,9 +17,9 @@ def log_workout(request: workout_schema.WorkoutRequest,
     workout_service.log_workout(db, request, user_id=current_user.id)
 
 @router.get("", response_model=workout_schema.WorkoutResponse)
-def get_workouts(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    workouts = workout_service.get_workouts(db, current_user.id)
-    return {"workouts": workouts}
+def get_workouts(skip: int = 0, limit: int = 10, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    workouts, total_count = workout_service.get_workouts(db, current_user.id, skip, limit)
+    return {"workouts": workouts, "total_count": total_count}
 
 @router.put("/{workout_id}", response_model=workout_schema.WorkoutItem)
 def update_workout(workout_id: int,

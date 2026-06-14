@@ -14,6 +14,9 @@ interface ExerciseFormRow {
 export default function Workouts() {
     const { settings } = useSettings();
     const [workouts, setWorkouts] = useState<Workout[]>([]);
+    const [totalCount, setTotalCount] = useState<number>(0);
+    const [skip, setSkip] = useState<number>(0);
+    const LIMIT = 10;
     
     const [name, setName] = useState('');
     const [durationMinutes, setDurationMinutes] = useState<number | ''>('');
@@ -32,19 +35,29 @@ export default function Workouts() {
     const pref = settings?.unit_preference;
 
     useEffect(() => {
-        fetchWorkouts();
+        fetchWorkouts(0);
     }, []);
 
-    const fetchWorkouts = async () => {
+    const fetchWorkouts = async (currentSkip: number, append: boolean = false) => {
         try {
-            setLoading(true);
-            const data = await getWorkouts();
-            setWorkouts(data);
+            if (!append) setLoading(true);
+            const data = await getWorkouts(currentSkip, LIMIT);
+            if (append) {
+                setWorkouts(prev => [...prev, ...data.workouts]);
+            } else {
+                setWorkouts(data.workouts);
+            }
+            setTotalCount(data.total_count);
+            setSkip(currentSkip);
         } catch {
             setError('Failed to load workouts.');
         } finally {
-            setLoading(false);
+            if (!append) setLoading(false);
         }
+    };
+
+    const handleLoadMore = () => {
+        fetchWorkouts(skip + LIMIT, true);
     };
 
     const handleAddExercise = () => {
@@ -136,7 +149,7 @@ export default function Workouts() {
                 setExerciseRows([{ name: '', sets: '', reps: '', weight_display: '' }]);
             }
             
-            await fetchWorkouts();
+            await fetchWorkouts(0);
         } catch (err: any) {
             const message = err.response?.data?.detail || 'Failed to save workout. Please try again.';
             setError(message);
@@ -336,6 +349,12 @@ export default function Workouts() {
                                 </li>
                             ))}
                         </ul>
+                    )}
+                    
+                    {!loading && workouts.length > 0 && workouts.length < totalCount && (
+                        <button className="log-btn load-more-btn" type="button" onClick={handleLoadMore} style={{ marginTop: '20px' }}>
+                            Load More
+                        </button>
                     )}
                 </section>
             </div>
