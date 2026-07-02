@@ -180,8 +180,11 @@
   color: #ffffff;
   font-weight: 600;
   font-size: 0.95rem;
+  font-family: inherit;
   padding: 0.8rem 1.8rem;
   border-radius: 30px;
+  border: none;
+  cursor: pointer;
   text-decoration: none;
   box-shadow: 0 4px 15px var(--accent-bg);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -249,6 +252,189 @@
   color: var(--text);
   margin: 0.5rem 0 0;
   text-align: left;
+}
+
+/* ── Inline questionnaire on dashboard ───────────────── */
+.questionnaire-inline-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.questionnaire-inline-header .section-title {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.q-cancel-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 0.85rem;
+  font-weight: 500;
+  padding: 0.4rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  font-family: inherit;
+}
+
+.q-cancel-btn:hover {
+  border-color: #ef4444;
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.08);
+}
+
+.q-inline-sub {
+  font-size: 1.05rem;
+  color: var(--text);
+  line-height: 1.6;
+  margin: 0 0 1rem;
+}
+
+/* ── Questionnaire styles (merged from Questionnaire.css) ── */
+.q-loading {
+  text-align: center;
+  color: var(--text);
+  font-size: 1.1rem;
+  padding: 3rem;
+}
+
+.q-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.question-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 2rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  text-align: left;
+}
+
+.question-card:hover {
+  border-color: var(--text-h);
+  box-shadow: var(--shadow);
+}
+
+.q-card-title {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--text-h);
+  margin: 0 0 1.25rem;
+  line-height: 1.4;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.q-number {
+  color: var(--text);
+  font-weight: 500;
+}
+
+/* Answers */
+.q-answers {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.answer-item {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  transition: all 0.2s ease;
+  overflow: hidden;
+}
+
+.answer-item:hover {
+  border-color: var(--text-h);
+  background: var(--social-bg);
+}
+
+.answer-item.selected {
+  border-color: var(--text-h);
+  background: var(--text-h);
+}
+
+.answer-item.selected .answer-text {
+  color: var(--bg);
+  font-weight: 600;
+}
+
+.answer-label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  width: 100%;
+  padding: 1rem 1.25rem;
+  margin: 0;
+}
+
+/* Hide default radio, rely on container styling */
+.answer-input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  margin: 0;
+}
+
+.answer-text {
+  color: var(--text-h);
+  font-size: 1rem;
+  transition: color 0.2s ease;
+}
+
+.q-footer {
+  margin-top: 2rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.submit-button {
+  padding: 1rem 2.5rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  font-family: inherit;
+  color: var(--bg);
+  background: var(--text-h);
+  border: none;
+  border-radius: 99px;
+  cursor: pointer;
+  transition: transform 0.2s ease, opacity 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.submit-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+}
+
+.submit-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.submit-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.q-hint {
+  font-size: 0.9rem;
+  color: var(--text);
+  margin: 0;
 }
 
 @keyframes pulse {

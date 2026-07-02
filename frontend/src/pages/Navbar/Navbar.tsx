@@ -28,12 +28,7 @@ export default function Navbar() {
         >
           Dashboard
         </NavLink>
-        <NavLink
-          to="/questionnaire"
-          className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}
-        >
-          Questionnaire & Plan
-        </NavLink>
+
         <NavLink
           to="/gyms"
           className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}
