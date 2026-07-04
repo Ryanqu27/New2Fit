@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import axios from 'axios';
 import { GoogleLogin, type CredentialResponse } from '@react-oauth/google';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from './AuthContext';
@@ -28,8 +29,12 @@ export default function LoginPage() {
             const user = await loginWithGoogle(token);
             auth.login(user);
             navigate('/');
-        } catch (err: any) {
-            setError(err.response?.data?.detail || 'Google login failed');
+        } catch (err) {
+            if (axios.isAxiosError(err)) {
+                setError(err.response?.data?.detail || 'Google login failed');
+            } else {
+                setError('Google login failed');
+            }
         }
     }
 
@@ -46,8 +51,12 @@ export default function LoginPage() {
             const response = await api.post('/users/login/email', { email, password });
             auth.login(response.data);
             navigate('/');
-        } catch (err: any) {
-            setError(err.response?.data?.detail || 'Invalid email or password');
+        } catch (err) {
+            if (axios.isAxiosError(err)) {
+                setError(err.response?.data?.detail || 'Invalid email or password');
+            } else {
+                setError('Invalid email or password');
+            }
         } finally {
             setIsLoading(false);
         }

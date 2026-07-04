@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import axios from 'axios';
 import { logWorkout, getWorkouts, updateWorkout, type Workout, type WorkoutRequest, type ExerciseSet } from './WorkoutsService';
 import { useSettings } from '../../Settings/SettingsContext';
 import { weightUnit, toDisplay, toStored } from '../../utils/units';
@@ -150,9 +151,13 @@ export default function Workouts() {
             }
             
             await fetchWorkouts(0);
-        } catch (err: any) {
-            const message = err.response?.data?.detail || 'Failed to save workout. Please try again.';
-            setError(message);
+        } catch (err) {
+            if (axios.isAxiosError(err)) {
+                const message = err.response?.data?.detail || 'Failed to save workout. Please try again.';
+                setError(message);
+            } else {
+                setError('Failed to save workout. Please try again.');
+            }
         } finally {
             setSubmitting(false);
         }
