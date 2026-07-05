@@ -21,32 +21,21 @@ export default function Navbar() {
       </NavLink>
 
       <div className="nav-links">
-        <NavLink
-          to="/"
-          className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}
-          end
-        >
-          Dashboard
-        </NavLink>
-
-        <NavLink
-          to="/gyms"
-          className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}
-        >
-          Find Gyms
-        </NavLink>
-        <NavLink
-          to="/camera"
-          className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}
-        >
-          AI Camera
-        </NavLink>
-        <NavLink
-          to="/workouts"
-          className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}
-        >
-          Workouts
-        </NavLink>
+        {[
+          { to: '/', label: 'Dashboard', end: true },
+          { to: '/gyms', label: 'Find Gyms' },
+          { to: '/camera', label: 'AI Camera' },
+          { to: '/workouts', label: 'Workouts' },
+        ].map((route) => (
+          <NavLink
+            key={route.to}
+            to={route.to}
+            end={route.end}
+            className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}
+          >
+            {route.label}
+          </NavLink>
+        ))}
       </div>
 
       <button className="logout-btn" onClick={handleLogout}>

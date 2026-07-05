@@ -5,12 +5,7 @@ import { useSettings } from '../../Settings/SettingsContext';
 import { weightUnit, toDisplay, toStored } from '../../utils/units';
 import './Workouts.css';
 
-interface ExerciseFormRow {
-    name: string;
-    sets: number | '';
-    reps: number | '';
-    weight_display: string; 
-}
+import ExerciseBuilder, { type ExerciseFormRow } from './ExerciseBuilder';
 
 export default function Workouts() {
     const { settings } = useSettings();
@@ -218,64 +213,13 @@ export default function Workouts() {
                         </div>
 
                         {/* Exercise Builder */}
-                        <div className="exercise-builder">
-                            <label className="exercise-builder-label">Exercises</label>
-                            
-                            <div className="exercise-rows">
-                                {exerciseRows.map((row, idx) => (
-                                    <div key={idx} className="exercise-row">
-                                        <input 
-                                            className="ex-name" 
-                                            placeholder="Exercise (e.g. Bench Press)" 
-                                            value={row.name}
-                                            onChange={(e) => handleExerciseChange(idx, 'name', e.target.value)}
-                                            required
-                                        />
-                                        <input 
-                                            className="ex-sets" 
-                                            type="number" 
-                                            min="0"
-                                            placeholder="Sets" 
-                                            value={row.sets}
-                                            onChange={(e) => handleExerciseChange(idx, 'sets', e.target.value)}
-                                        />
-                                        <input 
-                                            className="ex-reps" 
-                                            type="number" 
-                                            min="0"
-                                            placeholder="Reps" 
-                                            value={row.reps}
-                                            onChange={(e) => handleExerciseChange(idx, 'reps', e.target.value)}
-                                        />
-                                        <div className="ex-weight-wrapper">
-                                            <input 
-                                                className="ex-weight" 
-                                                type="number"
-                                                min="0"
-                                                step="0.1" 
-                                                placeholder="Weight" 
-                                                value={row.weight_display}
-                                                onChange={(e) => handleExerciseChange(idx, 'weight_display', e.target.value)}
-                                            />
-                                            <span className="unit-badge">{weightUnit(pref)}</span>
-                                        </div>
-                                        <button 
-                                            type="button" 
-                                            className="ex-remove"
-                                            onClick={() => handleRemoveExercise(idx)}
-                                            disabled={exerciseRows.length === 1}
-                                            title="Remove Exercise"
-                                        >
-                                            ✕
-                                        </button>
-                                    </div>
-                                ))}
-                            </div>
-                            
-                            <button type="button" className="add-exercise-btn" onClick={handleAddExercise}>
-                                + Add Exercise
-                            </button>
-                        </div>
+                        <ExerciseBuilder 
+                            exerciseRows={exerciseRows}
+                            handleExerciseChange={handleExerciseChange}
+                            handleRemoveExercise={handleRemoveExercise}
+                            handleAddExercise={handleAddExercise}
+                            pref={pref}
+                        />
 
                         {error && <p className="form-error">{error}</p>}
                         {success && <p className="form-success">Workout {editingWorkoutId ? 'updated' : 'logged'}!</p>}
