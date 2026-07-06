@@ -1,18 +1,17 @@
-from pydantic import ConfigDict
-from pydantic import BaseModel
+from pydantic import ConfigDict, BaseModel, Field
 from datetime import datetime
 from typing import Optional
 
 class ExerciseSet(BaseModel):
-    name: str
-    sets: Optional[int] = None
-    reps: Optional[int] = None
-    weight_kg: Optional[float] = None
+    name: str = Field(..., min_length=1, max_length=100)
+    sets: Optional[int] = Field(default=None, ge=0)
+    reps: Optional[int] = Field(default=None, ge=0)
+    weight_kg: Optional[float] = Field(default=None, ge=0.0)
     
 class WorkoutRequest(BaseModel):
-    name: str
+    name: str = Field(..., min_length=1, max_length=100)
     exercises: list[ExerciseSet] = []
-    duration_minutes: int
+    duration_minutes: int = Field(..., gt=0)
     date: datetime
     
 class WorkoutItem(BaseModel):
@@ -26,3 +25,4 @@ class WorkoutItem(BaseModel):
     
 class WorkoutResponse(BaseModel):
     workouts: list[WorkoutItem]
+    total_count: int

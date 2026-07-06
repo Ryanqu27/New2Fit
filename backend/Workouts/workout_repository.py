@@ -2,8 +2,11 @@ from sqlalchemy.orm import Session
 from Workouts.WorkoutModel import Workout
 from Workouts import workout_schema 
 
-def get_workouts_by_user_id(db: Session, user_id: int):
-    return db.query(Workout).filter(Workout.user_id == user_id).all()
+def get_workouts_by_user_id(db: Session, user_id: int, skip: int = 0, limit: int = 10):
+    return db.query(Workout).filter(Workout.user_id == user_id).order_by(Workout.date.desc(), Workout.id.desc()).offset(skip).limit(limit).all()
+
+def count_workouts_by_user_id(db: Session, user_id: int):
+    return db.query(Workout).filter(Workout.user_id == user_id).count()
 
 def get_most_recent_workout_by_user_id(db: Session, user_id: int):
     return db.query(Workout).filter(Workout.user_id == user_id).order_by(Workout.created_at.desc()).first()

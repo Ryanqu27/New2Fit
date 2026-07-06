@@ -1,19 +1,18 @@
 import { useEffect, useState } from 'react';
+import axios from 'axios';
 import { logWorkout, getWorkouts, updateWorkout, type Workout, type WorkoutRequest, type ExerciseSet } from './WorkoutsService';
 import { useSettings } from '../../Settings/SettingsContext';
 import { weightUnit, toDisplay, toStored } from '../../utils/units';
 import './Workouts.css';
 
-interface ExerciseFormRow {
-    name: string;
-    sets: number | '';
-    reps: number | '';
-    weight_display: string; 
-}
+import ExerciseBuilder, { type ExerciseFormRow } from './ExerciseBuilder';
 
 export default function Workouts() {
     const { settings } = useSettings();
     const [workouts, setWorkouts] = useState<Workout[]>([]);
+    const [totalCount, setTotalCount] = useState<number>(0);
+    const [skip, setSkip] = useState<number>(0);
+    const LIMIT = 10;
     
     const [name, setName] = useState('');
     const [durationMinutes, setDurationMinutes] = useState<number | ''>('');
@@ -32,19 +31,29 @@ export default function Workouts() {
     const pref = settings?.unit_preference;
 
     useEffect(() => {
-        fetchWorkouts();
+        fetchWorkouts(0);
     }, []);
 
-    const fetchWorkouts = async () => {
+    const fetchWorkouts = async (currentSkip: number, append: boolean = false) => {
         try {
-            setLoading(true);
-            const data = await getWorkouts();
-            setWorkouts(data);
+            if (!append) setLoading(true);
+            const data = await getWorkouts(currentSkip, LIMIT);
+            if (append) {
+                setWorkouts(prev => [...prev, ...data.workouts]);
+            } else {
+                setWorkouts(data.workouts);
+            }
+            setTotalCount(data.total_count);
+            setSkip(currentSkip);
         } catch {
             setError('Failed to load workouts.');
         } finally {
-            setLoading(false);
+            if (!append) setLoading(false);
         }
+    };
+
+    const handleLoadMore = () => {
+        fetchWorkouts(skip + LIMIT, true);
     };
 
     const handleAddExercise = () => {
@@ -136,10 +145,14 @@ export default function Workouts() {
                 setExerciseRows([{ name: '', sets: '', reps: '', weight_display: '' }]);
             }
             
-            await fetchWorkouts();
-        } catch (err: any) {
-            const message = err.response?.data?.detail || 'Failed to save workout. Please try again.';
-            setError(message);
+            await fetchWorkouts(0);
+        } catch (err) {
+            if (axios.isAxiosError(err)) {
+                const message = err.response?.data?.detail || 'Failed to save workout. Please try again.';
+                setError(message);
+            } else {
+                setError('Failed to save workout. Please try again.');
+            }
         } finally {
             setSubmitting(false);
         }
@@ -200,64 +213,13 @@ export default function Workouts() {
                         </div>
 
                         {/* Exercise Builder */}
-                        <div className="exercise-builder">
-                            <label className="exercise-builder-label">Exercises</label>
-                            
-                            <div className="exercise-rows">
-                                {exerciseRows.map((row, idx) => (
-                                    <div key={idx} className="exercise-row">
-                                        <input 
-                                            className="ex-name" 
-                                            placeholder="Exercise (e.g. Bench Press)" 
-                                            value={row.name}
-                                            onChange={(e) => handleExerciseChange(idx, 'name', e.target.value)}
-                                            required
-                                        />
-                                        <input 
-                                            className="ex-sets" 
-                                            type="number" 
-                                            min="0"
-                                            placeholder="Sets" 
-                                            value={row.sets}
-                                            onChange={(e) => handleExerciseChange(idx, 'sets', e.target.value)}
-                                        />
-                                        <input 
-                                            className="ex-reps" 
-                                            type="number" 
-                                            min="0"
-                                            placeholder="Reps" 
-                                            value={row.reps}
-                                            onChange={(e) => handleExerciseChange(idx, 'reps', e.target.value)}
-                                        />
-                                        <div className="ex-weight-wrapper">
-                                            <input 
-                                                className="ex-weight" 
-                                                type="number"
-                                                min="0"
-                                                step="0.1" 
-                                                placeholder="Weight" 
-                                                value={row.weight_display}
-                                                onChange={(e) => handleExerciseChange(idx, 'weight_display', e.target.value)}
-                                            />
-                                            <span className="unit-badge">{weightUnit(pref)}</span>
-                                        </div>
-                                        <button 
-                                            type="button" 
-                                            className="ex-remove"
-                                            onClick={() => handleRemoveExercise(idx)}
-                                            disabled={exerciseRows.length === 1}
-                                            title="Remove Exercise"
-                                        >
-                                            ✕
-                                        </button>
-                                    </div>
-                                ))}
-                            </div>
-                            
-                            <button type="button" className="add-exercise-btn" onClick={handleAddExercise}>
-                                + Add Exercise
-                            </button>
-                        </div>
+                        <ExerciseBuilder 
+                            exerciseRows={exerciseRows}
+                            handleExerciseChange={handleExerciseChange}
+                            handleRemoveExercise={handleRemoveExercise}
+                            handleAddExercise={handleAddExercise}
+                            pref={pref}
+                        />
 
                         {error && <p className="form-error">{error}</p>}
                         {success && <p className="form-success">Workout {editingWorkoutId ? 'updated' : 'logged'}!</p>}
@@ -336,6 +298,12 @@ export default function Workouts() {
                                 </li>
                             ))}
                         </ul>
+                    )}
+                    
+                    {!loading && workouts.length > 0 && workouts.length < totalCount && (
+                        <button className="log-btn load-more-btn" type="button" onClick={handleLoadMore} style={{ marginTop: '20px' }}>
+                            Load More
+                        </button>
                     )}
                 </section>
             </div>

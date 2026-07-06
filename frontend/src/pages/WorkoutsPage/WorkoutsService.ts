@@ -27,9 +27,14 @@ export const logWorkout = async (workout: WorkoutRequest): Promise<void> => {
     await api.post('/workouts/log', workout);
 };
 
-export const getWorkouts = async (): Promise<Workout[]> => {
-    const response = await api.get('/workouts');
-    return response.data.workouts;
+export interface WorkoutResponse {
+    workouts: Workout[];
+    total_count: number;
+}
+
+export const getWorkouts = async (skip: number = 0, limit: number = 10): Promise<WorkoutResponse> => {
+    const response = await api.get('/workouts', { params: { skip, limit } });
+    return response.data;
 };
 
 export const updateWorkout = async (id: number, workout: WorkoutRequest): Promise<void> => {

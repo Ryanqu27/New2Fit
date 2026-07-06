@@ -1,5 +1,4 @@
 import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom'
-import Questionnaire from './pages/QuestionnairePage/Questionnaire'
 import GymsPage from './pages/GymsPage/GymsPage'
 import DashboardPage from './pages/DashboardPage/DashboardPage'
 import AICamera from './pages/AICameraPage/AICamera'
@@ -32,7 +31,6 @@ function App() {
               </ProtectedRoute>
             }>
               <Route path="/" element={<DashboardPage />} />
-              <Route path="/questionnaire" element={<Questionnaire />} />
               <Route path="/gyms" element={<GymsPage />} />
               <Route path="/camera" element={<AICamera />} />
               <Route path="/workouts" element={<Workouts />} />

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import axios from 'axios';
 import { GoogleLogin, type CredentialResponse } from '@react-oauth/google';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from './AuthContext';
@@ -29,8 +30,12 @@ export default function RegisterPage() {
             const user = await loginWithGoogle(token);
             auth.login(user);
             navigate('/');
-        } catch (err: any) {
-            setError(err.response?.data?.detail || 'Google sign up failed');
+        } catch (err) {
+            if (axios.isAxiosError(err)) {
+                setError(err.response?.data?.detail || 'Google sign up failed');
+            } else {
+                setError('Google sign up failed');
+            }
         }
     }
 
@@ -51,8 +56,12 @@ export default function RegisterPage() {
             });
             auth.login(response.data);
             navigate('/');
-        } catch (err: any) {
-            setError(err.response?.data?.detail || 'Failed to create account');
+        } catch (err) {
+            if (axios.isAxiosError(err)) {
+                setError(err.response?.data?.detail || 'Failed to create account');
+            } else {
+                setError('Failed to create account');
+            }
         } finally {
             setIsLoading(false);
         }

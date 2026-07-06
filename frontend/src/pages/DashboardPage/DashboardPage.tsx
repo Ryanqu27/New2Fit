@@ -1,9 +1,14 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { useAuth } from '../../Auth/AuthContext';
 import { getUserStats, type UserStatsResponse } from './DashboardService';
-import { getRecommendation } from '../QuestionnairePage/QuestionnaireService';
+import { getQuestions, submitQuestions, getRecommendation } from './QuestionnaireService';
+import WorkoutPlan from './WorkoutPlan';
 import './DashboardPage.css';
+
+interface Question {
+  question: string;
+  answers: string[];
+}
 
 export default function DashboardPage() {
   const { user } = useAuth();
@@ -12,6 +17,12 @@ export default function DashboardPage() {
 
   const [recommendation, setRecommendation] = useState<Record<string, string> | null>(null);
   const [recLoading, setRecLoading] = useState(true);
+
+  // Questionnaire state
+  const [questionnaire, setQuestionnaire] = useState<Question[]>([]);
+  const [userAnswers, setUserAnswers] = useState<string[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showQuestionnaire, setShowQuestionnaire] = useState(false);
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -41,6 +52,55 @@ export default function DashboardPage() {
     fetchStats();
     fetchRec();
   }, []);
+
+  // Load questionnaire questions when user wants to take/retake
+  useEffect(() => {
+    if (showQuestionnaire) {
+      const loadQuestions = async () => {
+        try {
+          const questionsResponse = await getQuestions();
+          setQuestionnaire(questionsResponse);
+          setUserAnswers(new Array(questionsResponse.length).fill(""));
+        } catch (err) {
+          console.error("Failed to load questions", err);
+        }
+      };
+      loadQuestions();
+    }
+  }, [showQuestionnaire]);
+
+  const handleRadioButtonChange = (questionIndex: number, answer: string) => {
+    const updatedAnswers = [...userAnswers];
+    updatedAnswers[questionIndex] = answer;
+    setUserAnswers(updatedAnswers);
+  };
+
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
+    try {
+      const response = await submitQuestions(userAnswers);
+      setRecommendation(response);
+      setShowQuestionnaire(false);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleRetake = () => {
+    setRecommendation(null);
+    setShowQuestionnaire(true);
+  };
+
+  const handleStartAssessment = () => {
+    setShowQuestionnaire(true);
+  };
+
+  const handleCancelAssessment = () => {
+    setShowQuestionnaire(false);
+    setUserAnswers([]);
+  };
+
+  const isFormComplete = userAnswers.length > 0 && userAnswers.every(ans => ans !== "");
 
   const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   const todayName = daysOfWeek[new Date().getDay()];
@@ -104,14 +164,78 @@ export default function DashboardPage() {
                       <p className="no-workout">Rest Day! Keep up the recovery.</p>
                     )}
                   </div>
-                ) : (
+                ) : !showQuestionnaire ? (
                   <div className="recommendation-card empty-state">
                     <h3>Start Your Tailored Routine</h3>
                     <p>Take our quick fitness assessment to generate a custom 7-day schedule and get daily guidance.</p>
-                    <Link to="/questionnaire" className="cta-btn">Take Assessment</Link>
+                    <button className="cta-btn" onClick={handleStartAssessment}>Take Assessment</button>
                   </div>
-                )}
+                ) : null}
               </div>
+
+              {/* Inline Questionnaire */}
+              {showQuestionnaire && !recommendation && (
+                <div className="dashboard-section questionnaire-inline">
+                  <div className="questionnaire-inline-header">
+                    <h2 className="section-title">Fitness Assessment</h2>
+                    <button className="q-cancel-btn" onClick={handleCancelAssessment}>✕ Cancel</button>
+                  </div>
+                  <p className="q-inline-sub">Let's tailor a plan specifically to your goals and experience.</p>
+
+                  {questionnaire.length === 0 ? (
+                    <div className="q-loading">Loading questions...</div>
+                  ) : (
+                    <div className="q-list">
+                      {questionnaire.map((q, qIndex) => (
+                        <div key={qIndex} className="question-card">
+                          <h3 className="q-card-title">
+                            <span className="q-number">{qIndex + 1}.</span> {q.question}
+                          </h3>
+                          <ul className="q-answers">
+                            {q.answers.map((answer, ansIndex) => {
+                              const isSelected = userAnswers[qIndex] === answer;
+                              return (
+                                <li key={ansIndex} className={`answer-item ${isSelected ? 'selected' : ''}`}>
+                                  <label className="answer-label">
+                                    <input
+                                      type="radio"
+                                      name={`question-${qIndex}`}
+                                      value={answer}
+                                      checked={isSelected}
+                                      onChange={() => handleRadioButtonChange(qIndex, answer)}
+                                      className="answer-input"
+                                    />
+                                    <span className="answer-text">{answer}</span>
+                                  </label>
+                                </li>
+                              );
+                            })}
+                          </ul>
+                        </div>
+                      ))}
+                      <div className="q-footer">
+                        <button
+                          className="submit-button"
+                          onClick={handleSubmit}
+                          disabled={!isFormComplete || isSubmitting}
+                        >
+                          {isSubmitting ? 'Generating...' : 'Get My Workout Plan'}
+                        </button>
+                        {!isFormComplete && (
+                          <p className="q-hint">Please answer all questions to continue.</p>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Full Workout Plan section */}
+              {recommendation && (
+                <div className="dashboard-section">
+                  <WorkoutPlan plan={recommendation} onRetake={handleRetake} />
+                </div>
+              )}
 
               <div className="dashboard-section">
                 <h2 className="section-title">This Week</h2>
@@ -155,4 +279,3 @@ export default function DashboardPage() {
     </div>
   );
 }
-
