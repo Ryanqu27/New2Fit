@@ -2,7 +2,6 @@ from sqlalchemy import Column, Integer, DateTime, ForeignKey, JSON
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 from database import Base
-from Users.UserModel import User
 
 class UserRecommendation(Base):
     __tablename__ = "user_recommendations"
