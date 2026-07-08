@@ -11,6 +11,9 @@ class User(Base):
     password_hash = Column(String, nullable=True)
     google_id = Column(String, unique=True, index=True, nullable=True)
     first_name = Column(String, nullable=True)
+    user_name = Column(String, unique=True, index = True, nullable=False)
+    profile_picture_url = Column(String, nullable=True)
+    
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     workouts = relationship("Workout", back_populates="user")
