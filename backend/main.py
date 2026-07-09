@@ -1,5 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+import os
 from contextlib import asynccontextmanager
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
@@ -23,6 +25,7 @@ from GymLocations.gym_locations_router import router as gym_locations_router
 from Users.user_router import router as users_router
 from Camera.camera_router import router as camera_router
 from Workouts.workout_router import router as workouts_router
+from Messages.message_router import router as messages_router
 
 app = FastAPI(lifespan=lifespan)
 
@@ -42,6 +45,10 @@ app.include_router(users_router)
 app.include_router(camera_router)
 app.include_router(workouts_router)
 app.include_router(settings_router)
+app.include_router(messages_router)
+
+os.makedirs("uploads/avatars", exist_ok=True)
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 @app.get("/")
 async def root():
