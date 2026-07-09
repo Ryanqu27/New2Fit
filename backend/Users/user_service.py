@@ -116,6 +116,14 @@ UPLOAD_DIR = "uploads/avatars"
 
 def set_profile_picture(db: Session, user_id: int, file: UploadFile):
     os.makedirs(UPLOAD_DIR, exist_ok=True)
+
+    # Delete old avatar file if one exists
+    user = user_repository.get_user_by_id(db, user_id)
+    if user and user.profile_picture_url:
+        old_filepath = user.profile_picture_url.lstrip("/")
+        if os.path.isfile(old_filepath):
+            os.remove(old_filepath)
+
     ext = file.filename.split('.')[-1]
     filename = f"{uuid.uuid4()}.{ext}"
     filepath = os.path.join(UPLOAD_DIR, filename)
