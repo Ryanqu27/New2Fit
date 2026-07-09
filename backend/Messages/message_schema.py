@@ -2,19 +2,14 @@ from pydantic import BaseModel, ConfigDict
 from datetime import datetime
 from typing import Optional
 
-
-
 class SendMessageRequest(BaseModel):
     """Payload the frontend sends when the user hits Send."""
     conversation_id: int
     content: str
 
-
 class CreateConversationRequest(BaseModel):
     """Payload the frontend sends to open/find a DM with another user."""
     other_user_id: int
-
-
 
 class MessageOut(BaseModel):
     """A single message as returned from the DB for display in the chat window."""

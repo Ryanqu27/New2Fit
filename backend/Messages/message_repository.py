@@ -12,7 +12,7 @@ def search_users(db: Session, query: str, current_user_id: int, limit: int = 10)
     
     return db.query(User).filter(
         User.id != current_user_id, 
-        User.first_name.ilike(search_term)
+        User.username.ilike(search_term)
     ).limit(limit).all()
 
 
