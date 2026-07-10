@@ -15,6 +15,7 @@ class RegisterRequest(BaseModel):
     first_name: str
 
 class UserResponse(BaseModel):
+    id: int
     email: str
     first_name: str
     username: Optional[str] = None
