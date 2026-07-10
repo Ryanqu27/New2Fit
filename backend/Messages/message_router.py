@@ -45,8 +45,14 @@ def mark_read(conversation_id: int, current_user: User = Depends(get_current_use
 
 
 @router.websocket("/ws")
-async def websocket_endpoint(websocket: WebSocket, token: str = Query(...), db: Session = Depends(get_db)):
+async def websocket_endpoint(websocket: WebSocket, db: Session = Depends(get_db)):
     try:
+        # Extract the token from the HttpOnly cookie rather than the query string
+        token = websocket.cookies.get("access_token")
+        if not token:
+            await websocket.close(code=1008)
+            return
+
         payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
         user_id = int(payload["sub"])
     except Exception:
