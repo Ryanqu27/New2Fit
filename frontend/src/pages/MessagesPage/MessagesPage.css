@@ -318,6 +318,11 @@
     text-align: right;
 }
 
+.message-read {
+    color: #3b82f6; /* Matching the accent blue */
+    font-weight: 600;
+}
+
 .message-row + .message-row.sent .message-bubble,
 .message-row + .message-row.received .message-bubble {
     margin-top: -2px;

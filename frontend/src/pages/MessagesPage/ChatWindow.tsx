@@ -90,7 +90,10 @@ export default function ChatWindow({
                             <div key={msg.id} className={`message-row ${isSent ? 'sent' : 'received'}`}>
                                 <div>
                                     <div className="message-bubble">{msg.content}</div>
-                                    <div className="message-time">{formatTime(msg.created_at)}</div>
+                                    <div className="message-time">
+                                        {formatTime(msg.created_at)}
+                                        {isSent && msg.is_read && <span className="message-read"> • Read</span>}
+                                    </div>
                                 </div>
                             </div>
                         );
