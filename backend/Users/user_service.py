@@ -24,7 +24,7 @@ def process_oauth_login(db: Session, request: user_schema.GoogleLoginRequest) ->
         if existing_email:
             raise HTTPException(
                 status_code=400,
-                detail="Email already registered with a different login provider."
+                detail="An account with this email already exists."
             )
         user = user_repository.create_user(db, google_user)
 

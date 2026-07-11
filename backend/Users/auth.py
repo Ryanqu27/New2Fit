@@ -19,15 +19,16 @@ def verify_google_token(token: str) -> dict:
         id_info = id_token.verify_oauth2_token(
             token,
             google_requests.Request(),
-            GOOGLE_CLIENT_ID
+            audience=GOOGLE_CLIENT_ID,
+            clock_skew_in_seconds=10
         )
         return {
             "google_id": id_info["sub"],
             "email": id_info["email"],
             "first_name": id_info.get("given_name", "")
         }
-    except ValueError:
-        raise HTTPException(status_code=401, detail="Invalid Google token.")
+    except ValueError as e:
+        raise HTTPException(status_code=401, detail=f"Invalid Google token. Reason: {str(e)}")
 
 
 def create_access_token(user_id: int) -> str:
