@@ -37,6 +37,7 @@ export default function Navbar() {
           { to: '/gyms', label: 'Find Gyms' },
           { to: '/camera', label: 'AI Camera' },
           { to: '/workouts', label: 'Workouts' },
+          { to: '/messages', label: 'Messages' },
         ].map((route) => (
           <NavLink
             key={route.to}

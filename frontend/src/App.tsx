@@ -12,6 +12,7 @@ import { AuthProvider } from './Auth/AuthContext';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import SettingsPage from './pages/SettingsPage/SettingsPage';
 import { SettingsProvider } from './Settings/SettingsContext';
+import MessagesPage from './pages/MessagesPage/MessagesPage';
 import ProfilePage from './pages/ProfilePage/ProfilePage';
 
 const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
@@ -36,6 +37,7 @@ function App() {
               <Route path="/camera" element={<AICamera />} />
               <Route path="/workouts" element={<Workouts />} />
               <Route path="/settings" element={<SettingsPage />} />
+              <Route path="/messages" element={<MessagesPage />} />
               <Route path="/profile" element={<ProfilePage />} />
             </Route>
           </Routes>

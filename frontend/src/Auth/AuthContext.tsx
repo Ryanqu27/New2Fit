@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState } from 'react';
 import api from '../api';
 
 type User = {
+    id: number;
     email: string;
     first_name: string;
     username?: string;
