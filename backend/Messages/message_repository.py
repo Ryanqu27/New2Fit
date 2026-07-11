@@ -10,10 +10,12 @@ def search_users(db: Session, query: str, current_user_id: int, limit: int = 10)
         
     search_term = f"%{query.strip()}%"
     
-    return db.query(User).filter(
+    from Settings.SettingsModel import UserSettings
+    return db.query(User).join(User.settings).filter(
         User.id != current_user_id,
-        User.username != None,           # Only discoverable if they have a username set
-        User.username.ilike(search_term) # Search by username only — first name stays private
+        User.username != None,
+        User.username.ilike(search_term),
+        UserSettings.is_private == False # Exclude private users
     ).limit(limit).all()
 
 

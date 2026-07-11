@@ -12,5 +12,6 @@ class UserSettings(Base):
     unit_preference = Column(String, default="imperial")
     camera_framerate_preference = Column(Integer, default=30)
     workout_reminders = Column(Boolean, default=False)
+    is_private = Column(Boolean, default=False)
 
     user = relationship("User", back_populates="settings")
