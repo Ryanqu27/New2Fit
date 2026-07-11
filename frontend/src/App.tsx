@@ -8,6 +8,7 @@ import Navbar from './pages/Navbar/Navbar';
 import ProtectedRoute from './Auth/ProtectedRoute';
 import LoginPage from './Auth/LoginPage';
 import RegisterPage from './Auth/RegisterPage';
+import SetUsernamePage from './Auth/SetUsernamePage';
 import { AuthProvider } from './Auth/AuthContext';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import SettingsPage from './pages/SettingsPage/SettingsPage';
@@ -24,6 +25,7 @@ function App() {
           <Routes>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
+            <Route path="/set-username" element={<SetUsernamePage />} />
             <Route element={
               <ProtectedRoute>
                 <SettingsProvider>
