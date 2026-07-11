@@ -20,7 +20,7 @@ export interface MessageOut {
 
 export interface UserSearchResult {
     id: number;
-    first_name: string;
+    username: string;
 }
 
 export async function searchUsers(query: string): Promise<UserSearchResult[]> {

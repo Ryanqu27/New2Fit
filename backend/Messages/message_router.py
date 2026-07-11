@@ -25,7 +25,7 @@ def get_or_create_conversation(request: message_schema.CreateConversationRequest
     return message_schema.ConversationOut(
         id=conv.id,
         other_user_id=other_user.id,
-        other_user_name=other_user.first_name,
+        other_user_name=other_user.username or "User",
         last_message=None,
         unread_count=0,
         created_at=conv.created_at

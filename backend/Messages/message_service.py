@@ -36,7 +36,7 @@ def get_conversations_for_user(db: Session, user_id: int):
         result.append(message_schema.ConversationOut(
             id=conv.id,
             other_user_id=other_user.id,
-            other_user_name=other_user.first_name,
+            other_user_name=other_user.username or "User",
             last_message=last_msg.content if last_msg else None,
             unread_count=unread_count,
             created_at=conv.created_at

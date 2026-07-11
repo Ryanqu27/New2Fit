@@ -81,9 +81,9 @@ export default function UserSearch({ onConversationStart }: UserSearchProps) {
                                 onClick={() => handleSelect(u.id)}
                             >
                                 <div className="search-result-avatar">
-                                    {u.first_name.charAt(0).toUpperCase()}
+                                    {u.username.charAt(0).toUpperCase()}
                                 </div>
-                                <span className="search-result-name">{u.first_name}</span>
+                                <span className="search-result-name">{u.username}</span>
                             </button>
                         ))
                     ) : (

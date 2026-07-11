@@ -38,6 +38,6 @@ class ConversationOut(BaseModel):
 class UserSearchResult(BaseModel):
     """A user returned from the search endpoint."""
     id: int
-    first_name: str
+    username: str
 
     model_config = ConfigDict(from_attributes=True)
