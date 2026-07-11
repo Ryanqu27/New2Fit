@@ -105,7 +105,7 @@ export default function LoginPage() {
                 </form>
 
                 <div className="login-divider">
-                    <span>or continue with</span>
+                    <span>or</span>
                 </div>
 
                 <div className="login-btn-wrapper">
@@ -115,6 +115,7 @@ export default function LoginPage() {
                         theme="outline"
                         shape="pill"
                         size="large"
+                        text="continue_with"
                     />
                 </div>
                 <div className="auth-switch-link">
