@@ -22,16 +22,26 @@ export default function ChatWindow({
     const bottomRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
+        let ignore = false;
+
         setLoading(true);
         setMessages([]);
         getMessages(conversationId)
             .then(data => {
-                setMessages([...data].reverse());
+                if (!ignore) {
+                    setMessages([...data].reverse());
+                }
             })
             .catch(console.error)
-            .finally(() => setLoading(false));
+            .finally(() => {
+                if (!ignore) {
+                    setLoading(false);
+                }
+            });
 
         markMessagesAsRead(conversationId).catch(console.error);
+
+        return () => { ignore = true; };
     }, [conversationId]);
 
     useEffect(() => {
