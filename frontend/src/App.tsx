@@ -1,4 +1,5 @@
-import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Outlet, useNavigate } from 'react-router-dom'
+import { useEffect } from 'react'
 import GymsPage from './pages/GymsPage/GymsPage'
 import DashboardPage from './pages/DashboardPage/DashboardPage'
 import AICamera from './pages/AICameraPage/AICamera'
@@ -17,11 +18,25 @@ import MessagesPage from './pages/MessagesPage/MessagesPage';
 import ProfilePage from './pages/ProfilePage/ProfilePage';
 
 const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+
+// Listens for the custom 'unauthorized' event fired by the Axios interceptor
+// in api.ts and navigates to /login using React Router (no hard page reload).
+function AuthRedirectHandler() {
+  const navigate = useNavigate();
+  useEffect(() => {
+    const handleUnauthorized = () => navigate('/login', { replace: true });
+    window.addEventListener('unauthorized', handleUnauthorized);
+    return () => window.removeEventListener('unauthorized', handleUnauthorized);
+  }, [navigate]);
+  return null;
+}
+
 function App() {
   return (
     <GoogleOAuthProvider clientId={googleClientId}>
       <AuthProvider>
         <BrowserRouter>
+          <AuthRedirectHandler />
           <Routes>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
