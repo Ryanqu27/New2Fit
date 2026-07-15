@@ -16,6 +16,7 @@ def log_workout(db: Session, request: workout_schema.WorkoutRequest, user_id: in
     db.add(new_workout)
     db.commit()
     db.refresh(new_workout)
+    return new_workout
     
 def update_workout(db: Session, request: workout_schema.WorkoutRequest, user_id: int, workoutID: int):
     workout = db.query(Workout).filter(Workout.id == workoutID, Workout.user_id == user_id).first()

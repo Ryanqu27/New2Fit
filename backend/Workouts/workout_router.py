@@ -10,11 +10,11 @@ router = APIRouter(
     tags=["Workouts"]
 )
 
-@router.post("/log")
+@router.post("/log", response_model=workout_schema.WorkoutItem)
 def log_workout(request: workout_schema.WorkoutRequest,
                 db: Session = Depends(get_db),
                 current_user: User = Depends(get_current_user)):
-    workout_service.log_workout(db, request, user_id=current_user.id)
+    return workout_service.log_workout(db, request, user_id=current_user.id)
 
 @router.get("", response_model=workout_schema.WorkoutResponse)
 def get_workouts(skip: int = 0, limit: int = 10, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
