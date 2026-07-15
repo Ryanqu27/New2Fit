@@ -2,8 +2,7 @@ from fastapi import APIRouter, Depends, Response, UploadFile, File
 from sqlalchemy.orm import Session
 from database import get_db
 from Users import user_service, user_schema
-from Users.auth import get_current_user
-from Users.UserModel import User
+from Users.auth import get_current_user_id
 
 router = APIRouter(
     prefix="/api/users",
@@ -64,15 +63,15 @@ def logout(response: Response):
 
 
 @router.get("/me/stats", response_model=user_schema.UserStatsResponse)
-def get_stats(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    return user_service.get_user_stats(db, current_user.id)
+def get_stats(user_id: int = Depends(get_current_user_id), db: Session = Depends(get_db)):
+    return user_service.get_user_stats(db, user_id)
 
 
 @router.patch("/me/username", response_model=user_schema.UserResponse)
-def update_username(request: user_schema.UpdateUsernameRequest, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    return user_service.set_username(db, current_user.id, request.username)
+def update_username(request: user_schema.UpdateUsernameRequest, user_id: int = Depends(get_current_user_id), db: Session = Depends(get_db)):
+    return user_service.set_username(db, user_id, request.username)
 
 
 @router.post("/me/profile-picture", response_model=user_schema.UserResponse)
-def upload_profile_picture(file: UploadFile = File(...), current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    return user_service.set_profile_picture(db, current_user.id, file)
+def upload_profile_picture(file: UploadFile = File(...), user_id: int = Depends(get_current_user_id), db: Session = Depends(get_db)):
+    return user_service.set_profile_picture(db, user_id, file)

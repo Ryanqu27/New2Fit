@@ -1,9 +1,8 @@
 from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect, Query
 from sqlalchemy.orm import Session
 from database import get_db
-from Users.auth import get_current_user, JWT_SECRET, JWT_ALGORITHM
+from Users.auth import get_current_user_id, JWT_SECRET, JWT_ALGORITHM
 import jwt
-from Users.UserModel import User
 from Messages import message_service, message_schema
 from Messages.connection_manager import manager
 
@@ -13,13 +12,13 @@ router = APIRouter(
 )
 
 @router.get("/users/search", response_model=list[message_schema.UserSearchResult])
-def search_users(q: str = Query(..., min_length=2), current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    return message_service.search_users(db, q, current_user.id)
+def search_users(q: str = Query(..., min_length=2), user_id: int = Depends(get_current_user_id), db: Session = Depends(get_db)):
+    return message_service.search_users(db, q, user_id)
 
 @router.post("/conversations", response_model=message_schema.ConversationOut)
-def get_or_create_conversation(request: message_schema.CreateConversationRequest, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    conv = message_service.get_or_create_conversation(db, current_user.id, request.other_user_id)
-    is_user1 = conv.user1_id == current_user.id
+def get_or_create_conversation(request: message_schema.CreateConversationRequest, user_id: int = Depends(get_current_user_id), db: Session = Depends(get_db)):
+    conv = message_service.get_or_create_conversation(db, user_id, request.other_user_id)
+    is_user1 = conv.user1_id == user_id
     other_user = conv.user2 if is_user1 else conv.user1
     
     return message_schema.ConversationOut(
@@ -32,16 +31,16 @@ def get_or_create_conversation(request: message_schema.CreateConversationRequest
     )
 
 @router.get("/conversations", response_model=list[message_schema.ConversationOut])
-def get_conversations(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    return message_service.get_conversations_for_user(db, current_user.id)
+def get_conversations(user_id: int = Depends(get_current_user_id), db: Session = Depends(get_db)):
+    return message_service.get_conversations_for_user(db, user_id)
 
 @router.get("/conversations/{conversation_id}/messages", response_model=list[message_schema.MessageOut])
-def get_messages(conversation_id: int, skip: int = 0, limit: int = 50, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    return message_service.get_messages_in_conversation(db, conversation_id, current_user.id, skip, limit)
+def get_messages(conversation_id: int, skip: int = 0, limit: int = 50, user_id: int = Depends(get_current_user_id), db: Session = Depends(get_db)):
+    return message_service.get_messages_in_conversation(db, conversation_id, user_id, skip, limit)
 
 @router.post("/conversations/{conversation_id}/read")
-def mark_read(conversation_id: int, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    return message_service.mark_messages_as_read(db, conversation_id, current_user.id)
+def mark_read(conversation_id: int, user_id: int = Depends(get_current_user_id), db: Session = Depends(get_db)):
+    return message_service.mark_messages_as_read(db, conversation_id, user_id)
 
 
 @router.websocket("/ws")
