@@ -7,6 +7,7 @@ export interface UserSettings {
     unit_preference: 'imperial' | 'metric';
     camera_framerate_preference: 30 | 60;
     workout_reminders: boolean;
+    is_private: boolean;
 }
 
 export interface SettingsUpdate {
@@ -14,6 +15,7 @@ export interface SettingsUpdate {
     unit_preference?: 'imperial' | 'metric';
     camera_framerate_preference?: 30 | 60;
     workout_reminders?: boolean;
+    is_private?: boolean;
 }
 
 export const SettingsService = {

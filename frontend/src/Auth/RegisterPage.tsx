@@ -120,7 +120,7 @@ export default function RegisterPage() {
                 </form>
 
                 <div className="login-divider">
-                    <span>or continue with</span>
+                    <span>or</span>
                 </div>
 
                 <div className="login-btn-wrapper">
@@ -130,7 +130,7 @@ export default function RegisterPage() {
                         theme="outline"
                         shape="pill"
                         size="large"
-                        text="signup_with"
+                        text="continue_with"
                     />
                 </div>
 

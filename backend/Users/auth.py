@@ -19,15 +19,16 @@ def verify_google_token(token: str) -> dict:
         id_info = id_token.verify_oauth2_token(
             token,
             google_requests.Request(),
-            GOOGLE_CLIENT_ID
+            audience=GOOGLE_CLIENT_ID,
+            clock_skew_in_seconds=10
         )
         return {
             "google_id": id_info["sub"],
             "email": id_info["email"],
             "first_name": id_info.get("given_name", "")
         }
-    except ValueError:
-        raise HTTPException(status_code=401, detail="Invalid Google token.")
+    except ValueError as e:
+        raise HTTPException(status_code=401, detail=f"Invalid Google token. Reason: {str(e)}")
 
 
 def create_access_token(user_id: int) -> str:
@@ -40,10 +41,11 @@ def create_access_token(user_id: int) -> str:
     return jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
 
 
-def get_current_user(access_token: str = Cookie(None), db: Session = Depends(get_db)):
+def get_current_user_id(access_token: str = Cookie(None)) -> int:
     """
-    FastAPI dependency that extracts and validates our own JWT from the
-    HttpOnly cookie, then returns the corresponding User from the DB.
+    Lightweight FastAPI dependency that validates the JWT from the HttpOnly
+    cookie and returns just the user_id — no database call required.
+    Use this on any route that only needs the user's ID.
     """
     if not access_token:
         raise HTTPException(
@@ -53,12 +55,18 @@ def get_current_user(access_token: str = Cookie(None), db: Session = Depends(get
 
     try:
         payload = jwt.decode(access_token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
-        user_id = int(payload["sub"])
+        return int(payload["sub"])
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="Token has expired.")
     except (jwt.InvalidTokenError, KeyError, ValueError):
         raise HTTPException(status_code=401, detail="Invalid token.")
 
+
+def get_current_user(user_id: int = Depends(get_current_user_id), db: Session = Depends(get_db)):
+    """
+    FastAPI dependency that fetches the full User ORM object from the DB.
+    Prefer get_current_user_id when you only need the user's ID.
+    """
     from Users.user_repository import get_user_by_id
     user = get_user_by_id(db, user_id=user_id)
     if not user:

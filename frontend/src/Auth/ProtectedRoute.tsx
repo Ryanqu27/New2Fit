@@ -6,6 +6,10 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
     if (!auth.user) {
         return <Navigate to="/login" />
     }
+    
+    if (!auth.user.username) {
+        return <Navigate to="/set-username" />
+    }
 
     return children;
 }

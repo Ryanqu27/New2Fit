@@ -49,3 +49,25 @@ def create_email_user(db: Session, email: str, first_name: str, password_hash: s
     db.commit()
     db.refresh(db_user)
     return db_user
+
+
+def get_user_by_username(db: Session, username: str):
+    return db.query(User).filter(User.username == username).first()
+
+
+def update_username(db: Session, user_id: int, username: str):
+    user = get_user_by_id(db, user_id)
+    if user:
+        user.username = username
+        db.commit()
+        db.refresh(user)
+    return user
+
+
+def update_profile_picture(db: Session, user_id: int, url: str):
+    user = get_user_by_id(db, user_id)
+    if user:
+        user.profile_picture_url = url
+        db.commit()
+        db.refresh(user)
+    return user

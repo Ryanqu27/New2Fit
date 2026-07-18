@@ -1,31 +1,43 @@
-import { NavLink, useNavigate } from "react-router-dom";
+import { useState, useRef, useEffect } from 'react';
+import { NavLink, Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../Auth/AuthContext";
 import './Navbar.css';
 
 export default function Navbar() {
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const handleLogout = () => {
     logout();
     navigate('/login');
   };
 
+  const avatarUrl = user?.profile_picture_url 
+    ? `http://localhost:8000${user.profile_picture_url}` 
+    : null;
+  const initials = user?.first_name ? user.first_name.charAt(0).toUpperCase() : '?';
+
   return (
     <nav className="navbar">
-      <NavLink to="/settings" className="settings-cog" title="Settings">
-        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
-          <circle cx="12" cy="12" r="3"/>
-        </svg>
-      </NavLink>
-
       <div className="nav-links">
         {[
           { to: '/', label: 'Dashboard', end: true },
           { to: '/gyms', label: 'Find Gyms' },
           { to: '/camera', label: 'AI Camera' },
           { to: '/workouts', label: 'Workouts' },
+          { to: '/messages', label: 'Messages' },
         ].map((route) => (
           <NavLink
             key={route.to}
@@ -38,9 +50,33 @@ export default function Navbar() {
         ))}
       </div>
 
-      <button className="logout-btn" onClick={handleLogout}>
-        Log Out
-      </button>
+      <div className="nav-profile-container" ref={dropdownRef}>
+        <button 
+          className="nav-avatar-btn" 
+          onClick={() => setDropdownOpen(!dropdownOpen)}
+          aria-label="Toggle profile menu"
+        >
+          {avatarUrl ? (
+            <img src={avatarUrl} alt="Profile" className="nav-avatar-img" />
+          ) : (
+            <div className="nav-avatar-initials">{initials}</div>
+          )}
+        </button>
+        {dropdownOpen && (
+          <div className="nav-dropdown">
+            <Link to="/profile" className="nav-dropdown-item" onClick={() => setDropdownOpen(false)}>
+              Profile
+            </Link>
+            <Link to="/settings" className="nav-dropdown-item" onClick={() => setDropdownOpen(false)}>
+              Settings
+            </Link>
+            <div className="nav-dropdown-divider" />
+            <button className="nav-dropdown-item logout-dropdown-item" onClick={handleLogout}>
+              Log Out
+            </button>
+          </div>
+        )}
+      </div>
     </nav>
   );
 }

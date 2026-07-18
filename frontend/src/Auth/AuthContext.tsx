@@ -2,8 +2,11 @@ import React, { createContext, useContext, useState } from 'react';
 import api from '../api';
 
 type User = {
+    id: number;
     email: string;
     first_name: string;
+    username?: string;
+    profile_picture_url?: string;
     created_at: string;
 }
 
@@ -11,6 +14,7 @@ type AuthContextType = {
     user: User | null;
     login: (user: User) => void;
     logout: () => void;
+    updateUser: (update: Partial<User>) => void;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -46,8 +50,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
     }
 
+    const updateUser = (update: Partial<User>) => {
+        if (user) {
+            const updated = { ...user, ...update };
+            setUser(updated);
+            localStorage.setItem('user', JSON.stringify(updated));
+        }
+    };
+
     return (
-        <AuthContext.Provider value={{ user, login, logout }}>
+        <AuthContext.Provider value={{ user, login, logout, updateUser }}>
             {children}
         </AuthContext.Provider>
     )

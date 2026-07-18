@@ -38,7 +38,7 @@ def log_workout(db: Session, request: workout_schema.WorkoutRequest, user_id: in
                 detail=f"Please wait {time_str} before logging another workout."
             )
 
-    workout_repository.log_workout(db, request, user_id)
+    return workout_repository.log_workout(db, request, user_id)
 
 def update_workout(db: Session, request: workout_schema.WorkoutRequest, user_id: int, workoutID: int):
     updated_workout = workout_repository.update_workout(db, request, user_id, workoutID)

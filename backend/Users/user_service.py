@@ -3,6 +3,10 @@ from fastapi import HTTPException
 from passlib.context import CryptContext
 from Users import user_repository, user_schema
 from Users.auth import verify_google_token, create_access_token
+import os
+import shutil
+import uuid
+from fastapi import UploadFile
 
 # Password hashing context
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -20,7 +24,7 @@ def process_oauth_login(db: Session, request: user_schema.GoogleLoginRequest) ->
         if existing_email:
             raise HTTPException(
                 status_code=400,
-                detail="Email already registered with a different login provider."
+                detail="An account with this email already exists."
             )
         user = user_repository.create_user(db, google_user)
 
@@ -99,3 +103,31 @@ def get_user_stats(db: Session, user_id: int) -> user_schema.UserStatsResponse:
         this_week_workouts=this_week_workouts,
         this_week_minutes=this_week_minutes
     )
+
+
+def set_username(db: Session, user_id: int, username: str):
+    existing = user_repository.get_user_by_username(db, username)
+    if existing and existing.id != user_id:
+        raise HTTPException(status_code=409, detail="Username already taken")
+    return user_repository.update_username(db, user_id, username)
+
+
+UPLOAD_DIR = "uploads/avatars"
+
+def set_profile_picture(db: Session, user_id: int, file: UploadFile):
+    os.makedirs(UPLOAD_DIR, exist_ok=True)
+
+    # Delete old avatar file if one exists
+    user = user_repository.get_user_by_id(db, user_id)
+    if user and user.profile_picture_url:
+        old_filepath = user.profile_picture_url.lstrip("/")
+        if os.path.isfile(old_filepath):
+            os.remove(old_filepath)
+
+    ext = file.filename.split('.')[-1]
+    filename = f"{uuid.uuid4()}.{ext}"
+    filepath = os.path.join(UPLOAD_DIR, filename)
+    with open(filepath, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+    url = f"/uploads/avatars/{filename}"
+    return user_repository.update_profile_picture(db, user_id, url)

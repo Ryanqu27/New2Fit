@@ -17,6 +17,7 @@ def save_recommendation(db: Session, user_id: int, answers: list[str], recommend
             user_id=user_id,
             answers=answers,
             recommendation=recommendation
+            
         )
         db.add(new_rec)
         db.commit()

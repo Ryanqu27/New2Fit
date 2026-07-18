@@ -123,6 +123,25 @@ export default function SettingsPage() {
                 </div>
             </div>
 
+            <div className="settings-section">
+                <h2>Privacy & Discoverability</h2>
+
+                <div className="setting-item">
+                    <div className="setting-info">
+                        <h3>Private Account</h3>
+                        <p>Hide your profile from the direct messaging search results</p>
+                    </div>
+                    <label className="toggle-switch">
+                        <input 
+                            type="checkbox" 
+                            checked={settings.is_private}
+                            onChange={(e) => updateSetting({ is_private: e.target.checked })}
+                        />
+                        <span className="slider"></span>
+                    </label>
+                </div>
+            </div>
+
             {saveStatus && (
                 <div className={`save-status ${saveStatus}`}>
                     {saveStatus === 'saving' && "Saving changes..."}

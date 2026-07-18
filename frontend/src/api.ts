@@ -11,14 +11,16 @@ const api = axios.create({
 });
 
 
-// Automatically log user out for 401 or 403 status codes returned
+// Automatically log user out for 401 or 403 status codes returned.
+// We dispatch a custom event instead of doing a hard redirect so that
+// React Router can handle the navigation (no full page reload).
 api.interceptors.response.use(
     (response) => response,
     (error) => {
         if (error.response?.status === 401 || error.response?.status === 403) {
             localStorage.removeItem('user');
             if (window.location.pathname !== '/login') {
-                window.location.href = '/login';
+                window.dispatchEvent(new Event('unauthorized'));
             }
         }
         return Promise.reject(error);

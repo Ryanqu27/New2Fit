@@ -6,6 +6,7 @@ class SettingsBase(BaseModel):
     unit_preference: Optional[str] = "imperial"
     camera_framerate_preference: Optional[int] = 30
     workout_reminders: Optional[bool] = True
+    is_private: Optional[bool] = False
 
 class Settings(SettingsBase):
     id: int
