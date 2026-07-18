@@ -28,10 +28,14 @@ def log_workout(db: Session, request: workout_schema.WorkoutRequest, user_id: in
             hours = int(remaining.total_seconds() // 3600)
             minutes = int((remaining.total_seconds() % 3600) // 60)
             
-            if hours > 0:
+            if hours > 0 and minutes > 0:
                 time_str = f"{hours}h {minutes}m"
-            else:
+            elif hours > 0:
+                time_str = f"{hours}h"
+            elif minutes > 0:
                 time_str = f"{minutes}m"
+            else:
+                time_str = "less than a minute"
                 
             raise HTTPException(
                 status_code=429, 
