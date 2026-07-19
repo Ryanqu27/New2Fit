@@ -33,7 +33,7 @@ export default function SetUsernamePage() {
             navigate('/');
         } catch (err) {
             if (axios.isAxiosError(err)) {
-                setError(err.response?.data?.detail || 'Failed to set username');
+                setError((err as any).userMessage || err.response?.data?.detail || 'Failed to set username');
             } else {
                 setError('Failed to set username');
             }

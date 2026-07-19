@@ -148,7 +148,7 @@ export default function Workouts() {
             await fetchWorkouts(0);
         } catch (err) {
             if (axios.isAxiosError(err)) {
-                const message = err.response?.data?.detail || 'Failed to save workout. Please try again.';
+                const message = (err as any).userMessage || err.response?.data?.detail || 'Failed to save workout. Please try again.';
                 setError(message);
             } else {
                 setError('Failed to save workout. Please try again.');

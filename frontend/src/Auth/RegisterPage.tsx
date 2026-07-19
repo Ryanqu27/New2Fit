@@ -32,7 +32,7 @@ export default function RegisterPage() {
             navigate('/');
         } catch (err) {
             if (axios.isAxiosError(err)) {
-                setError(err.response?.data?.detail || 'Google sign up failed');
+                setError((err as any).userMessage || err.response?.data?.detail || 'Google sign up failed');
             } else {
                 setError('Google sign up failed');
             }
@@ -58,7 +58,7 @@ export default function RegisterPage() {
             navigate('/');
         } catch (err) {
             if (axios.isAxiosError(err)) {
-                setError(err.response?.data?.detail || 'Failed to create account');
+                setError((err as any).userMessage || err.response?.data?.detail || 'Failed to create account');
             } else {
                 setError('Failed to create account');
             }

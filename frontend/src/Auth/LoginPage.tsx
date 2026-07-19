@@ -31,7 +31,7 @@ export default function LoginPage() {
             navigate('/');
         } catch (err) {
             if (axios.isAxiosError(err)) {
-                setError(err.response?.data?.detail || 'Google login failed');
+                setError((err as any).userMessage || err.response?.data?.detail || 'Google login failed');
             } else {
                 setError('Google login failed');
             }
@@ -53,7 +53,7 @@ export default function LoginPage() {
             navigate('/');
         } catch (err) {
             if (axios.isAxiosError(err)) {
-                setError(err.response?.data?.detail || 'Invalid email or password');
+                setError((err as any).userMessage || err.response?.data?.detail || 'Invalid email or password');
             } else {
                 setError('Invalid email or password');
             }

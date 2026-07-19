@@ -23,6 +23,9 @@ api.interceptors.response.use(
                 window.dispatchEvent(new Event('unauthorized'));
             }
         }
+        if (error.response?.status === 429) {
+            error.userMessage = 'Too many requests. Please wait a moment and try again.';
+        }
         return Promise.reject(error);
     }
 );
