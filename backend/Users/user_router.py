@@ -1,8 +1,9 @@
-from fastapi import APIRouter, Depends, Response, UploadFile, File
+from fastapi import APIRouter, Depends, Response, UploadFile, File, Request
 from sqlalchemy.orm import Session
 from database import get_db
 from Users import user_service, user_schema
 from Users.auth import get_current_user_id
+from limiter import limiter
 
 router = APIRouter(
     prefix="/api/users",
@@ -23,26 +24,29 @@ def set_auth_cookie(response: Response, token: str):
 
 
 @router.post("/login", response_model=user_schema.UserResponse)
-def google_login(request: user_schema.GoogleLoginRequest, response: Response, db: Session = Depends(get_db)):
-    auth_data = user_service.process_oauth_login(db, request)
+@limiter.limit("20/minute")
+def google_login(request: Request, body: user_schema.GoogleLoginRequest, response: Response, db: Session = Depends(get_db)):
+    auth_data = user_service.process_oauth_login(db, body)
     set_auth_cookie(response, auth_data["access_token"])
     return auth_data["user"]
 
 
 @router.post("/login/email", response_model=user_schema.UserResponse)
-def email_login(request: user_schema.EmailLoginRequest, response: Response, db: Session = Depends(get_db)):
-    auth_data = user_service.process_email_login(db, email=request.email, password=request.password)
+@limiter.limit("10/minute")
+def email_login(request: Request, body: user_schema.EmailLoginRequest, response: Response, db: Session = Depends(get_db)):
+    auth_data = user_service.process_email_login(db, email=body.email, password=body.password)
     set_auth_cookie(response, auth_data["access_token"])
     return auth_data["user"]
 
 
 @router.post("/register", response_model=user_schema.UserResponse)
-def user_register(request: user_schema.RegisterRequest, response: Response, db: Session = Depends(get_db)):
+@limiter.limit("5/minute")
+def user_register(request: Request, body: user_schema.RegisterRequest, response: Response, db: Session = Depends(get_db)):
     auth_data = user_service.register_user(
         db,
-        email=request.email,
-        first_name=request.first_name,
-        password=request.password
+        email=body.email,
+        first_name=body.first_name,
+        password=body.password
     )
     set_auth_cookie(response, auth_data["access_token"])
     return auth_data["user"]
