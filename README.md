@@ -10,6 +10,7 @@ New2Fit uses a TensorFlow pose model (MoveNet) to analyze exercise form in real 
 - **Modern Web Interface**: Built with React and TypeScript for a highly responsive user experience.
 - **Workout Logging**: Track your exercises, sets, reps, and weights over time.
 - **Personalized Dashboard & Questionnaire**: Customize your fitness journey based on your personal preferences and goals.
+- **Real-time Chat & User Communication**: Instant user-to-user messaging powered by WebSockets, complete with live unread message badges and active conversation state syncing.
 - **Gym Locator**: Gym locations and websites retrieved from a web scraping algorithm. 
 - **Google OAuth**: Secure user authentication.
 
