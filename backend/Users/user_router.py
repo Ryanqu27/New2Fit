@@ -53,7 +53,8 @@ def user_register(request: Request, body: user_schema.RegisterRequest, response:
 
 
 @router.post("/logout")
-def logout(response: Response):
+@limiter.limit("60/minute")
+def logout(request: Request, response: Response):
     """Log out the user by clearing the HttpOnly cookie."""
     response.set_cookie(
         key="access_token",
@@ -67,15 +68,18 @@ def logout(response: Response):
 
 
 @router.get("/me/stats", response_model=user_schema.UserStatsResponse)
-def get_stats(user_id: int = Depends(get_current_user_id), db: Session = Depends(get_db)):
+@limiter.limit("30/minute")
+def get_stats(request: Request, user_id: int = Depends(get_current_user_id), db: Session = Depends(get_db)):
     return user_service.get_user_stats(db, user_id)
 
 
 @router.patch("/me/username", response_model=user_schema.UserResponse)
-def update_username(request: user_schema.UpdateUsernameRequest, user_id: int = Depends(get_current_user_id), db: Session = Depends(get_db)):
-    return user_service.set_username(db, user_id, request.username)
+@limiter.limit("5/minute")
+def update_username(request: Request, body: user_schema.UpdateUsernameRequest, user_id: int = Depends(get_current_user_id), db: Session = Depends(get_db)):
+    return user_service.set_username(db, user_id, body.username)
 
 
 @router.post("/me/profile-picture", response_model=user_schema.UserResponse)
-def upload_profile_picture(file: UploadFile = File(...), user_id: int = Depends(get_current_user_id), db: Session = Depends(get_db)):
+@limiter.limit("5/minute")
+def upload_profile_picture(request: Request, file: UploadFile = File(...), user_id: int = Depends(get_current_user_id), db: Session = Depends(get_db)):
     return user_service.set_profile_picture(db, user_id, file)
