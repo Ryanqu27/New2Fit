@@ -71,7 +71,7 @@ def test_register_duplicate_email_fails(client):
 def test_register_password_too_short_fails(client):
     payload = {**REGISTER_PAYLOAD, "password": "abc"}
     response = client.post("/api/users/register", json=payload)
-    assert response.status_code == 400
+    assert response.status_code == 422
 
 
 # ---------------------------------------------------------------------------

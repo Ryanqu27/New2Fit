@@ -117,6 +117,13 @@ UPLOAD_DIR = "uploads/avatars"
 def set_profile_picture(db: Session, user_id: int, file: UploadFile):
     os.makedirs(UPLOAD_DIR, exist_ok=True)
 
+    ext = file.filename.split('.')[-1].lower()
+    if ext not in ["jpg", "jpeg", "png", "webp"]:
+        raise HTTPException(status_code=400, detail="Invalid image format. Allowed formats: jpg, jpeg, png, webp")
+    
+    if not file.content_type.startswith("image/"):
+        raise HTTPException(status_code=400, detail="Invalid file type. Must be an image.")
+
     # Delete old avatar file if one exists
     user = user_repository.get_user_by_id(db, user_id)
     if user and user.profile_picture_url:
