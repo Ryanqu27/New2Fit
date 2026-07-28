@@ -13,6 +13,7 @@ export default function MessagesPage() {
     const [conversations, setConversations] = useState<ConversationOut[]>([]);
     const [activeConv, setActiveConv] = useState<ConversationOut | null>(null);
     const [incomingMessage, setIncomingMessage] = useState<MessageOut | null>(null);
+    const [incomingTypingEvent, setIncomingTypingEvent] = useState<{ conversation_id: number, sender_id: number, is_typing: boolean } | null>(null);
     const wsRef = useRef<WebSocket | null>(null);
 
     useEffect(() => {
@@ -26,7 +27,18 @@ export default function MessagesPage() {
 
         ws.onmessage = (event) => {
             try {
-                const msg: MessageOut = JSON.parse(event.data);
+                const data = JSON.parse(event.data);
+                
+                if (data.type === 'typing') {
+                    setIncomingTypingEvent({
+                        conversation_id: data.conversation_id,
+                        sender_id: data.sender_id,
+                        is_typing: data.is_typing
+                    });
+                    return;
+                }
+
+                const msg: MessageOut = data;
                 setIncomingMessage(msg);
 
                 setConversations(prev => prev.map(conv => {
@@ -74,7 +86,15 @@ export default function MessagesPage() {
             console.warn('WebSocket not open');
             return;
         }
-        wsRef.current.send(JSON.stringify({ conversation_id: conversationId, content }));
+        // Send chat message
+        wsRef.current.send(JSON.stringify({ type: "message", conversation_id: conversationId, content }));
+        // Ensure typing indicator turns off immediately when sending
+        wsRef.current.send(JSON.stringify({ type: "typing", conversation_id: conversationId, is_typing: false }));
+    }, []);
+
+    const handleTyping = useCallback((conversationId: number, isTyping: boolean) => {
+        if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
+        wsRef.current.send(JSON.stringify({ type: "typing", conversation_id: conversationId, is_typing: isTyping }));
     }, []);
 
     return (
@@ -99,7 +119,9 @@ export default function MessagesPage() {
                         otherUserName={activeConv.other_user_name}
                         currentUserId={user?.id ?? 0}
                         incomingMessage={incomingMessage}
+                        incomingTypingEvent={incomingTypingEvent}
                         onSend={handleSend}
+                        onTyping={handleTyping}
                     />
                 ) : (
                     <div className="chat-empty-state">

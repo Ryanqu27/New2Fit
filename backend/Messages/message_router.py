@@ -74,6 +74,26 @@ async def websocket_endpoint(websocket: WebSocket, db: Session = Depends(get_db)
     try:
         while True:
             data = await websocket.receive_json()
+            
+            if data.get("type") == "typing" and "conversation_id" in data:
+                conversation_id = int(data["conversation_id"])
+                is_typing = data.get("is_typing", False)
+                
+                conv_model = db.query(message_service.message_repository.Conversation).filter(
+                    message_service.message_repository.Conversation.id == conversation_id
+                ).first()
+                
+                if conv_model:
+                    recipient_id = conv_model.user2_id if conv_model.user1_id == user_id else conv_model.user1_id
+                    typing_event = {
+                        "type": "typing",
+                        "conversation_id": conversation_id,
+                        "sender_id": user_id,
+                        "is_typing": is_typing
+                    }
+                    await manager.send_personal_message(typing_event, recipient_id)
+                continue
+
             if "conversation_id" in data and "content" in data:
                 conversation_id = int(data["conversation_id"])
                 content = data["content"]
@@ -93,10 +113,12 @@ async def websocket_endpoint(websocket: WebSocket, db: Session = Depends(get_db)
                         content=new_msg.content,
                         is_read=new_msg.is_read,
                         created_at=new_msg.created_at
-                    )
+                    ).model_dump(mode="json")
                     
-                    await manager.send_personal_message(msg_out.model_dump(mode="json"), user_id)
-                    await manager.send_personal_message(msg_out.model_dump(mode="json"), recipient_id)
+                    msg_out["type"] = "message"
+                    
+                    await manager.send_personal_message(msg_out, user_id)
+                    await manager.send_personal_message(msg_out, recipient_id)
     except WebSocketDisconnect:
         manager.disconnect(user_id)
     except Exception as e:

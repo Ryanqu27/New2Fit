@@ -6,7 +6,9 @@ interface ChatWindowProps {
     otherUserName: string;
     currentUserId: number;
     incomingMessage: MessageOut | null;
+    incomingTypingEvent: { conversation_id: number, sender_id: number, is_typing: boolean } | null;
     onSend: (conversationId: number, content: string) => void;
+    onTyping: (conversationId: number, isTyping: boolean) => void;
 }
 
 export default function ChatWindow({
@@ -14,12 +16,25 @@ export default function ChatWindow({
     otherUserName,
     currentUserId,
     incomingMessage,
+    incomingTypingEvent,
     onSend,
+    onTyping,
 }: ChatWindowProps) {
     const [messages, setMessages] = useState<MessageOut[]>([]);
     const [input, setInput] = useState('');
     const [loading, setLoading] = useState(true);
+    const [isOtherUserTyping, setIsOtherUserTyping] = useState(false);
     const bottomRef = useRef<HTMLDivElement>(null);
+    const typingTimeoutRef = useRef<number | null>(null);
+
+    // Cleanup typing timeout on unmount
+    useEffect(() => {
+        return () => {
+            if (typingTimeoutRef.current) {
+                clearTimeout(typingTimeoutRef.current);
+            }
+        };
+    }, []);
 
     useEffect(() => {
         let ignore = false;
@@ -59,14 +74,46 @@ export default function ChatWindow({
     }, [incomingMessage, conversationId, currentUserId]);
 
     useEffect(() => {
+        if (!incomingTypingEvent) return;
+        if (incomingTypingEvent.conversation_id !== conversationId) return;
+        if (incomingTypingEvent.sender_id === currentUserId) return;
+        
+        setIsOtherUserTyping(incomingTypingEvent.is_typing);
+    }, [incomingTypingEvent, conversationId, currentUserId]);
+
+    useEffect(() => {
         bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messages]);
 
     const handleSend = () => {
         const trimmed = input.trim();
         if (!trimmed) return;
+        
+        // Clear local typing timeout immediately
+        if (typingTimeoutRef.current) {
+            clearTimeout(typingTimeoutRef.current);
+            typingTimeoutRef.current = null;
+        }
+        
         onSend(conversationId, trimmed);
         setInput('');
+    };
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        setInput(e.target.value);
+        
+        if (typingTimeoutRef.current) {
+            clearTimeout(typingTimeoutRef.current);
+        } else {
+            // First keystroke -> send typing start
+            onTyping(conversationId, true);
+        }
+        
+        // Stop typing after 1.5 seconds of inactivity
+        typingTimeoutRef.current = window.setTimeout(() => {
+            onTyping(conversationId, false);
+            typingTimeoutRef.current = null;
+        }, 1500);
     };
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -112,13 +159,22 @@ export default function ChatWindow({
                 </div>
             )}
 
+            {isOtherUserTyping && (
+                <div className="typing-indicator-container">
+                    <span className="typing-username">{otherUserName} is typing</span>
+                    <div className="typing-dots">
+                        <span>.</span><span>.</span><span>.</span>
+                    </div>
+                </div>
+            )}
+
             <div className="chat-input-bar">
                 <textarea
                     className="chat-input"
                     rows={1}
                     placeholder="Type a message… (Enter to send)"
                     value={input}
-                    onChange={e => setInput(e.target.value)}
+                    onChange={handleInputChange}
                     onKeyDown={handleKeyDown}
                 />
                 <button
