@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useSettings } from '../../Settings/SettingsContext';
+import { getWsBaseUrl } from '../../api';
 import './AICamera.css';
 
 export default function AICamera() {
@@ -26,7 +27,7 @@ export default function AICamera() {
 
     if (videoRef.current && videoRef.current.srcObject) {
       const stream = videoRef.current.srcObject as MediaStream;
-      stream.getTracks().forEach(track => track.stop());
+      stream.getTracks().forEach((track) => track.stop());
       videoRef.current.srcObject = null;
     }
     
@@ -45,7 +46,7 @@ export default function AICamera() {
     try {
       setIsRecording(true);
 
-      const targetFps = settings.camera_framerate_preference;
+      const targetFps = settings?.camera_framerate_preference ?? 15;
       const stream = await navigator.mediaDevices.getUserMedia({ 
         video: { 
           frameRate: { ideal: targetFps, max: targetFps }
@@ -56,8 +57,7 @@ export default function AICamera() {
         await videoRef.current.play();
       }
 
-
-      const wsUrl = `ws://localhost:8000/api/camera/ws/${encodeURIComponent(exercise)}`;
+      const wsUrl = `${getWsBaseUrl()}/camera/ws/${encodeURIComponent(exercise)}`;
       const ws = new WebSocket(wsUrl);
       ws.binaryType = 'blob'; 
       wsRef.current = ws;

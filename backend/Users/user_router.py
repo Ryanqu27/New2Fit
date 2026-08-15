@@ -1,3 +1,4 @@
+import os
 from fastapi import APIRouter, Depends, Response, UploadFile, File, Request
 from sqlalchemy.orm import Session
 from database import get_db
@@ -10,6 +11,7 @@ router = APIRouter(
     tags=["Users"]
 )
 
+IS_PRODUCTION = os.getenv("ENVIRONMENT", "development").lower() == "production"
 
 def set_auth_cookie(response: Response, token: str):
     """Helper to set the HttpOnly cookie for authentication."""
@@ -17,8 +19,8 @@ def set_auth_cookie(response: Response, token: str):
         key="access_token",
         value=token,
         httponly=True,
-        samesite="lax",
-        secure=False,  # Set to True in production (HTTPS)
+        samesite="none" if IS_PRODUCTION else "lax",
+        secure=IS_PRODUCTION,
         max_age=7 * 24 * 60 * 60  # 7 days
     )
 
@@ -60,8 +62,8 @@ def logout(request: Request, response: Response):
         key="access_token",
         value="",
         httponly=True,
-        samesite="lax",
-        secure=False,
+        samesite="none" if IS_PRODUCTION else "lax",
+        secure=IS_PRODUCTION,
         max_age=0  # Expires immediately
     )
     return {"message": "Successfully logged out"}

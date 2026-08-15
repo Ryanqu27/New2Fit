@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { NavLink, Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../Auth/AuthContext";
+import { getAvatarUrl } from "../../api";
 import './Navbar.css';
 
 export default function Navbar() {
@@ -24,9 +25,7 @@ export default function Navbar() {
     navigate('/login');
   };
 
-  const avatarUrl = user?.profile_picture_url 
-    ? `http://localhost:8000${user.profile_picture_url}` 
-    : null;
+  const avatarUrl = getAvatarUrl(user?.profile_picture_url);
   const initials = user?.first_name ? user.first_name.charAt(0).toUpperCase() : '?';
 
   return (

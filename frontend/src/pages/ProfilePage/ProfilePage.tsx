@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../Auth/AuthContext';
 import { ProfileService } from './ProfileService';
+import { getAvatarUrl } from '../../api';
 import './ProfilePage.css';
 
 export default function ProfilePage() {
@@ -14,7 +15,7 @@ export default function ProfilePage() {
         if (user?.username) {
             setUsername(user.username);
         }
-    }, [user]);
+    }, [user?.username]);
 
     const handleUsernameSave = async () => {
         setIsSaving(true);
@@ -53,9 +54,7 @@ export default function ProfilePage() {
 
     if (!user) return null;
 
-    const avatarUrl = user.profile_picture_url 
-        ? `http://localhost:8000${user.profile_picture_url}` 
-        : null;
+    const avatarUrl = getAvatarUrl(user.profile_picture_url);
         
     const initials = user.first_name ? user.first_name.charAt(0).toUpperCase() : '?';
 

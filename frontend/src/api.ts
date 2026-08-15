@@ -2,7 +2,26 @@ import axios from 'axios';
 
 
 // Abstraction on axios to make API calls easier and more consistent
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
+export const BACKEND_BASE_URL = API_BASE_URL.replace(/\/api\/?$/, '');
+
+export const getAvatarUrl = (path?: string | null): string | null => {
+    if (!path) return null;
+    if (path.startsWith('http://') || path.startsWith('https://')) {
+        return path;
+    }
+    const cleanPath = path.startsWith('/') ? path : `/${path}`;
+    return `${BACKEND_BASE_URL}${cleanPath}`;
+};
+
+export const getWsBaseUrl = (): string => {
+    if (import.meta.env.VITE_WS_BASE_URL) {
+        return import.meta.env.VITE_WS_BASE_URL.replace(/\/+$/, '');
+    }
+    const protocol = window.location.protocol === 'https:' || BACKEND_BASE_URL.startsWith('https:') ? 'wss:' : 'ws:';
+    const host = BACKEND_BASE_URL.replace(/^https?:\/\//, '');
+    return `${protocol}//${host}/api`;
+};
 
 const api = axios.create({
     baseURL: API_BASE_URL,

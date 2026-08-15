@@ -121,7 +121,7 @@ export default function DashboardPage() {
     <div className="home-container">
       <div className="home-content">
         <h1 className="home-title">
-          Welcome <span className="home-name">{user.first_name}</span>
+          Welcome <span className="home-name">{user?.first_name || 'there'}</span>
         </h1>
         <p className="home-subtitle">
           Here is your fitness progress. Keep up the great work!

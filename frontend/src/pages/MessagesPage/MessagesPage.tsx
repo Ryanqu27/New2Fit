@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useAuth } from '../../Auth/AuthContext';
 import { getConversations, type ConversationOut, type MessageOut } from './messageService';
+import { getWsBaseUrl } from '../../api';
 import UserSearch from './UserSearch';
 import ConversationList from './ConversationList';
 import ChatWindow from './ChatWindow';
 import './MessagesPage.css';
 
-const WS_BASE = import.meta.env.VITE_WS_BASE_URL || 'ws://localhost:8000/api/messages';
+const getMessagesWsUrl = () => `${getWsBaseUrl()}/messages/ws`;
 
 export default function MessagesPage() {
     const { user } = useAuth();
@@ -22,7 +23,7 @@ export default function MessagesPage() {
 
     // Open persistent WebSocket on mount
     useEffect(() => {
-        const ws = new WebSocket(`${WS_BASE}/ws`);
+        const ws = new WebSocket(getMessagesWsUrl());
         wsRef.current = ws;
 
         ws.onmessage = (event) => {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useSettings } from '../../Settings/SettingsContext';
 import './SettingsPage.css';
 
