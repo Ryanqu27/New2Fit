@@ -112,29 +112,43 @@ def set_username(db: Session, user_id: int, username: str):
     return user_repository.update_username(db, user_id, username)
 
 
+from Services import s3_service
+
 UPLOAD_DIR = "uploads/avatars"
 
 def set_profile_picture(db: Session, user_id: int, file: UploadFile):
-    os.makedirs(UPLOAD_DIR, exist_ok=True)
-
-    ext = file.filename.split('.')[-1].lower()
+    ext = file.filename.split('.')[-1].lower() if '.' in file.filename else ""
     if ext not in ["jpg", "jpeg", "png", "webp"]:
         raise HTTPException(status_code=400, detail="Invalid image format. Allowed formats: jpg, jpeg, png, webp")
     
-    if not file.content_type.startswith("image/"):
+    if not file.content_type or not file.content_type.startswith("image/"):
         raise HTTPException(status_code=400, detail="Invalid file type. Must be an image.")
 
-    # Delete old avatar file if one exists
+    # Delete old avatar if one exists
     user = user_repository.get_user_by_id(db, user_id)
     if user and user.profile_picture_url:
-        old_filepath = user.profile_picture_url.lstrip("/")
-        if os.path.isfile(old_filepath):
-            os.remove(old_filepath)
+        if s3_service.is_s3_configured() and "amazonaws.com" in user.profile_picture_url:
+            s3_service.delete_image_from_s3(user.profile_picture_url)
+        else:
+            old_filepath = user.profile_picture_url.lstrip("/")
+            if os.path.isfile(old_filepath):
+                os.remove(old_filepath)
 
-    ext = file.filename.split('.')[-1]
-    filename = f"{uuid.uuid4()}.{ext}"
-    filepath = os.path.join(UPLOAD_DIR, filename)
-    with open(filepath, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
-    url = f"/uploads/avatars/{filename}"
+    file_bytes = file.file.read()
+
+    if s3_service.is_s3_configured():
+        url = s3_service.upload_image_to_s3(
+            file_bytes=file_bytes,
+            file_ext=ext,
+            content_type=file.content_type,
+            folder="avatars"
+        )
+    else:
+        os.makedirs(UPLOAD_DIR, exist_ok=True)
+        filename = f"{uuid.uuid4()}.{ext}"
+        filepath = os.path.join(UPLOAD_DIR, filename)
+        with open(filepath, "wb") as buffer:
+            buffer.write(file_bytes)
+        url = f"/uploads/avatars/{filename}"
+
     return user_repository.update_profile_picture(db, user_id, url)

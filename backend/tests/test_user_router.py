@@ -42,10 +42,6 @@ def mock_verify_google_token(token_str, request, audience, clock_skew_in_seconds
     }
 
 
-# ---------------------------------------------------------------------------
-# POST /api/users/register
-# ---------------------------------------------------------------------------
-
 def test_register_new_user_success(client):
     response = client.post("/api/users/register", json=REGISTER_PAYLOAD)
     assert response.status_code == 200
@@ -74,9 +70,6 @@ def test_register_password_too_short_fails(client):
     assert response.status_code == 422
 
 
-# ---------------------------------------------------------------------------
-# POST /api/users/login/email
-# ---------------------------------------------------------------------------
 
 def test_email_login_success(client):
     client.post("/api/users/register", json=REGISTER_PAYLOAD)
@@ -102,9 +95,6 @@ def test_email_login_unknown_email_returns_401(client):
     assert response.status_code == 401
 
 
-# ---------------------------------------------------------------------------
-# POST /api/users/login (Google OAuth)
-# ---------------------------------------------------------------------------
 
 def test_google_login_new_user_success(client):
     with patch(
@@ -180,9 +170,6 @@ def test_google_login_invalid_token_returns_401(client):
     assert response.status_code == 401
 
 
-# ---------------------------------------------------------------------------
-# POST /api/users/logout
-# ---------------------------------------------------------------------------
 
 def test_logout_clears_cookie(auth_client, db_session):
     from Users.user_repository import create_email_user
@@ -198,10 +185,6 @@ def test_logout_clears_cookie(auth_client, db_session):
     cookie = response.cookies.get("access_token")
     assert cookie is None or cookie == ""
 
-
-# ---------------------------------------------------------------------------
-# GET /api/users/me/stats
-# ---------------------------------------------------------------------------
 
 def test_get_stats_unauthenticated(client):
     response = client.get("/api/users/me/stats")
@@ -222,3 +205,42 @@ def test_get_stats_authenticated_returns_zeros(auth_client, db_session):
     assert data["all_time_workouts"] == 0
     assert data["all_time_minutes"] == 0
     assert data["this_week_workouts"] == 0
+
+
+def test_upload_profile_picture_s3_mock(auth_client, db_session):
+    from Users.user_repository import create_email_user
+    from passlib.context import CryptContext
+
+    pwd = CryptContext(schemes=["bcrypt"], deprecated="auto")
+    user = create_email_user(db_session, "avatar@test.com", "Avatar", pwd.hash("pw123456"))
+    c = auth_client(user.id)
+
+    fake_image_file = ("avatar.png", b"fake image data", "image/png")
+
+    with patch("Services.s3_service.is_s3_configured", return_value=True), \
+         patch("Services.s3_service.upload_image_to_s3", return_value="https://test-bucket.s3.us-east-2.amazonaws.com/avatars/test.png"):
+        response = c.post(
+            "/api/users/me/profile-picture",
+            files={"file": fake_image_file}
+        )
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["profile_picture_url"] == "https://test-bucket.s3.us-east-2.amazonaws.com/avatars/test.png"
+
+
+def test_upload_profile_picture_invalid_format(auth_client, db_session):
+    from Users.user_repository import create_email_user
+    from passlib.context import CryptContext
+
+    pwd = CryptContext(schemes=["bcrypt"], deprecated="auto")
+    user = create_email_user(db_session, "avatar2@test.com", "Avatar2", pwd.hash("pw123456"))
+    c = auth_client(user.id)
+
+    fake_text_file = ("document.txt", b"hello world", "text/plain")
+    response = c.post(
+        "/api/users/me/profile-picture",
+        files={"file": fake_text_file}
+    )
+    assert response.status_code == 400
+
