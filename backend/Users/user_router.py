@@ -11,7 +11,7 @@ router = APIRouter(
     tags=["Users"]
 )
 
-IS_PRODUCTION = os.getenv("ENVIRONMENT", "development").lower() == "production"
+IS_PRODUCTION = os.getenv("ENVIRONMENT", "development").lower() == "production" or bool(os.getenv("RENDER"))
 
 def set_auth_cookie(response: Response, token: str):
     """Helper to set the HttpOnly cookie for authentication."""
