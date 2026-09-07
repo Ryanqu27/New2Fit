@@ -1,6 +1,9 @@
 # New2Fit
 New2Fit is a personalized AI fitness application for beginners featuring an AI camera with real-time pose analysis and feedback.
 
+## Deployment
+New2Fit Link: https://new2fit.vercel.app
+
 ## Overview
 New2Fit uses a TensorFlow pose model (MoveNet) to analyze exercise form in real time and provides per-rep feedback on range of motion, speed, and joint angles. The application features a modern full-stack architecture with a **React** (Vite) frontend and a **FastAPI** backend. Real-time video processing is handled via WebSockets, and user data is managed securely using **SQLAlchemy**.
 
