@@ -3,7 +3,8 @@ import jwt
 from datetime import datetime, timedelta, timezone
 from google.oauth2 import id_token
 from google.auth.transport import requests as google_requests
-from fastapi import Depends, HTTPException, Cookie
+from typing import Optional
+from fastapi import Depends, HTTPException, Cookie, Header
 from sqlalchemy.orm import Session
 from database import get_db
 
@@ -41,20 +42,28 @@ def create_access_token(user_id: int) -> str:
     return jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
 
 
-def get_current_user_id(access_token: str = Cookie(None)) -> int:
+def get_current_user_id(
+    access_token: Optional[str] = Cookie(None),
+    authorization: Optional[str] = Header(None)
+) -> int:
     """
-    Lightweight FastAPI dependency that validates the JWT from the HttpOnly
-    cookie and returns just the user_id — no database call required.
-    Use this on any route that only needs the user's ID.
+    Lightweight FastAPI dependency that validates the JWT from either the HttpOnly
+    cookie OR the Authorization Bearer header, and returns just the user_id.
     """
-    if not access_token:
+    token = access_token
+    if not token and authorization:
+        parts = authorization.strip().split()
+        if len(parts) == 2 and parts[0].lower() == "bearer":
+            token = parts[1]
+
+    if not token:
         raise HTTPException(
             status_code=401,
-            detail="Not authenticated. No access token cookie found."
+            detail="Not authenticated. No access token found in cookie or header."
         )
 
     try:
-        payload = jwt.decode(access_token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
         return int(payload["sub"])
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="Token has expired.")

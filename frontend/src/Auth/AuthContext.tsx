@@ -8,6 +8,7 @@ type User = {
     username?: string;
     profile_picture_url?: string;
     created_at: string;
+    access_token?: string;
 }
 
 type AuthContextType = {
@@ -33,6 +34,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const login = (inputUser: User) => {
         setUser(inputUser);
         localStorage.setItem('user', JSON.stringify(inputUser));
+        if (inputUser.access_token) {
+            localStorage.setItem('token', inputUser.access_token);
+        }
     }
 
     const logout = async () => {
@@ -44,6 +48,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         } finally {
             setUser(null);
             localStorage.removeItem('user');
+            localStorage.removeItem('token');
             // Make sure to remove old google_token if it still exists from previous sessions
             localStorage.removeItem('google_token'); 
             window.location.href = '/login';

@@ -30,6 +30,15 @@ const api = axios.create({
 });
 
 
+// Automatically attach Bearer token if present (fallback for mobile/cross-site cookie blocking)
+api.interceptors.request.use((config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+});
+
 // Automatically log user out for 401 or 403 status codes returned.
 // We dispatch a custom event instead of doing a hard redirect so that
 // React Router can handle the navigation (no full page reload).
@@ -38,6 +47,7 @@ api.interceptors.response.use(
     (error) => {
         if (error.response?.status === 401 || error.response?.status === 403) {
             localStorage.removeItem('user');
+            localStorage.removeItem('token');
             if (window.location.pathname !== '/login') {
                 window.dispatchEvent(new Event('unauthorized'));
             }

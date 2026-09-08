@@ -7,7 +7,11 @@ import ConversationList from './ConversationList';
 import ChatWindow from './ChatWindow';
 import './MessagesPage.css';
 
-const getMessagesWsUrl = () => `${getWsBaseUrl()}/messages/ws`;
+const getMessagesWsUrl = () => {
+    const token = localStorage.getItem('token');
+    const base = `${getWsBaseUrl()}/messages/ws`;
+    return token ? `${base}?token=${token}` : base;
+};
 
 export default function MessagesPage() {
     const { user } = useAuth();

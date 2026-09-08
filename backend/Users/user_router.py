@@ -30,7 +30,9 @@ def set_auth_cookie(response: Response, token: str):
 def google_login(request: Request, body: user_schema.GoogleLoginRequest, response: Response, db: Session = Depends(get_db)):
     auth_data = user_service.process_oauth_login(db, body)
     set_auth_cookie(response, auth_data["access_token"])
-    return auth_data["user"]
+    user_res = user_schema.UserResponse.model_validate(auth_data["user"])
+    user_res.access_token = auth_data["access_token"]
+    return user_res
 
 
 @router.post("/login/email", response_model=user_schema.UserResponse)
@@ -38,7 +40,9 @@ def google_login(request: Request, body: user_schema.GoogleLoginRequest, respons
 def email_login(request: Request, body: user_schema.EmailLoginRequest, response: Response, db: Session = Depends(get_db)):
     auth_data = user_service.process_email_login(db, email=body.email, password=body.password)
     set_auth_cookie(response, auth_data["access_token"])
-    return auth_data["user"]
+    user_res = user_schema.UserResponse.model_validate(auth_data["user"])
+    user_res.access_token = auth_data["access_token"]
+    return user_res
 
 
 @router.post("/register", response_model=user_schema.UserResponse)
@@ -51,7 +55,9 @@ def user_register(request: Request, body: user_schema.RegisterRequest, response:
         password=body.password
     )
     set_auth_cookie(response, auth_data["access_token"])
-    return auth_data["user"]
+    user_res = user_schema.UserResponse.model_validate(auth_data["user"])
+    user_res.access_token = auth_data["access_token"]
+    return user_res
 
 
 @router.post("/logout")

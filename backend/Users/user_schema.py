@@ -21,6 +21,7 @@ class UserResponse(BaseModel):
     username: Optional[str] = None
     profile_picture_url: Optional[str] = None
     created_at: datetime
+    access_token: Optional[str] = None
 
     class Config:
         from_attributes = True

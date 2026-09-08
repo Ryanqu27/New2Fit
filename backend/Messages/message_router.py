@@ -52,8 +52,8 @@ def mark_read(request: Request, conversation_id: int, user_id: int = Depends(get
 @router.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket, db: Session = Depends(get_db)):
     try:
-        # Extract the token from the HttpOnly cookie rather than the query string
-        token = websocket.cookies.get("access_token")
+        # Extract the token from the HttpOnly cookie or query param fallback
+        token = websocket.cookies.get("access_token") or websocket.query_params.get("token")
         if not token:
             await websocket.close(code=1008)
             return
