@@ -9,6 +9,7 @@ interface ChatWindowProps {
     incomingTypingEvent: { conversation_id: number, sender_id: number, is_typing: boolean } | null;
     onSend: (conversationId: number, content: string) => void;
     onTyping: (conversationId: number, isTyping: boolean) => void;
+    onBack?: () => void;
 }
 
 export default function ChatWindow({
@@ -19,6 +20,7 @@ export default function ChatWindow({
     incomingTypingEvent,
     onSend,
     onTyping,
+    onBack,
 }: ChatWindowProps) {
     const [messages, setMessages] = useState<MessageOut[]>([]);
     const [input, setInput] = useState('');
@@ -131,6 +133,17 @@ export default function ChatWindow({
     return (
         <>
             <div className="chat-header">
+                {onBack && (
+                    <button 
+                        className="chat-back-btn" 
+                        onClick={onBack}
+                        aria-label="Back to conversations"
+                    >
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <polyline points="15 18 9 12 15 6"></polyline>
+                        </svg>
+                    </button>
+                )}
                 <div className="chat-header-avatar">
                     {otherUserName.charAt(0).toUpperCase()}
                 </div>

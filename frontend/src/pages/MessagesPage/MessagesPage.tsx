@@ -102,8 +102,12 @@ export default function MessagesPage() {
         wsRef.current.send(JSON.stringify({ type: "typing", conversation_id: conversationId, is_typing: isTyping }));
     }, []);
 
+    const handleBack = useCallback(() => {
+        setActiveConv(null);
+    }, []);
+
     return (
-        <div className="messages-page">
+        <div className={`messages-page ${activeConv ? 'has-active-conv' : ''}`}>
             <div className="messages-sidebar">
                 <div className="messages-sidebar-header">
                     <h2 className="messages-sidebar-title">Messages</h2>
@@ -127,6 +131,7 @@ export default function MessagesPage() {
                         incomingTypingEvent={incomingTypingEvent}
                         onSend={handleSend}
                         onTyping={handleTyping}
+                        onBack={handleBack}
                     />
                 ) : (
                     <div className="chat-empty-state">
