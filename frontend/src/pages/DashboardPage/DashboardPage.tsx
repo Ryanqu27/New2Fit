@@ -258,13 +258,13 @@ export default function DashboardPage() {
               <div className="dashboard-section">
                 <h2 className="section-title">All-Time</h2>
                 <div className="stats-cards">
-                  <div className="stat-card outline">
+                  <div className="stat-card">
                     <div className="stat-info">
                       <span className="stat-value">{stats.all_time_workouts}</span>
                       <span className="stat-label">Workouts</span>
                     </div>
                   </div>
-                  <div className="stat-card outline">
+                  <div className="stat-card">
                     <div className="stat-info">
                       <span className="stat-value">{stats.all_time_minutes}</span>
                       <span className="stat-label">Minutes</span>
