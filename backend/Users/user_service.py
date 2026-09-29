@@ -134,6 +134,14 @@ def set_profile_picture(db: Session, user_id: int, file: UploadFile):
             if os.path.isfile(old_filepath):
                 os.remove(old_filepath)
 
+    MAX_FILE_SIZE = 5 * 1024 * 1024  # 5 MB
+
+    file.file.seek(0, 2) 
+    size = file.file.tell()
+    file.file.seek(0)     
+    if size > MAX_FILE_SIZE:
+        raise HTTPException(status_code=413, detail="File too large. Maximum size is 5 MB.")
+
     file_bytes = file.file.read()
 
     if s3_service.is_s3_configured():
