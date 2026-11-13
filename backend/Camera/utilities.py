@@ -233,7 +233,7 @@ def StandbackCheck (KeypntCheckList,keypoints_with_scores, cofident_threshold, N
 
 def GetMovePositions_1(keypoints_with_scores, distElbow2Wrist, cofident_threshold):
   dTol = 0.00001
-  angleTreshold = 0.7 # 0.7 # about 45 degree
+  angleTreshold = 0.7 # 0.7 about 45 degrees
   Positions = dict()
   y_leftWrist = keypoints_with_scores[0][0][KEYPOINT_DICT['left_wrist']][0] - keypoints_with_scores[0][0][KEYPOINT_DICT['left_elbow']][0] 
   x_leftWrist = keypoints_with_scores[0][0][KEYPOINT_DICT['left_wrist']][1] - keypoints_with_scores[0][0][KEYPOINT_DICT['left_elbow']][1] 
@@ -266,7 +266,7 @@ def GetMovePositions_1(keypoints_with_scores, distElbow2Wrist, cofident_threshol
 
 def GetMovePositionsBicep(pnts, distElbow2Wrist_l, distElbow2Wrist_r, cofident_threshold):
   dTol = 0.0001
-  angleUpTreshold = 0.5 # 0.7 # about 45 degree
+  angleUpTreshold = 0.5 # 0.7 about 45 degrees
   angleDownTreshold = 0.5
   lElbow = KEYPOINT_DICT['left_elbow']
   lWrist = KEYPOINT_DICT['left_wrist']
