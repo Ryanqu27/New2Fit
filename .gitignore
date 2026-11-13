@@ -9,3 +9,5 @@ __pycache__/
 
 .env*
 .vscode
+.neon
+node_modules/
