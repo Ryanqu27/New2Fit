@@ -127,7 +127,7 @@ def set_profile_picture(db: Session, user_id: int, file: UploadFile):
     # Delete old avatar if one exists
     user = user_repository.get_user_by_id(db, user_id)
     if user and user.profile_picture_url:
-        if s3_service.is_s3_configured() and "amazonaws.com" in user.profile_picture_url:
+        if s3_service.is_s3_configured() and user.profile_picture_url.startswith("http"):
             s3_service.delete_image_from_s3(user.profile_picture_url)
         else:
             old_filepath = user.profile_picture_url.lstrip("/")

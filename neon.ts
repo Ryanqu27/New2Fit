@@ -2,6 +2,9 @@ import { defineConfig } from "@neon/config/v1";
 
 export default defineConfig({
   // Declare your Neon services here
+  buckets: {
+    "new2fit-avatars": { access: "public_read" },
+  },
   auth: false,
   // Branch policy: per-branch tuning
   branch: (branch) => {
