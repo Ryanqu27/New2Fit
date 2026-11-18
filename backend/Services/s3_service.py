@@ -66,13 +66,8 @@ def upload_image_to_s3(file_bytes: bytes, file_ext: str, content_type: str, fold
     if not is_s3_configured():
         raise ValueError("AWS_BUCKET_NAME environment variable is not configured.")
 
-    logger.info(
-        "S3 upload request: endpoint=%s, bucket=%s, key_id=%s, region=%s",
-        endpoint_url or "(default AWS S3)",
-        bucket_name,
-        key_prefix,
-        region,
-    )
+    debug_msg = f"[S3 UPLOAD] endpoint={endpoint_url or '(DEFAULT AWS S3)'} | bucket={bucket_name} | key_id={key_prefix} | region={region}"
+    print(debug_msg, flush=True)
 
     client = get_s3_client()
     clean_ext = file_ext.lstrip(".")
@@ -93,7 +88,7 @@ def upload_image_to_s3(file_bytes: bytes, file_ext: str, content_type: str, fold
         error_msg = e.response["Error"]["Message"] if isinstance(e, ClientError) and "Error" in getattr(e, "response", {}) else str(e)
         raise HTTPException(
             status_code=500,
-            detail=f"Failed to upload image to S3: {error_msg}"
+            detail=f"Failed to upload image to S3 [endpoint={endpoint_url or 'DEFAULT_AWS_S3'}, key={key_prefix}]: {error_msg}"
         )
 
 
