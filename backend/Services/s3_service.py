@@ -9,8 +9,8 @@ from fastapi import HTTPException
 logger = logging.getLogger(__name__)
 
 
-def _get_clean_env(key: str, default: str = None) -> str:
-    """Gets an environment variable and strips surrounding quotes and whitespace."""
+def _clean_env(key: str, default: str = None) -> str:
+    """Gets an environment variable and strips surrounding quotes, spaces, and newlines."""
     val = os.getenv(key, default)
     if val:
         val = val.strip().strip('"').strip("'").strip()
@@ -20,11 +20,11 @@ def _get_clean_env(key: str, default: str = None) -> str:
 def get_s3_config():
     """Returns cleaned S3 configuration from environment variables."""
     return {
-        "access_key_id": _get_clean_env("AWS_ACCESS_KEY_ID"),
-        "secret_access_key": _get_clean_env("AWS_SECRET_ACCESS_KEY"),
-        "region": _get_clean_env("AWS_REGION", "us-east-1"),
-        "bucket_name": _get_clean_env("AWS_BUCKET_NAME", "new2fit-avatars"),
-        "endpoint_url": _get_clean_env("AWS_ENDPOINT_URL_S3"),
+        "access_key_id": _clean_env("AWS_ACCESS_KEY_ID"),
+        "secret_access_key": _clean_env("AWS_SECRET_ACCESS_KEY"),
+        "region": _clean_env("AWS_REGION", "us-east-1"),
+        "bucket_name": _clean_env("AWS_BUCKET_NAME", "new2fit-avatars"),
+        "endpoint_url": _clean_env("AWS_ENDPOINT_URL_S3"),
     }
 
 
@@ -48,7 +48,7 @@ def get_s3_client():
 
 
 def is_s3_configured() -> bool:
-    """Checks whether AWS S3 bucket name is configured in environment variables."""
+    """Checks whether S3 bucket name is configured in environment variables."""
     cfg = get_s3_config()
     return bool(cfg["bucket_name"])
 
@@ -61,9 +61,18 @@ def upload_image_to_s3(file_bytes: bytes, file_ext: str, content_type: str, fold
     bucket_name = cfg["bucket_name"]
     endpoint_url = cfg["endpoint_url"]
     region = cfg["region"]
+    key_prefix = (cfg["access_key_id"][:12] + "...") if cfg["access_key_id"] else "None"
 
     if not is_s3_configured():
         raise ValueError("AWS_BUCKET_NAME environment variable is not configured.")
+
+    logger.info(
+        "S3 upload request: endpoint=%s, bucket=%s, key_id=%s, region=%s",
+        endpoint_url or "(default AWS S3)",
+        bucket_name,
+        key_prefix,
+        region,
+    )
 
     client = get_s3_client()
     clean_ext = file_ext.lstrip(".")
@@ -81,7 +90,7 @@ def upload_image_to_s3(file_bytes: bytes, file_ext: str, content_type: str, fold
         return f"https://{bucket_name}.s3.{region}.amazonaws.com/{unique_key}"
     except Exception as e:
         logger.exception("Failed to upload image to S3: %s", e)
-        error_msg = e.response['Error']['Message'] if isinstance(e, ClientError) and 'Error' in getattr(e, 'response', {}) else str(e)
+        error_msg = e.response["Error"]["Message"] if isinstance(e, ClientError) and "Error" in getattr(e, "response", {}) else str(e)
         raise HTTPException(
             status_code=500,
             detail=f"Failed to upload image to S3: {error_msg}"
